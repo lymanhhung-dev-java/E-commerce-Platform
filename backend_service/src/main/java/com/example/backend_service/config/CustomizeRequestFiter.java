@@ -1,24 +1,19 @@
 package com.example.backend_service.config;
 
 import java.io.IOException;
-import java.security.Security;
 import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.GsonBuilderUtils;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.backend_service.common.TokenType;
-import com.example.backend_service.service.JwtService;
-import com.example.backend_service.service.UserServiceDetail;
+import com.example.backend_service.service.auth.JwtService;
+import com.example.backend_service.service.auth.UserServiceDetail;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -47,7 +42,7 @@ public class CustomizeRequestFiter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            log.info("Authorization token present: {}", authHeader.subSequence(0, 22));
+            log.info("Authorization token present: {}", token);
 
             String username = "";
             try {

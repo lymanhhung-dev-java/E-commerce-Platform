@@ -1,4 +1,4 @@
-package com.example.backend_service.service;
+package com.example.backend_service.service.auth;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import com.example.backend_service.repository.UserRepository;

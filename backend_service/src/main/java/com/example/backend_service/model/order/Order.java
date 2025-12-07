@@ -1,4 +1,4 @@
-package com.example.backend_service.model;
+package com.example.backend_service.model.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.backend_service.common.OrderStatus;
+import com.example.backend_service.model.auth.User;
+import com.example.backend_service.model.business.Shop;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

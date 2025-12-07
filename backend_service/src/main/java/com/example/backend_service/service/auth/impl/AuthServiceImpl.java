@@ -1,6 +1,9 @@
-package com.example.backend_service.service.impl;
+package com.example.backend_service.service.auth.impl;
 
-import javax.naming.AuthenticationException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,14 +11,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.backend_service.common.TokenType;
 import com.example.backend_service.dto.request.auth.LoginRequest;
 import com.example.backend_service.dto.request.auth.RegisterRequest;
 import com.example.backend_service.dto.response.auth.TokenResponse;
 import com.example.backend_service.exception.AppException;
-import com.example.backend_service.model.User;
+import com.example.backend_service.model.auth.Role;
+import com.example.backend_service.model.auth.User;
+import com.example.backend_service.repository.RoleRepository;
 import com.example.backend_service.repository.UserRepository;
-import com.example.backend_service.service.AuthService;
-import com.example.backend_service.service.JwtService;
+import com.example.backend_service.service.auth.AuthService;
+import com.example.backend_service.service.auth.JwtService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -32,6 +38,8 @@ public class AuthServiceImpl implements AuthService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public User register(RegisterRequest registerRequest) {
@@ -48,6 +56,11 @@ public class AuthServiceImpl implements AuthService {
         user.setPhoneNumber(registerRequest.getPhone());
         user.setFullName(registerRequest.getFullName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new AppException("Error: Role USER not found."));
+        roles.add(userRole);
+        user.setRoles(roles);
         User savedUser = userRepository.save(user);
         log.info("New user registered: {}", savedUser.getUsername());
         return savedUser;
@@ -56,27 +69,22 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse getAccessToken(LoginRequest loginRequest) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()));
+        List<String> authorities = new ArrayList<>();
 
         try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()));
+            log.info("Authorities: {}", authentication.getAuthorities().toString());
+            authorities.add(authentication.getAuthorities().toString());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             log.error("Authentication failed for user: {}", loginRequest.getUsername());
             throw new AppException("Invalid username or password");
         }
-
-        var user = userRepository.findByUsername(loginRequest.getUsername());
-
-        if (user == null) {
-            log.error("User not found: {}", loginRequest.getUsername());
-            throw new AppException("User not found");
-        }
-
-        String accessToken = jwtService.generateAccessToken(user.getId(), loginRequest.getUsername(), null);
-        String refreshToken = jwtService.generateRefreshToken(user.getId(), loginRequest.getUsername(), null);
+        String accessToken = jwtService.generateAccessToken(loginRequest.getUsername(), authorities);
+        String refreshToken = jwtService.generateRefreshToken(loginRequest.getUsername(), authorities);
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -85,8 +93,25 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenResponse getRefreshToken(String refreshToken) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRefreshToken'");
+        try {
+            String username = jwtService.extractUsername(refreshToken, TokenType.REFRESH_TOKEN);
+            User user = userRepository.findByUsername(username);
+            if (user == null) {
+                throw new AppException("User not found");
+            }
+            List<String> authorities = new ArrayList<>();
+            authorities.add(user.getAuthorities().toString());
+            String accessToken = jwtService.generateAccessToken(user.getUsername(), authorities);
+            return TokenResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Failed to refresh token: {}", e.getMessage());
+            throw new AppException("Invalid refresh token");
+        }
+
     }
 
 }

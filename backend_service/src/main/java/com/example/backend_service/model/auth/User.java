@@ -1,16 +1,15 @@
-package com.example.backend_service.model;
+package com.example.backend_service.model.auth;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.example.backend_service.common.UserRole;
 import com.example.backend_service.common.UserStatus;
+import com.example.backend_service.model.AbstractEntity;
+import com.example.backend_service.model.business.Shop;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
@@ -29,11 +30,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class User implements UserDetails, Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class User extends AbstractEntity<Long> implements UserDetails, Serializable {
+  
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -48,29 +46,35 @@ public class User implements UserDetails, Serializable {
 
     @Column(name = "phone_number")
     private String phoneNumber;
-
     @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER;
-
     private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
     private Shop shop;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "users_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roles) {
+            // 1. Add Role (VD: ROLE_ADMIN)
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+            
+            // 2. Add Permission (VD: PRODUCT_CREATE)
+            for (Permission permission : role.getPermissions()) {
+                authorities.add(new SimpleGrantedAuthority(permission.getName()));
+            }
+        }
+        return authorities;
     }
     @Override
     public boolean isAccountNonExpired() {

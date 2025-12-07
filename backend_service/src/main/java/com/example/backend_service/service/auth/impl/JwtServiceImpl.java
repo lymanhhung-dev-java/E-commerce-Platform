@@ -1,9 +1,10 @@
-package com.example.backend_service.service.impl;
+package com.example.backend_service.service.auth.impl;
 
 import java.security.Key;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -12,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import com.example.backend_service.common.TokenType;
 import com.example.backend_service.exception.AppException;
-import com.example.backend_service.service.JwtService;
+import com.example.backend_service.service.auth.JwtService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -36,28 +37,24 @@ public class JwtServiceImpl implements JwtService {
     private String refreshKey;
 
     @Override
-    public String generateAccessToken(long userId, String username,
-            Collection<? extends GrantedAuthority> authorities) {
+    public String generateAccessToken( String username,List<String> authorities) {
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
         claims.put("role", authorities);
 
-        log.info("Generating access token for userId: {}, username: {}", userId, username);
+        log.info("Generating access token for userId: {}, username: {}", username);
 
         return generateToken(claims, username);
     }
 
     @Override
-    public String generateRefreshToken(long userId, String username,
-            Collection<? extends GrantedAuthority> authorities) {
+    public String generateRefreshToken(String username,
+           List<String> authorities) {
 
-        log.info("Generating refresh token for userId: {}, username: {}", userId, username);
+        log.info("Generating refresh token for userId: {}, username: {}",username);
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
         claims.put("role", authorities);
-
         return refreshToken(claims, username);
     }
 

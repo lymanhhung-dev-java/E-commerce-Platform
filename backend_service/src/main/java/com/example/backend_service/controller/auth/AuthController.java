@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend_service.dto.request.auth.LoginRequest;
 import com.example.backend_service.dto.request.auth.RegisterRequest;
 import com.example.backend_service.dto.response.auth.TokenResponse;
-import com.example.backend_service.model.User;
-import com.example.backend_service.service.AuthService;
+import com.example.backend_service.model.auth.User;
+import com.example.backend_service.service.auth.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

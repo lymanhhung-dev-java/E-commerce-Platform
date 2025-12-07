@@ -1,8 +1,10 @@
-package com.example.backend_service.model;
+package com.example.backend_service.model.order;
 
 import jakarta.persistence.Entity;
 
 import java.math.BigDecimal;
+
+import com.example.backend_service.model.product.Product;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
