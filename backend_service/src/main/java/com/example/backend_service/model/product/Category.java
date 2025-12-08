@@ -1,4 +1,4 @@
-package com.example.backend_service.model;
+package com.example.backend_service.model.product;
 import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

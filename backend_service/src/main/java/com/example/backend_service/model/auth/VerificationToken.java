@@ -1,4 +1,4 @@
-package com.example.backend_service.model;
+package com.example.backend_service.model.auth;
 
 import java.time.LocalDateTime;
 

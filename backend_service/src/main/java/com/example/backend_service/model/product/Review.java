@@ -1,7 +1,9 @@
-package com.example.backend_service.model;
+package com.example.backend_service.model.product;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.example.backend_service.model.auth.User;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

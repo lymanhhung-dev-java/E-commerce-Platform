@@ -1,5 +1,7 @@
 package com.example.backend_service.model;
 
+import com.example.backend_service.model.auth.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,10 +17,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "user_addresses")
+@Table(name = "addresses")
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAddress {
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,12 +28,11 @@ public class UserAddress {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
     private String street;
     private String city;
     private String district;
     private String ward;
-
+    
     @Column(name = "phone_number")
     private String phoneNumber;
 

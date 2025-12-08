@@ -1,0 +1,56 @@
+package com.example.backend_service.controller.auth;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.backend_service.dto.request.auth.LoginRequest;
+import com.example.backend_service.dto.request.auth.RegisterRequest;
+import com.example.backend_service.dto.response.auth.TokenResponse;
+import com.example.backend_service.model.auth.User;
+import com.example.backend_service.service.auth.AuthService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
+
+@RestController
+@RequestMapping("/api/auth")
+@Slf4j(topic = "AUTH-CONTROLLER")
+@Tag(name = "Auth Controller", description = "APIs for user authentication and registration")
+public class AuthController {
+    @Autowired
+    private AuthService authService;
+    @PostMapping("/register")
+     public ResponseEntity<Long> register(@RequestBody @Valid RegisterRequest req)  {
+        User registeredUser = authService.register(req);
+        return ResponseEntity.ok(registeredUser.getId());
+    }
+
+    @Operation(summary = "Access Token", description = "API to obtain an access token using user credentials")
+    @PostMapping("/acces-token")
+    public TokenResponse getAccessToken(@RequestBody LoginRequest req) {
+        log.info("Access token requested");
+       // return TokenResponse.builder().accessToken("dummy-access-token").refreshToken("dummy-refresh-token").build();
+         return authService.getAccessToken(req);
+                
+    }
+
+    @Operation(summary = "Refresh Token", description = "API to obtain a new access token using a refresh token")
+    @PostMapping("/refresh-token")
+    public TokenResponse getRefreshToken(@RequestBody String refreshToken) {
+        log.info("refresh token requested");
+        //return TokenResponse.builder().accessToken("dummy-access-token").refreshToken("dummy-refresh-token").build();
+        return authService.getRefreshToken(refreshToken);
+                
+    }
+    
+    
+}
