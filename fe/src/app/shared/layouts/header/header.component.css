@@ -1,0 +1,4 @@
+/* Hiện tại dùng Bootstrap class nên có thể để trống, hoặc thêm tùy chỉnh */
+.navbar-brand {
+    font-weight: bold;
+}

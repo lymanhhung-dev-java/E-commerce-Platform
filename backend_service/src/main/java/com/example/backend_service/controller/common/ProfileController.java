@@ -1,6 +1,7 @@
 package com.example.backend_service.controller.common;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,7 @@ public class ProfileController {
 
     @Operation(summary = "Change Password", description = "Đổi mật khẩu (Cần mật khẩu cũ)")
     @PutMapping("/change-password")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> changePassword(@RequestBody @Valid ChangePasswordRequest req){
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("Request change password for user: {}", currentUsername);

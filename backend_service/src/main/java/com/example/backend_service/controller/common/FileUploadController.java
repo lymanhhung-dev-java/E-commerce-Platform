@@ -36,7 +36,7 @@ public class FileUploadController {
 
     @Operation(summary = "Upload Product Image", description = "Upload ảnh sản phẩm (Lưu vào folder products)")
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hashAuthority('SELLER')")
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
     public ResponseEntity<?> uploadProductImage(@RequestParam("file") MultipartFile file) {
         String url = storageService.uploadFile(file, "products");
         return ResponseEntity.ok(Map.of("url", url));

@@ -1,0 +1,21 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">My Shop</a>
+    
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" routerLink="/">Trang chủ</a></li>
+      </ul>
+
+      <div class="d-flex gap-2">
+        @if (!authService.isLoggedIn()) {
+          <button class="btn btn-outline-light" routerLink="/login">Đăng nhập</button>
+          <button class="btn btn-warning" routerLink="/register">Đăng ký</button>
+        } @else {
+          <button class="btn btn-info" routerLink="/profile">Profile</button>
+          <button class="btn btn-danger" (click)="authService.logout()">Đăng xuất</button>
+        }
+      </div>
+    </div>
+  </div>
+</nav>
