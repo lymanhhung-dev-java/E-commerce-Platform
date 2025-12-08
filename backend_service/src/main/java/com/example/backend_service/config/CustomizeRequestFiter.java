@@ -1,7 +1,6 @@
 package com.example.backend_service.config;
 
 import java.io.IOException;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -19,12 +18,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 
 @Component
 @Slf4j(topic = "CUSTOM-REQUEST-FILTER")
@@ -40,58 +34,35 @@ public class CustomizeRequestFiter extends OncePerRequestFilter {
         log.info("Incoming request: {} {}", request.getMethod(), request.getRequestURI());
 
         String authHeader = request.getHeader("Authorization");
+        
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             log.info("Authorization token present: {}", token);
 
-            String username = "";
             try {
-                username = jwtService.extractUsername(authHeader, TokenType.ACCESS_TOKEN);
+                String username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
                 log.info("Extracted username from token: {}", username);
-                
 
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    
+                    UserDetails userDetails = userServiceDetail.userDetailsService().loadUserByUsername(username);
+
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                    securityContext.setAuthentication(authenticationToken);
+                    
+                    SecurityContextHolder.setContext(securityContext);
+                }
+                
             } catch (Exception e) {
-                log.error("Error extracting username from token: {}", e.getMessage());
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(errorResponse(e.getMessage()));
-                return;
+                log.error("Token invalid or expired: {}", e.getMessage());
+                SecurityContextHolder.clearContext();
             }
-            UserDetails userDetails = userServiceDetail.userDetailsService().loadUserByUsername(username);
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.setContext(securityContext);
-            filterChain.doFilter(request, response);
-            return;
         }
+        
         filterChain.doFilter(request, response);
     }
-
-    private String errorResponse(String message) {
-        try {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(new Date());
-        errorResponse.setStatus(403);
-        errorResponse.setError("Forbidden");
-        errorResponse.setMessage(message);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(errorResponse);
-
-        } catch (Exception e) {
-            return "{}";
-        }
-    }
-    @Setter
-    @Getter
-    private class ErrorResponse {
-        private Date timestamp;
-        private int status;
-        private String error;
-        private String message;
-
-    }
-
 }

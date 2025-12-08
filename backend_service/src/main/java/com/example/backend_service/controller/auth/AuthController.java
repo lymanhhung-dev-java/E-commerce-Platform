@@ -38,7 +38,6 @@ public class AuthController {
     @PostMapping("/acces-token")
     public TokenResponse getAccessToken(@RequestBody LoginRequest req) {
         log.info("Access token requested");
-       // return TokenResponse.builder().accessToken("dummy-access-token").refreshToken("dummy-refresh-token").build();
          return authService.getAccessToken(req);
                 
     }
@@ -47,10 +46,7 @@ public class AuthController {
     @PostMapping("/refresh-token")
     public TokenResponse getRefreshToken(@RequestBody String refreshToken) {
         log.info("refresh token requested");
-        //return TokenResponse.builder().accessToken("dummy-access-token").refreshToken("dummy-refresh-token").build();
         return authService.getRefreshToken(refreshToken);
                 
     }
-    
-    
 }

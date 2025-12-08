@@ -30,6 +30,7 @@ public class AppConfig {
 
     private final CustomizeRequestFiter customizeRequestFiter;
     private final UserServiceDetail userServiceDetail;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -46,6 +47,9 @@ public class AppConfig {
                     "/swagger-ui.html"
             ).permitAll()
                 .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            )
             .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
             .authenticationProvider(authenticatorProvider()).addFilterBefore(customizeRequestFiter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
