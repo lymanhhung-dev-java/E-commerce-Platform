@@ -1,0 +1,27 @@
+<div class="container mt-5">
+  <div class="card mx-auto login-card">
+    <div class="card-body">
+      <h3 class="card-title text-center mb-4">Đăng Nhập</h3>
+      
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" formControlName="username">
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" formControlName="password">
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid">
+          Đăng nhập
+        </button>
+      </form>
+      
+      <div class="mt-3 text-center">
+        Chưa có tài khoản? <a routerLink="/register">Đăng ký ngay</a>
+      </div>
+    </div>
+  </div>
+</div>

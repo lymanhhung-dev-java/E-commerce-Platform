@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
+    
     public void changePassword(String currentUsername, ChangePasswordRequest req) {
         User user = getUserByUsername(currentUsername);
 
