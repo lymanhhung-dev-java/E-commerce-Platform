@@ -49,7 +49,6 @@ public class AppConfig {
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(requests -> requests.requestMatchers("/api/auth/**", 
                     
-                    // 2. Các đường dẫn cần thiết cho Swagger hoạt động ổn định
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html"

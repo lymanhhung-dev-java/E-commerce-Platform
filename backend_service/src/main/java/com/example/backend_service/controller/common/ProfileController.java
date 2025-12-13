@@ -48,11 +48,10 @@ public class ProfileController {
 
     @Operation(summary = "Change Password", description = "Đổi mật khẩu (Cần mật khẩu cũ)")
     @PutMapping("/change-password")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> changePassword(@RequestBody @Valid ChangePasswordRequest req){
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("Request change password for user: {}", currentUsername);
         userService.changePassword(currentUsername, req);
-        return ResponseEntity.ok("oke");
+        return ResponseEntity.ok("Đổi mật khẩu thành công");
     }
 }
