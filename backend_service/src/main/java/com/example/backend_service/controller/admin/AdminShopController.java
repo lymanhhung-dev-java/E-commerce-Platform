@@ -2,6 +2,8 @@ package com.example.backend_service.controller.admin;
 
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backend_service.service.business.ShopService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class AdminShopController {
 
     private final ShopService shopService;
 
+    @Operation(summary = "Approve Shop", description = "Approve or reject a shop")
     @PutMapping("/{id}/approve")
     public ResponseEntity<?> approveShop(@PathVariable Long shopId, @RequestParam Boolean isApproved){
         shopService.approveShope(shopId, isApproved);

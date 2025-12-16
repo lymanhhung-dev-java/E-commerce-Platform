@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend_service.dto.request.product.CategoryRequest;
 import com.example.backend_service.service.product.CategoryService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminCategoryController {
     private final CategoryService categoryService;
 
+    @Operation(summary = "Create Category", description = "Create a new category")
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestBody CategoryRequest req) {
         return ResponseEntity.ok(categoryService.createCategory(req));

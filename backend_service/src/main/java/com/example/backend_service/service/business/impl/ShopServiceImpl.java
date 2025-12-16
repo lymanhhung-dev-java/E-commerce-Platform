@@ -1,10 +1,7 @@
 package com.example.backend_service.service.business.impl;
 
-import java.util.Optional;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import com.example.backend_service.common.ShopStatus;
 import com.example.backend_service.dto.request.business.RegisterShopRequest;
 import com.example.backend_service.exception.AppException;
@@ -43,6 +40,7 @@ public class ShopServiceImpl  implements ShopService{
         shop.setDescription(req.getDescription());
         shop.setLogoUrl(req.getLogoUrl());
         shop.setOwner(currentUser);
+        shop.setAddress(req.getAddress());
         shop.setStatus(ShopStatus.PENDING);
         shop.setRating(5.0);
         return shopRepository.save(shop);
