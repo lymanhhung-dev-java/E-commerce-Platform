@@ -53,13 +53,19 @@ public class AppConfig {
                     "/swagger-ui/**",
                     "/swagger-ui.html"
             ).permitAll()
+    //         .requestMatchers("/api/products/**").permitAll()
+    // .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             )
+            
             .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
             .authenticationProvider(authenticatorProvider()).addFilterBefore(customizeRequestFiter, UsernamePasswordAuthenticationFilter.class);
+             
         return http.build();
+           
+            // (Cho phép tất cả mọi người truy cập vào link bắt đầu bằng /api/products)
     }
 
     @Bean
@@ -90,4 +96,5 @@ public class AppConfig {
         return authProvider;
        
     }
+
 }
