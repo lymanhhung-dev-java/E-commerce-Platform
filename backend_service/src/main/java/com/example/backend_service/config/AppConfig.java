@@ -53,8 +53,8 @@ public class AppConfig {
                     "/swagger-ui/**",
                     "/swagger-ui.html"
             ).permitAll()
-    //         .requestMatchers("/api/products/**").permitAll()
-    // .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/api/products/**").permitAll()
+    .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
