@@ -48,7 +48,7 @@ public class AppConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(requests -> requests.requestMatchers("/api/auth/**", 
-                    
+                    "/api/products/**",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html"
