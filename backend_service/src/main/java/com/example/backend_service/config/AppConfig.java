@@ -65,7 +65,7 @@ public class AppConfig {
              
         return http.build();
            
-            // (Cho phép tất cả mọi người truy cập vào link bắt đầu bằng /api/products)
+            
     }
 
     @Bean
