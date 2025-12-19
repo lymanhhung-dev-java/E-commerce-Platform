@@ -2,6 +2,9 @@ package com.example.backend_service.controller.business;
 
 import com.example.backend_service.dto.request.business.CartItemRequest;
 import com.example.backend_service.service.business.CartService;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
+@Slf4j(topic = "CART-MANAGEMENT-CONTROLLER")
 @RequestMapping("/api/cart")
 public class CartController {
 
