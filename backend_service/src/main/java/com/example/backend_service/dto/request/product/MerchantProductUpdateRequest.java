@@ -1,6 +1,5 @@
 package com.example.backend_service.dto.request.product;
 
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 import java.math.BigDecimal;
 

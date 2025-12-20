@@ -31,7 +31,7 @@ public class MerchantProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductDetailResponse> update(
             @PathVariable Long id,
-            @Valid @ModelAttribute MerchantProductUpdateRequest request) {
+            @Valid @RequestBody MerchantProductUpdateRequest request) {
         return ResponseEntity.ok(merchantProductService.update(id, request));
     }
 
