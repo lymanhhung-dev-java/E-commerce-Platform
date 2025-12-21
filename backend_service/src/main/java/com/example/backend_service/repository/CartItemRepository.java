@@ -1,7 +1,10 @@
 package com.example.backend_service.repository;
 
+import com.example.backend_service.model.auth.User;
 // 👇 Import đúng đường dẫn model của bạn
-import com.example.backend_service.model.order.CartItem; 
+import com.example.backend_service.model.order.CartItem;
+import com.example.backend_service.model.product.Product;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +19,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     // Tìm món hàng cụ thể của user (để kiểm tra trùng khi thêm mới)
     Optional<CartItem> findByUserIdAndProductId(Long userId, Long productId);
+
+    Optional<CartItem> findByUserAndProduct(User user, Product product);
+
+    void deleteByUserAndProduct(User user, Product product);
 }
