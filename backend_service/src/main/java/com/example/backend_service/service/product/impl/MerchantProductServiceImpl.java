@@ -27,7 +27,7 @@ public class MerchantProductServiceImpl implements MerchantProductService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-@Override
+    @Override
     public ProductDetailResponse create(MerchantProductCreateRequest request) {
         @SuppressWarnings("null")
         Category category = categoryRepository.findById(request.getCategoryId())

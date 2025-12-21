@@ -9,9 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/merchant/products")
@@ -22,16 +22,17 @@ public class MerchantProductController {
 
     private final MerchantProductService merchantProductService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> create(
-            @Valid @ModelAttribute MerchantProductCreateRequest request) {
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_SELLER')")
+    public ResponseEntity<ProductDetailResponse> create(
+            @Valid @RequestBody MerchantProductCreateRequest request) {
         return ResponseEntity.ok(merchantProductService.create(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductDetailResponse> update(
             @PathVariable Long id,
-            @Valid @RequestBody MerchantProductUpdateRequest request) {
+             @RequestBody MerchantProductUpdateRequest request) {
         return ResponseEntity.ok(merchantProductService.update(id, request));
     }
 
