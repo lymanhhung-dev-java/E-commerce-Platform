@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend_service.dto.request.checkout.CheckoutRequest;
+import com.example.backend_service.dto.request.order.CheckoutRequest;
 import com.example.backend_service.service.order.CheckoutService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/checkout")
 @Tag(name = "Checkout Controller", description = "Checkout / đặt hàng")
 @Slf4j(topic = "CHECKOUT-CONTROLLER")
 public class CheckoutController {
@@ -27,7 +27,7 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @Operation(summary = "Checkout - Tạo đơn hàng từ giỏ hàng hoặc list sản phẩm")
-    @PostMapping("/checkout")
+    @PostMapping
     public ResponseEntity<Object> checkout(@RequestBody @Valid CheckoutRequest req) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("Checkout request by {} with {} items", username, req.getItems() != null ? req.getItems().size() : 0);

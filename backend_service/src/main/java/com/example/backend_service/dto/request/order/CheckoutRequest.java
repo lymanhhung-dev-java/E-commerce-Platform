@@ -1,4 +1,4 @@
-package com.example.backend_service.dto.request.checkout;
+package com.example.backend_service.dto.request.order;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ public class CheckoutRequest {
     private List<Item> items;
     private String shippingAddress;
     private String shippingPhone;
+    private String  PaymentMethod = "COD";
 
     @Data
     public static class Item {

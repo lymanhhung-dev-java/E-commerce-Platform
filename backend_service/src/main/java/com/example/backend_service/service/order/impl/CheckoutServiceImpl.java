@@ -7,9 +7,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.backend_service.dto.request.checkout.CheckoutRequest;
+import com.example.backend_service.dto.request.order.CheckoutRequest;
 import com.example.backend_service.exception.AppException;
 import com.example.backend_service.exception.OutOfStockException;
 import com.example.backend_service.model.auth.User;
@@ -80,6 +79,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         order.setShippingPhone(request.getShippingPhone());
         order.setTotalAmount(total);
         order.setOrderItems(orderItems);
+        order.setPaymentMethod(request.getPaymentMethod());
         // set back-reference
         for (OrderItem oi : orderItems) oi.setOrder(order);
 
