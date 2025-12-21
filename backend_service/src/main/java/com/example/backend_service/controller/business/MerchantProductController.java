@@ -37,7 +37,7 @@ public class MerchantProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         merchantProductService.softDelete(id);
         return ResponseEntity.ok("Xóa sản phẩm thành công");
 
