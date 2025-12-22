@@ -9,14 +9,17 @@ import { CommonModule } from '@angular/common';
   selector: 'app-register',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RouterLink],
-  templateUrl: './register.html',
-  styleUrl: './register.css'
+  templateUrl: './register.html', 
+  styleUrl: './register.css'     
 })
 export class RegisterComponent {
-  fb = inject(FormBuilder);
-  authService = inject(AuthService);
-  router = inject(Router);
-  toastr = inject(ToastrService);
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private toastr = inject(ToastrService);
+
+  showPassword = false;
+  showConfirmPassword = false;
 
   registerForm = this.fb.group({
     username: ['', [Validators.required, Validators.minLength(3)]],
@@ -31,21 +34,24 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       const val = this.registerForm.value;
       
-      // Kiểm tra mật khẩu khớp nhau (Validation đơn giản)
       if (val.password !== val.confirmPassword) {
         this.toastr.error('Mật khẩu xác nhận không khớp!');
         return;
       }
 
       this.authService.register(val).subscribe({
-        next: () => {
+        next: (res) => {
           this.toastr.success('Đăng ký thành công! Hãy đăng nhập.');
           this.router.navigate(['/login']);
         },
         error: (err) => {
-          this.toastr.error(err.error?.message || 'Đăng ký thất bại');
+          const errorMessage = err.error?.message || 'Đăng ký thất bại. Vui lòng thử lại.';
+          this.toastr.error(errorMessage);
         }
       });
+    } else {
+      this.toastr.warning('Vui lòng điền đầy đủ thông tin hợp lệ.');
+      this.registerForm.markAllAsTouched();
     }
   }
 }

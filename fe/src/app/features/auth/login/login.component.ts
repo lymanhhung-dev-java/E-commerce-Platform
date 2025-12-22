@@ -17,7 +17,7 @@ export class LoginComponent {
   authService = inject(AuthService);
   router = inject(Router);
   toastr = inject(ToastrService);
-
+  showPassword: boolean = false;
   loginForm = this.fb.group({
     username: ['', Validators.required],
     password: ['', Validators.required]
