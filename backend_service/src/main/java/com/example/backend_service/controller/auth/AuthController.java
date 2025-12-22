@@ -2,18 +2,15 @@ package com.example.backend_service.controller.auth;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.backend_service.dto.request.auth.LoginRequest;
 import com.example.backend_service.dto.request.auth.RegisterRequest;
 import com.example.backend_service.dto.response.auth.TokenResponse;
 import com.example.backend_service.model.auth.User;
 import com.example.backend_service.service.auth.AuthService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class AuthController {
     @Autowired
     private AuthService authService;
+
+    @Operation(summary = "Register", description = "API to register a new user")
     @PostMapping("/register")
      public ResponseEntity<Long> register(@RequestBody @Valid RegisterRequest req)  {
         User registeredUser = authService.register(req);

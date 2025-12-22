@@ -43,5 +43,8 @@ public class Shop extends AbstractEntity<Long> implements Serializable {
     @Enumerated(EnumType.STRING)
     private ShopStatus status = ShopStatus.PENDING;
 
+    @Column(name = "address")
+    private String address;
+
     private Double rating = 5.0;
 }

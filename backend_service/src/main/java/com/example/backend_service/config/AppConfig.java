@@ -13,13 +13,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfigurationSource; 
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.config.Customizer;
 
 import com.example.backend_service.service.auth.UserServiceDetail;
 
 import lombok.RequiredArgsConstructor;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 
@@ -39,35 +46,41 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests(requests -> requests.requestMatchers("/api/auth/**", 
-                    
-                    // 2. Các đường dẫn cần thiết cho Swagger hoạt động ổn định
+                    "/api/products/**",
+                    "/api/categories/**",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html"
             ).permitAll()
+    .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             )
+            
             .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
             .authenticationProvider(authenticatorProvider()).addFilterBefore(customizeRequestFiter, UsernamePasswordAuthenticationFilter.class);
+             
         return http.build();
+           
+            
     }
 
     @Bean
-    public WebMvcConfigurer mvcConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("*");
-                        
-            }
-        };
-    }   
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200")); 
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); 
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
+        configuration.setExposedHeaders(List.of("x-auth-token"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }  
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -83,4 +96,5 @@ public class AppConfig {
         return authProvider;
        
     }
+
 }

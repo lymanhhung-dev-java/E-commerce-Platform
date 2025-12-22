@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/users")
@@ -21,6 +22,5 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminUserController {
     private final UserService userService;
-
     
 }
