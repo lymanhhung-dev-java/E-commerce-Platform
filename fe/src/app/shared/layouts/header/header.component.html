@@ -1,21 +1,103 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<div class="bg-white py-3 shadow-sm sticky-top">
   <div class="container">
-    <a class="navbar-brand" routerLink="/">My Shop</a>
-    
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" routerLink="/">Trang chủ</a></li>
-      </ul>
+    <div class="row align-items-center">
 
-      <div class="d-flex gap-2">
-        @if (!authService.isLoggedIn()) {
-          <button class="btn btn-outline-light" routerLink="/login">Đăng nhập</button>
-          <button class="btn btn-warning" routerLink="/register">Đăng ký</button>
-        } @else {
-          <button class="btn btn-info" routerLink="/profile">Profile</button>
-          <button class="btn btn-danger" (click)="authService.logout()">Đăng xuất</button>
-        }
+      <div class="col-md-2 d-flex align-items-center">
+        <a routerLink="/" class="text-decoration-none d-flex align-items-center gap-2">
+          <div class="bg-primary text-white rounded p-2 d-flex justify-content-center align-items-center"
+            style="width: 40px; height: 40px;">
+            <i class="bi bi-bag-fill fs-5"></i>
+          </div>
+          <span class="fw-bold fs-4 text-dark font-primary">E-Market</span>
+        </a>
+      </div>
+
+      <div class="col-md-6 my-2 my-md-0">
+        <div class="input-group">
+          <button class="btn btn-outline-secondary dropdown-toggle bg-light border-end-0" type="button"
+            data-bs-toggle="dropdown" style="min-width: 150px;">
+            {{ selectedCategoryName }}
+          </button>
+
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item cursor-pointer fw-bold" (click)="onSelectCategory(null, 'All Categories')">
+                <i class="bi bi-grid-fill me-2"></i> Tất cả danh mục
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li *ngFor="let cat of categories">
+              <ng-container *ngIf="cat.children && cat.children.length > 0">
+                <a class="dropdown-item cursor-pointer has-children d-flex justify-content-between align-items-center"
+                  (click)="onSelectCategory(cat.id, cat.name)">
+                  {{ cat.name }}
+                </a>
+
+                <ul class="submenu shadow">
+                  <li *ngFor="let child of cat.children">
+                    <a class="dropdown-item cursor-pointer"
+                      (click)="onSelectCategory(child.id, child.name); $event.stopPropagation()">
+                      {{ child.name }}
+                    </a>
+                  </li>
+                </ul>
+              </ng-container>
+
+              <ng-container *ngIf="!cat.children || cat.children.length === 0">
+                <a class="dropdown-item cursor-pointer" (click)="onSelectCategory(cat.id, cat.name)">
+                  {{ cat.name }}
+                </a>
+              </ng-container>
+
+            </li>
+          </ul>
+
+          <input type="text" #searchInput (keyup.enter)="onSearch(searchInput.value)"
+            class="form-control border-start-0 border-end-0" placeholder="Tìm kiếm sản phẩm...">
+
+          <button class="btn btn-primary px-4" (click)="onSearch(searchInput.value)">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="col-md-4 d-flex justify-content-end align-items-center gap-3">
+        <button class="btn btn-outline-secondary d-none d-lg-block rounded-pill px-3">
+          Become a Seller
+        </button>
+
+        <div class="position-relative cursor-pointer text-secondary" routerLink="/cart"> <i
+            class="bi bi-cart3 fs-4"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 10px;" *ngIf="cartService.totalCount() > 0">
+            {{ cartService.totalCount() }}
+          </span>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 border-start ps-3 ms-2">
+          @if (authService.isLoggedIn()) {
+          <a routerLink="/profile" class="d-flex align-items-center text-decoration-none text-dark gap-2">
+            <div class="bg-light rounded-circle d-flex justify-content-center align-items-center"
+              style="width: 35px; height: 35px;">
+              <i class="bi bi-person fs-5 text-primary"></i>
+            </div>
+            <div class="d-none d-xl-block lh-1 text-start">
+              <div class="small text-muted" style="font-size: 11px;">Account</div>
+              <div class="fw-bold" style="font-size: 13px;">My Profile</div>
+            </div>
+          </a>
+          <button class="btn btn-sm btn-link text-danger text-decoration-none" (click)="authService.logout()">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+          } @else {
+          <a routerLink="/login" class="btn btn-sm btn-primary">Sign In</a>
+          }
+        </div>
+
       </div>
     </div>
   </div>
-</nav>
+</div>

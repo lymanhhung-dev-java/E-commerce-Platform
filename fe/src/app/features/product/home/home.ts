@@ -2,7 +2,7 @@ import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
-import { CategoryService } from '../../../core/services/category.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductCardComponent } from '../product-card/product-card';
 import { Product } from '../../../core/models/product';
 import { Category } from '../../../core/models/category';
@@ -16,40 +16,34 @@ import { Category } from '../../../core/models/category';
 })
 export class HomeComponent implements OnInit {
   private productService = inject(ProductService);
-  private categoryService = inject(CategoryService);
+  private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
   
 
   products: Product[] = [];
-  categories: Category[] = [];
   isLoading = false;
 
 
   currentPage = 0;
   pageSize = 12;
   totalPages = 0;
-  keyword = '';
+  keyword: string = '';
   selectedCategoryId: number | null = null;
-  
   selectedPriceRange: string = 'all'; 
   minPrice?: number;
   maxPrice?: number;
 
   ngOnInit() {
-    this.loadCategories();
+    this.route.queryParams.subscribe(params => {
+      this.selectedCategoryId = params['categoryId'] ? Number(params['categoryId']) : null;
+      this.keyword = params['search'] || '';
     this.loadData();
+    });
   }
 
   toggleCategory(cat: Category) {
     cat.expanded = !cat.expanded;
   }
-  loadCategories() {
-    this.categoryService.getCategories().subscribe({
-      next: (res) => this.categories = res,
-      error: (err) => console.error('Lỗi tải danh mục:', err)
-    });
-  }
-
   loadData() {
     this.isLoading = true;
     

@@ -19,24 +19,20 @@ export class ProductService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size)
-      .set('sort', 'createdAt,desc'); // Mặc định sort theo controller
+      .set('sort', 'createdAt,desc'); 
 
     if (search) params = params.set('search', search);
     if (categoryId) params = params.set('categoryId', categoryId);
     if (minPrice) params = params.set('minPrice', minPrice);
     if (maxPrice) params = params.set('maxPrice', maxPrice);
 
-    // Trả về ProductResponse (dạng Page của Spring)
     return this.http.get<ProductResponse>(this.apiUrl, { params });
   }
 
-
-  // Tìm kiếm sản phẩm
   searchProducts(keyword: string) {
     return this.http.get<any>(`${this.apiUrl}/search?keyword=${keyword}`);
   }
   
-  // Lấy chi tiết
   getProductById(id: number) {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }

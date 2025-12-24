@@ -1,0 +1,31 @@
+/* Nút checkout màu cam đặc trưng */
+.btn-orange {
+    background: linear-gradient(to right, #f97316, #ea580c);
+    border: none;
+    transition: opacity 0.2s;
+}
+.btn-orange:hover {
+    opacity: 0.9;
+}
+
+
+.cart-item-row:last-child {
+    border-bottom: none !important;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.card {
+    border-radius: 10px;
+}
+
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    cursor: pointer;
+}

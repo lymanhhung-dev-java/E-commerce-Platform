@@ -1,23 +1,32 @@
-.cursor-pointer {
-    cursor: pointer;
+
+.promo-banner {
+    background-color: #eef2ff; 
+    border: 2px dashed #c7d2fe;
+    border-radius: 12px;
+    min-height: 250px;
+}
+
+.nav-link {
+    font-size: 14px;
+    padding: 10px 15px;
     transition: all 0.2s;
 }
 
-.cursor-pointer:hover {
+.nav-link:hover {
+    color: #0d6efd !important;
     background-color: #f8f9fa;
-    padding-left: 20px; /* Hiệu ứng thụt vào khi hover */
+    border-radius: 4px;
 }
 
-/* Override màu active cho danh mục */
-.list-group-item.active {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    font-weight: bold;
+.page-link {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
 }
-
-/* Banner */
-.banner-section {
-    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
-    border-radius: 0 0 50% 50% / 20px;
-    padding-bottom: 60px !important;
+.page-link:hover {
+    background-color: #eef2ff;
+    color: #0d6efd;
 }

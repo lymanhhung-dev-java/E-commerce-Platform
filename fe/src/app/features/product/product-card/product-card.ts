@@ -7,8 +7,8 @@ import { Product } from '../../../core/models/product';
   selector: 'app-product-card',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './product-card.html', // Trỏ đến file HTML
-  styleUrl: './product-card.css'      // Trỏ đến file CSS
+  templateUrl: './product-card.html', 
+  styleUrl: './product-card.css'      
 })
 export class ProductCardComponent {
   @Input() product!: Product;

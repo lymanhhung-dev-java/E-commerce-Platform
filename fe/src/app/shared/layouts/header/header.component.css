@@ -1,4 +1,84 @@
-/* Hiện tại dùng Bootstrap class nên có thể để trống, hoặc thêm tùy chỉnh */
-.navbar-brand {
-    font-weight: bold;
+.font-primary {
+    font-family: 'Inter', sans-serif;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+.input-group .btn-outline-secondary {
+    border-color: #ced4da;
+    color: #555;
+}
+
+.bi-cart3:hover {
+    color: #0d6efd;
+    transition: 0.2s;
+}
+
+.dropdown-menu li {
+  position: relative;
+}
+
+.dropdown-menu .submenu { 
+  display: none;
+  position: absolute;
+  left: 100%; 
+  top: 0; 
+  /* margin-top: -5px; Bỏ dòng này đi để căn chuẩn hơn, ta sẽ chỉnh margin ở dưới */
+  margin-top: -0.5rem; /* Đẩy nhẹ lên để khớp với viền trên */
+  
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.375rem;
+  background-color: #fff;
+  min-width: 220px; /* Tăng độ rộng chút cho đẹp */
+  list-style: none;
+  padding: 0.5rem 0;
+  border: 1px solid rgba(0,0,0,.15);
+  z-index: 1000;
+}
+
+/* QUAN TRỌNG: Tạo lớp cầu nối trong suốt để không bị mất hover khi di chuột */
+.dropdown-menu .submenu::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -10px; /* Mở rộng vùng nhận diện hover sang trái 10px (lấn vào menu cha) */
+  width: 20px; /* Độ rộng cầu nối */
+  background: transparent; /* Trong suốt */
+  display: block;
+}
+
+.dropdown-menu li:hover > .submenu {
+  display: block;
+}
+
+.dropdown-menu > li:nth-last-child(-n + 3) > .submenu {
+  top: auto;    
+  bottom: 0;   
+  margin-top: 0;
+  margin-bottom: -0.5rem; 
+}
+
+
+.dropdown-item.has-children::after {
+  content: "\F285";
+  font-family: "bootstrap-icons";
+  position: absolute;
+  right: 1rem;
+  font-size: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
+.submenu li a:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd; 
 }

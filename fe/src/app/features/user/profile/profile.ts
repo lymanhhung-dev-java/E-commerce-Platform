@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../../core/services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { User } from '../../../core/models/user';
 
 @Component({
   selector: 'app-profile',
@@ -16,14 +17,14 @@ export class ProfileComponent implements OnInit {
   userService = inject(UserService);
   toastr = inject(ToastrService);
 
-  user: any = null;
+  user: User | null = null;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
   profileForm = this.fb.group({
     fullName: [''],
     phoneNumber: [''],
-    email: [{value: '', disabled: true}], // Email thường không cho sửa
+    email: [{value: '', disabled: true}], 
     username: [{value: '', disabled: true}]
   });
 
@@ -35,9 +36,7 @@ export class ProfileComponent implements OnInit {
     this.userService.getMyProfile().subscribe({
       next: (res) => {
         this.user = res;
-        this.previewUrl = res.avatarUrl; // Hiển thị avatar hiện tại
-        
-        // Điền dữ liệu vào form
+        this.previewUrl = res.avatarUrl; 
         this.profileForm.patchValue({
           fullName: res.fullName,
           phoneNumber: res.phoneNumber,
@@ -49,13 +48,10 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // Khi người dùng chọn file ảnh
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
-      
-      // Tạo preview ảnh ngay lập tức để User xem trước
       const reader = new FileReader();
       reader.onload = (e: any) => this.previewUrl = e.target.result;
       reader.readAsDataURL(file);
@@ -63,22 +59,20 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    // Bước 1: Nếu có chọn file mới -> Upload trước
+
     if (this.selectedFile) {
       this.userService.uploadAvatar(this.selectedFile).subscribe({
         next: (res) => {
-          const newAvatarUrl = res.url; // URL từ Cloudinary trả về
-          this.updateUserInfo(newAvatarUrl); // Gọi tiếp hàm cập nhật info
+          const newAvatarUrl = res.url; 
+          this.updateUserInfo(newAvatarUrl); 
         },
         error: () => this.toastr.error('Lỗi upload ảnh!')
       });
     } else {
-      // Nếu không đổi ảnh -> Cập nhật thông tin text thôi
-      this.updateUserInfo(this.user.avatarUrl);
+      this.updateUserInfo(this.user?.avatarUrl || '');
     }
   }
 
-  // Bước 2: Cập nhật thông tin vào DB (UserServiceImpl)
   updateUserInfo(avatarUrl: string) {
     const updateData = {
       ...this.profileForm.value,
@@ -88,8 +82,8 @@ export class ProfileComponent implements OnInit {
     this.userService.updateProfile(updateData).subscribe({
       next: (res) => {
         this.toastr.success('Cập nhật hồ sơ thành công!');
-        this.user = res; // Cập nhật lại giao diện
-        this.selectedFile = null; // Reset file
+        this.user = res; 
+        this.selectedFile = null; 
       },
       error: () => this.toastr.error('Lỗi cập nhật hồ sơ')
     });
