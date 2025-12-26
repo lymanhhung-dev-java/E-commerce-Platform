@@ -22,8 +22,7 @@ export class DetailProductComponent implements OnInit {
   product: Product | null = null;
   mainImage: string = '';
   quantity: number = 1;
-  
-  description = "";
+  description : string = "";
   thumbnails: string[] = []; 
 
   ngOnInit() {

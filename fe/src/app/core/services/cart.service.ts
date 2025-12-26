@@ -29,7 +29,7 @@ export class CartService {
 
 
   totalCount = computed(() => 
-    this.cartItems().reduce((acc, item) => acc + item.quantity, 0)
+    this.cartItems().length
   );
 
   subTotal = computed(() => 

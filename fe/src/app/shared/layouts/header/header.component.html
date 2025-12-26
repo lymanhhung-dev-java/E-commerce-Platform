@@ -79,24 +79,38 @@
 
         <div class="d-flex align-items-center gap-2 border-start ps-3 ms-2">
           @if (authService.isLoggedIn()) {
-          <a routerLink="/profile" class="d-flex align-items-center text-decoration-none text-dark gap-2">
-            <div class="bg-light rounded-circle d-flex justify-content-center align-items-center"
-              style="width: 35px; height: 35px;">
-              <i class="bi bi-person fs-5 text-primary"></i>
-            </div>
-            <div class="d-none d-xl-block lh-1 text-start">
-              <div class="small text-muted" style="font-size: 11px;">Account</div>
-              <div class="fw-bold" style="font-size: 13px;">My Profile</div>
-            </div>
-          </a>
-          <button class="btn btn-sm btn-link text-danger text-decoration-none" (click)="authService.logout()">
-            <i class="bi bi-box-arrow-right"></i>
-          </button>
+            <a routerLink="/profile" class="d-flex align-items-center text-decoration-none text-dark gap-2">
+              
+              <div class="bg-light rounded-circle d-flex justify-content-center align-items-center overflow-hidden"
+                style="width: 35px; height: 35px;">
+                <img *ngIf="currentUser?.avatarUrl; else defaultIcon" 
+                     [src]="currentUser?.avatarUrl" 
+                     alt="Avatar" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+                
+                <ng-template #defaultIcon>
+                  <i class="bi bi-person fs-5 text-primary"></i>
+                </ng-template>
+              </div>
+
+              <div class="d-none d-xl-block lh-1 text-start">
+                <div class="small text-muted" style="font-size: 11px;">
+                   {{ currentUser?.role === 'SELLER' ? 'Seller Account' : 'Member' }}
+                </div>
+                <div class="fw-bold text-truncate" style="font-size: 13px; max-width: 100px;">
+                  {{ currentUser?.fullName || currentUser?.username || 'User' }}
+                </div>
+              </div>
+            </a>
+
+            <button class="btn btn-sm btn-link text-danger text-decoration-none" (click)="authService.logout()">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+
           } @else {
-          <a routerLink="/login" class="btn btn-sm btn-primary">Sign In</a>
+            <a routerLink="/login" class="btn btn-sm btn-primary">Sign In</a>
           }
         </div>
-
       </div>
     </div>
   </div>

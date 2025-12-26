@@ -1,11 +1,11 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core'; 
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../../core/services/product.service';
+import { ProductService } from '../../core/services/product.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductCardComponent } from '../product-card/product-card';
-import { Product } from '../../../core/models/product';
-import { Category } from '../../../core/models/category';
+import { ProductCardComponent } from '../product/product-card/product-card';
+import { Product } from '../../core/models/product';
+import { Category } from '../../core/models/category';
 
 @Component({
   selector: 'app-home',
