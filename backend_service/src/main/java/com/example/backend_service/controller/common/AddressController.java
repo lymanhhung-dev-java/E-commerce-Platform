@@ -38,12 +38,12 @@ public class AddressController {
         return ResponseEntity.ok(addressService.createAddress(req));
     }
 
-    @PutMapping
+    @PutMapping("/{addressId}")
     public ResponseEntity<Address> updateAddress(@PathVariable Long addressId, @RequestBody AddressRequest req) {
         return ResponseEntity.ok(addressService.updateAddress(addressId, req));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{addressId}")
     public ResponseEntity<String> deleteAddress(@PathVariable Long addressId) {
         addressService.deleteAddress(addressId);
         return ResponseEntity.ok("Xóa địa chỉ thành công");

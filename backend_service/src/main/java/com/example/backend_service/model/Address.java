@@ -28,11 +28,12 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    @Column(name = "receiver_name") 
+    private String receiverName;
     private String street;
     private String city;
     private String district;
     private String ward;
-    
     @Column(name = "phone_number")
     private String phoneNumber;
 

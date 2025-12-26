@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j(topic = "ADDRESS-SERVICE")
-public class AddressServiceImpl implements AddressService{
+public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
 
@@ -32,29 +32,30 @@ public class AddressServiceImpl implements AddressService{
     @Override
     public List<Address> getMyAddresses() {
         User user = getCurrentUser();
-        return addressRepository.findByUser(user);   
+        return addressRepository.findByUser(user);
     }
 
     @Override
     @Transactional
     public Address createAddress(AddressRequest req) {
-       User user = getCurrentUser();
-       Address address = new Address();
-       mapRequestToEntity(req, address);
+        User user = getCurrentUser();
+        Address address = new Address();
+        address.setUser(user);
+        mapRequestToEntity(req, address);
 
-       List<Address> existingAddresses = addressRepository.findByUser(user);
+        List<Address> existingAddresses = addressRepository.findByUser(user);
         if (existingAddresses.isEmpty()) {
             address.setIsDefault(true);
         } else if (Boolean.TRUE.equals(req.getIsDefault())) {
             resetDefaultAddress(user, null);
         }
-       return addressRepository.save(address);
+        return addressRepository.save(address);
 
     }
 
     @Override
     @Transactional
-    public Address updateAddress(  Long addressId, AddressRequest req) {
+    public Address updateAddress(Long addressId, AddressRequest req) {
         User user = getCurrentUser();
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new AppException("Địa chỉ không tồn tại"));
@@ -62,9 +63,10 @@ public class AddressServiceImpl implements AddressService{
         if (!address.getUser().getId().equals(user.getId())) {
             throw new AppException("Bạn không có quyền cập nhật địa chỉ này");
         }
+
         mapRequestToEntity(req, address);
 
-        if (Boolean.TRUE.equals(req.getIsDefault())){
+        if (Boolean.TRUE.equals(req.getIsDefault())) {
             resetDefaultAddress(user, addressId);
         }
         return addressRepository.save(address);
@@ -72,8 +74,8 @@ public class AddressServiceImpl implements AddressService{
 
     @Override
     @Transactional
-    public void deleteAddress( Long addressId) {
-       User user = getCurrentUser();
+    public void deleteAddress(Long addressId) {
+        User user = getCurrentUser();
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new AppException("Địa chỉ không tồn tại"));
 
@@ -85,28 +87,26 @@ public class AddressServiceImpl implements AddressService{
     }
 
     private void mapRequestToEntity(AddressRequest req, Address address) {
+        address.setReceiverName(req.getReceiverName());
         address.setStreet(req.getStreet());
         address.setCity(req.getCity());
         address.setDistrict(req.getDistrict());
         address.setWard(req.getWard());
         address.setPhoneNumber(req.getPhoneNumber());
-
         if (req.getIsDefault() != null) {
             address.setIsDefault(req.getIsDefault());
         }
     }
 
-    // Hàm phụ: Bỏ default của các địa chỉ khác
     private void resetDefaultAddress(User user, Long excludeAddressId) {
-        Address oldDefault = addressRepository.findByUserAndIsDefaultTrue(user);
-        if (oldDefault != null) {
-            // Nếu có excludeAddressId (đang update chính nó) thì ko cần reset nó
-            if (excludeAddressId == null || !oldDefault.getId().equals(excludeAddressId)) {
-                oldDefault.setIsDefault(false);
-                addressRepository.save(oldDefault);
+        List<Address> oldDefaults = addressRepository.findByUserAndIsDefaultTrue(user);
+
+        for (Address addr : oldDefaults) {
+            if (excludeAddressId == null || !addr.getId().equals(excludeAddressId)) {
+                addr.setIsDefault(false);
+                addressRepository.save(addr);
             }
         }
     }
-
 
 }

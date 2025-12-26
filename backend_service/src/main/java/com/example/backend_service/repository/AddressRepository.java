@@ -9,5 +9,5 @@ import com.example.backend_service.model.auth.User;
 
 public interface AddressRepository extends JpaRepository<Address, Long>{
     List<Address> findByUser(User user);
-    Address findByUserAndIsDefaultTrue(User user);
+    List<Address> findByUserAndIsDefaultTrue(User user);
 }
