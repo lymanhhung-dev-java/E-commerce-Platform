@@ -40,8 +40,6 @@ public class CheckoutServiceImpl implements CheckoutService {
     public Long checkout(CheckoutRequest request, String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) throw new AppException("User not found");
-
-        // load products with lock
         List<Product> products = new ArrayList<>();
         for (CheckoutRequest.Item it : request.getItems()) {
             Product p = productRepository.findByIdForUpdate(it.getProductId())

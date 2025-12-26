@@ -37,7 +37,6 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderResponse> getOrdersByShop(Pageable pageable) {
         User user = getCurrentUser();
         Shop shop = user.getShop();
-
         if (shop == null) {
             throw new AppException("Bạn chưa đăng ký Shop");
         }
