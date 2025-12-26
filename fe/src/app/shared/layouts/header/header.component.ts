@@ -45,8 +45,12 @@ export class HeaderComponent implements OnInit {
       next: (user) => {
         this.currentUser = user;
       },
-      error: (err) => console.error('Lỗi tải thông tin người dùng:', err)
-    });
+      error: (err) => {
+      console.error('Lỗi tải thông tin user hoặc Token hết hạn:', err);
+      this.authService.logout(); 
+      this.currentUser = null;
+    }
+  });
   }
 
   ngOnInit() {

@@ -57,5 +57,71 @@
         </div>
       </div>
     </div>
+    <div class="card shadow mt-4">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 text-primary">Sổ Địa Chỉ</h5>
+    <button class="btn btn-sm btn-primary" (click)="openAddAddress()" *ngIf="!showAddressForm">
+      <i class="bi bi-plus-lg"></i> Thêm Địa Chỉ
+    </button>
+  </div>
+  
+  <div class="card-body">
+    
+    <div *ngIf="showAddressForm" class="mb-4 p-3 bg-light rounded border">
+      <h6 class="fw-bold mb-3">{{ isEditingAddress ? 'Cập Nhật Địa Chỉ' : 'Thêm Địa Chỉ Mới' }}</h6>
+      <form [formGroup]="addressForm" (ngSubmit)="saveAddress()">
+        <div class="row g-2">
+          <div class="col-12">
+            <label class="form-label small text-muted">Tên người nhận</label>
+            <input type="text" class="form-control" formControlName="receiverName" placeholder="Tên người nhận">
+        </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" formControlName="street" placeholder="Số nhà, đường...">
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" formControlName="phoneNumber" placeholder="Số điện thoại nhận hàng">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" formControlName="ward" placeholder="Phường/Xã">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" formControlName="district" placeholder="Quận/Huyện">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" formControlName="city" placeholder="Tỉnh/Thành phố">
+          </div>
+          <div class="col-12 mt-2">
+             <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="isDefault" id="defaultCheck">
+                <label class="form-check-label" for="defaultCheck">Đặt làm địa chỉ mặc định</label>
+             </div>
+          </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button type="submit" class="btn btn-success btn-sm" [disabled]="addressForm.invalid">Lưu</button>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="showAddressForm = false">Hủy</button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngFor="let addr of addresses" class="border rounded p-3 mb-3 position-relative">
+      <span *ngIf="addr.isDefault" class="badge bg-danger position-absolute top-0 end-0 m-2">Mặc định</span>
+      
+      <p class="mb-1 fw-bold">{{ addr.receiverName }} <span class="fw-normal text-muted">| {{ addr.phoneNumber }}</span></p>
+      <p class="mb-1 text-secondary small">{{ addr.street }}</p>
+      <p class="mb-2 text-secondary small">{{ addr.ward }}, {{ addr.district }}, {{ addr.city }}</p>
+      
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary btn-sm py-0 px-2" (click)="openEditAddress(addr)">Sửa</button>
+        <button class="btn btn-outline-danger btn-sm py-0 px-2" (click)="deleteAddress(addr.id!)" *ngIf="!addr.isDefault">Xóa</button>
+      </div>
+    </div>
+
+    <div *ngIf="addresses.length === 0 && !showAddressForm" class="text-center text-muted py-3">
+      Chưa có địa chỉ nào.
+    </div>
+
+  </div>
+</div>
   </div>
 </div>
