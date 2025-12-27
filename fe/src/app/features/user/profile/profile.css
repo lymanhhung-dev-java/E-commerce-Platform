@@ -1,0 +1,47 @@
+/* Nền trang xám nhạt */
+.profile-wrapper {
+    background-color: #f3f4f6; /* Xám nhạt giống ảnh */
+    min-height: 100vh;
+}
+
+/* Sidebar Menu Active State */
+.list-group-item {
+    color: #4b5563;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+/* Class active-nav: Hiệu ứng nền xanh nhạt, chữ xanh đậm */
+.active-nav {
+    background-color: #e0f2fe !important; /* Xanh dương rất nhạt */
+    color: #0284c7 !important; /* Xanh dương đậm */
+    border-left: 4px solid #0284c7 !important;
+    font-weight: 600;
+}
+
+.list-group-item i {
+    width: 24px;
+    text-align: center;
+}
+
+/* Inputs */
+.form-control:focus {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.transition {
+    transition: all 0.2s;
+}

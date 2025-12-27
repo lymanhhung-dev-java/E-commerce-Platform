@@ -1,127 +1,204 @@
-<p>profile works!</p>
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-md-4 text-center">
-      <div class="card shadow">
-        <div class="card-body">
-          <img [src]="previewUrl || 'https://via.placeholder.com/150'" 
-               alt="Avatar" 
-               class="rounded-circle img-thumbnail mb-3" 
-               style="width: 150px; height: 150px; object-fit: cover;">
-          
-          <h5 class="card-title">{{ user?.fullName || 'User' }}</h5>
-          <p class="text-muted">{{ user?.role }}</p>
+<div class="profile-wrapper">
+  <div class="container py-5">
+    <div class="row g-4">
 
-          <div class="mt-3">
-            <label class="btn btn-outline-primary btn-sm">
-              <i class="bi bi-camera"></i> Đổi Ảnh
+      <div class="col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 mb-4 text-center p-4">
+          <div class="position-relative d-inline-block mx-auto mb-3">
+            <img [src]="previewUrl || 'https://via.placeholder.com/150'" class="rounded-circle img-thumbnail"
+              style="width: 100px; height: 100px; object-fit: cover;">
+            <label class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 p-1"
+              style="width: 32px; height: 32px;">
+              <i class="bi bi-camera"></i>
               <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
             </label>
           </div>
+          <h5 class="fw-bold mb-1">{{ user?.fullName || 'User' }}</h5>
+          <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Member</span>
         </div>
-      </div>
-    </div>
 
-    <div class="col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-          Thông Tin Cá Nhân
-        </div>
-        <div class="card-body">
-          <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-            
-            <div class="mb-3">
-              <label class="form-label">Username</label>
-              <input type="text" class="form-control" formControlName="username">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="text" class="form-control" formControlName="email">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Họ và Tên</label>
-              <input type="text" class="form-control" formControlName="fullName">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Số điện thoại</label>
-              <input type="text" class="form-control" formControlName="phoneNumber">
-            </div>
-
-            <button type="submit" class="btn btn-primary">
-              <i class="bi bi-save"></i> Lưu Thay Đổi
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div class="list-group list-group-flush">
+            <button class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3"
+              [class.active-nav]="activeTab === 'info'" (click)="switchTab('info')">
+              <i class="bi bi-person fs-5"></i> Profile Information
             </button>
-          </form>
+
+            <button class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3"
+              [class.active-nav]="activeTab === 'security'" (click)="switchTab('security')">
+              <i class="bi bi-shield-lock fs-5"></i> Security
+            </button>
+
+            <button class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3"
+              [class.active-nav]="activeTab === 'address'" (click)="switchTab('address')">
+              <i class="bi bi-geo-alt fs-5"></i> Address Book
+            </button>
+
+            <button
+              class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3 text-danger"
+              (click)="authService.logout()"> <i class="bi bi-box-arrow-right fs-5"></i> Logout
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="card shadow mt-4">
-  <div class="card-header bg-white d-flex justify-content-between align-items-center">
-    <h5 class="mb-0 text-primary">Sổ Địa Chỉ</h5>
-    <button class="btn btn-sm btn-primary" (click)="openAddAddress()" *ngIf="!showAddressForm">
-      <i class="bi bi-plus-lg"></i> Thêm Địa Chỉ
-    </button>
-  </div>
-  
-  <div class="card-body">
-    
-    <div *ngIf="showAddressForm" class="mb-4 p-3 bg-light rounded border">
-      <h6 class="fw-bold mb-3">{{ isEditingAddress ? 'Cập Nhật Địa Chỉ' : 'Thêm Địa Chỉ Mới' }}</h6>
-      <form [formGroup]="addressForm" (ngSubmit)="saveAddress()">
-        <div class="row g-2">
-          <div class="col-12">
-            <label class="form-label small text-muted">Tên người nhận</label>
-            <input type="text" class="form-control" formControlName="receiverName" placeholder="Tên người nhận">
-        </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" formControlName="street" placeholder="Số nhà, đường...">
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" formControlName="phoneNumber" placeholder="Số điện thoại nhận hàng">
-          </div>
-          <div class="col-md-4">
-            <input type="text" class="form-control" formControlName="ward" placeholder="Phường/Xã">
-          </div>
-          <div class="col-md-4">
-            <input type="text" class="form-control" formControlName="district" placeholder="Quận/Huyện">
-          </div>
-          <div class="col-md-4">
-            <input type="text" class="form-control" formControlName="city" placeholder="Tỉnh/Thành phố">
-          </div>
-          <div class="col-12 mt-2">
-             <div class="form-check">
-                <input class="form-check-input" type="checkbox" formControlName="isDefault" id="defaultCheck">
-                <label class="form-check-label" for="defaultCheck">Đặt làm địa chỉ mặc định</label>
-             </div>
-          </div>
-        </div>
-        <div class="mt-3 d-flex gap-2">
-          <button type="submit" class="btn btn-success btn-sm" [disabled]="addressForm.invalid">Lưu</button>
-          <button type="button" class="btn btn-secondary btn-sm" (click)="showAddressForm = false">Hủy</button>
-        </div>
-      </form>
-    </div>
 
-    <div *ngFor="let addr of addresses" class="border rounded p-3 mb-3 position-relative">
-      <span *ngIf="addr.isDefault" class="badge bg-danger position-absolute top-0 end-0 m-2">Mặc định</span>
-      
-      <p class="mb-1 fw-bold">{{ addr.receiverName }} <span class="fw-normal text-muted">| {{ addr.phoneNumber }}</span></p>
-      <p class="mb-1 text-secondary small">{{ addr.street }}</p>
-      <p class="mb-2 text-secondary small">{{ addr.ward }}, {{ addr.district }}, {{ addr.city }}</p>
-      
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-primary btn-sm py-0 px-2" (click)="openEditAddress(addr)">Sửa</button>
-        <button class="btn btn-outline-danger btn-sm py-0 px-2" (click)="deleteAddress(addr.id!)" *ngIf="!addr.isDefault">Xóa</button>
+      <div class="col-lg-9">
+
+        <div *ngIf="activeTab === 'info'" class="card border-0 shadow-sm rounded-4 h-100">
+          <div class="card-header bg-white border-0 p-4">
+            <h4 class="fw-bold mb-0">Profile Information</h4>
+          </div>
+          <div class="card-body p-4 pt-0">
+            <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-bold">Username</label>
+                  <input type="text" class="form-control bg-light" formControlName="username">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-bold">Email Address</label>
+                  <input type="text" class="form-control bg-light" formControlName="email">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-bold">Full Name</label>
+                  <input type="text" class="form-control" formControlName="fullName">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-bold">Phone Number</label>
+                  <input type="text" class="form-control" formControlName="phoneNumber">
+                </div>
+              </div>
+              <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">Update Profile</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div *ngIf="activeTab === 'security'" class="card border-0 shadow-sm rounded-4 h-100">
+          <div class="card-header bg-white border-0 p-4 pb-0">
+            <h4 class="fw-bold mb-0">Login & Security</h4>
+            <p class="text-muted small">Manage your password and security settings.</p>
+          </div>
+          <div class="card-body p-4">
+
+            <div class="border rounded-3 p-4 mb-4">
+              <h5 class="fw-bold mb-3">Change Password</h5>
+              <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Current Password</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" formControlName="currentPassword"
+                      placeholder="Nhập mật khẩu hiện tại">
+                    <span class="input-group-text bg-white"><i class="bi bi-eye-slash"></i></span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">New Password</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" formControlName="newPassword"
+                      placeholder="Ít nhất 6 ký tự">
+                    <span class="input-group-text bg-white"><i class="bi bi-eye-slash"></i></span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Confirm New Password</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" formControlName="confirmPassword"
+                      placeholder="Nhập lại mật khẩu mới">
+                    <span class="input-group-text bg-white"><i class="bi bi-eye-slash"></i></span>
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                  <button type="submit" class="btn btn-primary px-4" [disabled]="passwordForm.invalid">Update
+                    Password</button>
+                  <button type="button" class="btn btn-light px-4 border">Cancel</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="border rounded-3 p-4 d-flex justify-content-between align-items-center bg-light">
+              <div>
+                <h6 class="fw-bold mb-1"><i class="bi bi-shield-check text-primary me-2"></i> Two-Factor Authentication
+                </h6>
+                <p class="mb-0 text-muted small">Add an extra layer of security to your account.</p>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" style="width: 3em; height: 1.5em;">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div *ngIf="activeTab === 'address'" class="card border-0 shadow-sm rounded-4 h-100">
+          <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold mb-0">Address Book</h4>
+            <button class="btn btn-primary btn-sm" (click)="openAddAddress()" *ngIf="!showAddressForm">
+              <i class="bi bi-plus-lg"></i> Add New
+            </button>
+          </div>
+          <div class="card-body p-4 pt-0">
+
+            <div *ngIf="showAddressForm" class="mb-4 p-4 bg-light rounded-3 border">
+              <h6 class="fw-bold mb-3">{{ isEditingAddress ? 'Update Address' : 'Add New Address' }}</h6>
+              <form [formGroup]="addressForm" (ngSubmit)="saveAddress()">
+                <div class="row g-2">
+                  <div class="col-12"><input class="form-control" formControlName="receiverName"
+                      placeholder="Tên người nhận"></div>
+                  <div class="col-md-6"><input class="form-control" formControlName="phoneNumber" placeholder="SĐT">
+                  </div>
+                  <div class="col-md-6"><input class="form-control" formControlName="street"
+                      placeholder="Địa chỉ chi tiết"></div>
+                  <div class="col-md-4"><input class="form-control" formControlName="ward" placeholder="Phường/Xã">
+                  </div>
+                  <div class="col-md-4"><input class="form-control" formControlName="district" placeholder="Quận/Huyện">
+                  </div>
+                  <div class="col-md-4"><input class="form-control" formControlName="city" placeholder="Tỉnh/Thành">
+                  </div>
+                  <div class="col-12 mt-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" formControlName="isDefault" id="def">
+                      <label class="form-check-label" for="def">Set as default</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3 d-flex gap-2">
+                  <button type="submit" class="btn btn-success btn-sm">Save</button>
+                  <button type="button" class="btn btn-secondary btn-sm"
+                    (click)="showAddressForm = false">Cancel</button>
+                </div>
+              </form>
+            </div>
+
+            <div *ngFor="let addr of addresses"
+              class="border rounded-3 p-3 mb-3 position-relative bg-white hover-shadow transition">
+              <span *ngIf="addr.isDefault" class="badge bg-danger position-absolute top-0 end-0 m-3">Default</span>
+              <div class="d-flex gap-3 align-items-center">
+                <div class="bg-light p-3 rounded-circle text-primary">
+                  <i class="bi bi-geo-alt-fill fs-5"></i>
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-1">{{ addr.receiverName }} <span class="text-muted fw-normal">| {{
+                      addr.phoneNumber }}</span></h6>
+                  <p class="mb-0 text-muted small">{{ addr.street }}, {{ addr.ward }}, {{ addr.district }}, {{ addr.city
+                    }}</p>
+                </div>
+              </div>
+              <div class="mt-3 border-top pt-2 d-flex gap-3">
+                <span class="text-primary cursor-pointer small fw-bold" (click)="openEditAddress(addr)">Edit</span>
+                <span class="text-danger cursor-pointer small fw-bold" (click)="deleteAddress(addr.id!)"
+                  *ngIf="!addr.isDefault">Delete</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </div>
-
-    <div *ngIf="addresses.length === 0 && !showAddressForm" class="text-center text-muted py-3">
-      Chưa có địa chỉ nào.
-    </div>
-
-  </div>
-</div>
   </div>
 </div>

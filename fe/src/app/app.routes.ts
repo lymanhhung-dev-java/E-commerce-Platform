@@ -5,6 +5,8 @@ import { ProfileComponent } from './features/user/profile/profile';
 import { DetailProductComponent } from './features/product/product-detail/product-detail';
 import { HomeComponent } from './features/home/home'; 
 import { CartComponent } from './features/cart/cart';
+import { CheckoutComponent } from './features/checkout/checkout';
+
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -13,5 +15,7 @@ export const routes: Routes = [
     { path: 'profile', component: ProfileComponent },
     { path: 'product/:id', component: DetailProductComponent },
     { path: 'cart', component: CartComponent },
+    { path: 'checkout', component: CheckoutComponent },
+    
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

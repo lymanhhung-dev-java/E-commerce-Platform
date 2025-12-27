@@ -1,0 +1,197 @@
+/* Container chính: Chia màn hình nếu màn hình to */
+.checkout-container {
+    min-height: 100vh;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* CỘT TRÁI: Nhập liệu */
+.main-content {
+    background-color: #fff;
+    padding: 40px;
+    border-right: 1px solid #e1e1e1;
+}
+
+/* CỘT PHẢI: Summary */
+.sidebar-summary {
+    background-color: #fafafa;
+    padding: 40px;
+}
+
+/* Breadcrumb (Đường dẫn) */
+.breadcrumb-custom a {
+    color: #197bbd;
+    text-decoration: none;
+    font-size: 13px;
+}
+.breadcrumb-custom .active {
+    color: #333;
+    font-weight: 500;
+}
+
+/* Section Title */
+h4.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Input Styling giống mẫu */
+.form-label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-control {
+    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid #d9d9d9;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    border-color: #f97316; /* Màu cam khi focus */
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Payment Box Styles */
+.payment-box {
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.payment-option {
+    padding: 15px;
+    border-bottom: 1px solid #d9d9d9;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: #fff;
+}
+
+.payment-option:last-child {
+    border-bottom: none;
+}
+
+.payment-option.selected {
+    background-color: #f0fdf4; /* Xanh rất nhạt hoặc trắng */
+    border-left: 4px solid #f97316;
+}
+
+.payment-details {
+    padding: 20px;
+    background-color: #fafafa;
+    border-top: 1px solid #e1e1e1;
+}
+
+/* Order Summary Styles (Cột phải) */
+.product-thumbnail {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    background: #fff;
+    padding: 5px;
+}
+
+.product-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.qty-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #777;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e1e1e1;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.total-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+}
+
+.usd {
+    font-size: 12px;
+    color: #777;
+    margin-right: 5px;
+    font-weight: normal;
+}
+
+/* Nút đặt hàng */
+.btn-place-order {
+    background-color: #ea580c; /* Màu cam đậm */
+    color: white;
+    font-weight: 600;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    border: none;
+    margin-top: 20px;
+    transition: opacity 0.2s;
+}
+
+.btn-place-order:hover {
+    opacity: 0.9;
+}
+
+.btn-place-order:disabled {
+    background-color: #fdba74;
+    cursor: not-allowed;
+}
+
+/* Discount Input */
+.discount-group {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 20px 0;
+    border-top: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .main-content, .sidebar-summary {
+        width: 100%;
+        border-right: none;
+    }
+    .sidebar-summary {
+        order: -1; /* Đưa summary lên đầu trên mobile giống Shopee/Shopify */
+        border-bottom: 1px solid #e1e1e1;
+    }
+}

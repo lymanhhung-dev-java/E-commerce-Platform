@@ -6,6 +6,7 @@ import { CommonModule,isPlatformBrowser } from '@angular/common';
 import { User } from '../../../core/models/user';
 import { Address } from '../../../core/models/address';
 import { AddressService } from '../../../core/services/address.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 @Component({
@@ -21,10 +22,15 @@ export class ProfileComponent implements OnInit {
   toastr = inject(ToastrService);
   addressService = inject(AddressService);
   platformId = inject(PLATFORM_ID);
+  authService = inject(AuthService);
+
+
   addresses: Address[] = [];
   showAddressForm = false;
   isEditingAddress = false;
   currentAddressId: number | null = null;
+
+  activeTab: 'info' | 'security' | 'address' = 'info';
 
   addressForm = this.fb.group({
     receiverName: ['', Validators.required],
@@ -47,11 +53,22 @@ export class ProfileComponent implements OnInit {
     username: [{ value: '', disabled: true }]
   });
 
+  passwordForm = this.fb.group({
+    currentPassword: ['', Validators.required],
+    newPassword: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', Validators.required]
+  });
+
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.loadProfile();
       this.loadAddresses();
     }
+  }
+
+  switchTab(tab: 'info' | 'security' | 'address') {
+    this.activeTab = tab;
+    this.showAddressForm = false; 
   }
 
   loadProfile() {
@@ -67,6 +84,24 @@ export class ProfileComponent implements OnInit {
         });
       },
       error: () => this.toastr.error('Lỗi tải thông tin cá nhân')
+    });
+  }
+
+  onChangePassword() {
+    if (this.passwordForm.invalid) return;
+    
+    const { newPassword, confirmPassword } = this.passwordForm.value;
+    if (newPassword !== confirmPassword) {
+      this.toastr.error('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    this.userService.changePassword(this.passwordForm.value).subscribe({
+      next: () => {
+        this.toastr.success('Đổi mật khẩu thành công');
+        this.passwordForm.reset();
+      },
+      error: (err) => this.toastr.error(err.error?.message || 'Đổi mật khẩu thất bại')
     });
   }
 

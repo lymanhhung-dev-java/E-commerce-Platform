@@ -93,8 +93,11 @@ public class CheckoutServiceImpl implements CheckoutService {
             order.setPaymentMethod(request.getPaymentMethod());
             order.setNote(request.getNote()); 
             order.setStatus(OrderStatus.PENDING);
-
+             order.setTotalAmount(BigDecimal.ZERO);
             order = orderRepository.save(order);
+
+           
+
 
             BigDecimal totalAmount = BigDecimal.ZERO;
             List<OrderItem> orderItems = new ArrayList<>();

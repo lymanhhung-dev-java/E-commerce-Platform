@@ -1,0 +1,138 @@
+<form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="checkout-container row g-0">
+
+  <div class="col-lg-7 main-content">
+
+    <div class="mb-4 d-flex align-items-center justify-content-between">
+      <h3 class="fw-bold mb-0 text-primary"><i class="bi bi-bag-check-fill"></i> E-Shop</h3>
+      <div class="breadcrumb-custom small">
+        <a routerLink="/cart">Cart</a>
+        <span class="mx-2 text-muted">></span>
+        <span class="active">Information & Shipping</span>
+      </div>
+    </div>
+
+    <h4 class="section-title mt-4">Shipping Address</h4>
+
+    <div class="mb-4" *ngIf="savedAddresses.length > 0">
+      <select class="form-select" (change)="onAddressChange($event)">
+        <option value="null">-- Chọn địa chỉ có sẵn --</option>
+        <option *ngFor="let addr of savedAddresses; let i = index" [value]="i">
+          {{ addr.receiverName }} - {{ addr.street }}
+        </option>
+      </select>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Tên người nhận</label>
+        <input type="text" class="form-control" formControlName="receiverName" placeholder="VD: Nguyễn Văn A">
+        <div *ngIf="checkoutForm.get('receiverName')?.invalid && checkoutForm.get('receiverName')?.touched"
+          class="text-danger small mt-1">
+          Bắt buộc nhập tên
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Số điện thoại</label>
+        <input type="text" class="form-control" formControlName="phone" placeholder="098...">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Địa chỉ</label>
+        <input type="text" class="form-control" formControlName="address" placeholder="Số nhà, tên đường, phường/xã...">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Tỉnh / Thành phố</label>
+        <input type="text" class="form-control" formControlName="city" placeholder="Hà Nội, TP HCM...">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Ghi chú (Tùy chọn)</label>
+        <input type="text" class="form-control" formControlName="note" placeholder="VD: Giao giờ hành chính">
+      </div>
+    </div>
+
+    <h4 class="section-title mt-5">Payment Method</h4>
+    <p class="text-muted small mb-3">All transactions are secure and encrypted.</p>
+
+    <div class="payment-box">
+      <div class="payment-option" [class.selected]="checkoutForm.get('paymentMethod')?.value === 'COD'">
+        <input class="form-check-input mt-0 me-3" type="radio" value="COD" id="cod" formControlName="paymentMethod">
+        <label class="form-check-label w-100 fw-bold cursor-pointer" for="cod">
+          Cash on Delivery (COD)
+        </label>
+        <i class="bi bi-cash-stack fs-5 text-muted"></i>
+      </div>
+
+      <div class="payment-details small text-muted" *ngIf="checkoutForm.get('paymentMethod')?.value === 'COD'">
+        Thanh toán bằng tiền mặt khi nhận hàng. Phí thu hộ: 0đ.
+      </div>
+
+      <div class="payment-option">
+        <input class="form-check-input mt-0 me-3" type="radio" value="VNPAY" id="vnpay" formControlName="paymentMethod"
+          [disabled]="true">
+
+        <label class="form-check-label w-100 text-muted cursor-pointer" for="vnpay">
+          VNPay / Banking (Đang bảo trì)
+        </label>
+        <i class="bi bi-credit-card fs-5 text-muted"></i>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-lg-5 sidebar-summary border-start">
+
+    <div class="mb-4">
+      <div *ngFor="let item of cartService.cartItems()" class="d-flex align-items-center mb-3">
+        <div class="product-thumbnail me-3">
+          <img [src]="item.product.imageUrl || 'https://via.placeholder.com/64'" [alt]="item.product.name">
+          <span class="qty-badge">{{ item.quantity }}</span>
+        </div>
+
+        <div class="flex-grow-1">
+          <h6 class="mb-0 text-dark small fw-bold text-truncate" style="max-width: 200px;">
+            {{ item.product.name }}
+          </h6>
+          <small class="text-muted">{{ item.product.shopName }}</small>
+        </div>
+
+        <div class="fw-bold small">
+          {{ item.product.price * item.quantity | currency:'VND':'symbol':'1.0-0' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="discount-group">
+      <input type="text" class="form-control" placeholder="Mã giảm giá">
+      <button type="button" class="btn btn-secondary disabled">Áp dụng</button>
+    </div>
+
+    <div class="price-row">
+      <span>Tạm tính</span>
+      <span class="fw-bold">{{ cartService.subTotal() | currency:'VND':'symbol':'1.0-0' }}</span>
+    </div>
+    <div class="price-row">
+      <span>Phí vận chuyển</span>
+      <span class="small">Miễn phí</span>
+    </div>
+
+    <div class="total-row">
+      <span>Tổng cộng</span>
+      <div class="d-flex align-items-baseline">
+        <span class="usd">VND</span>
+        <span class="total-price">{{ cartService.subTotal() | currency:'VND':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-place-order shadow"
+      [disabled]="cartService.cartItems().length === 0 || checkoutForm.invalid">
+      Đặt Hàng (Place Order)
+    </button>
+
+    <div class="text-center mt-3 small text-muted">
+      <i class="bi bi-lock-fill"></i> Bảo mật thanh toán bởi E-Shop
+    </div>
+
+  </div>
+</form>
