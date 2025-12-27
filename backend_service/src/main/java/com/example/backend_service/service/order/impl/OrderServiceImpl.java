@@ -1,7 +1,10 @@
 package com.example.backend_service.service.order.impl;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import com.example.backend_service.model.business.Shop;
 import com.example.backend_service.model.order.Order;
 import com.example.backend_service.repository.OrderRepository;
 import com.example.backend_service.repository.UserRepository;
+import com.example.backend_service.repository.specification.OrderSpecification;
 import com.example.backend_service.service.order.OrderService;
 
 import jakarta.transaction.Transactional;
@@ -59,6 +63,22 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(status);
         orderRepository.save(order);
+    }
+
+    @Override
+   public Page<OrderResponse> getMyOrders(String search, OrderStatus status, Pageable pageable) {
+        User currentUser = getCurrentUser();
+
+        // Xây dựng điều kiện lọc
+        Specification<Order> spec = Specification.where(OrderSpecification.hasUser(currentUser))
+                .and(OrderSpecification.hasStatus(status))
+                .and(OrderSpecification.containsKeyword(search));
+
+        // Gọi Repo lấy Page
+        Page<Order> orderPage = orderRepository.findAll(spec, pageable);
+
+        // Map sang DTO
+        return orderPage.map(OrderResponse::fromEntity);
     }
     }
     

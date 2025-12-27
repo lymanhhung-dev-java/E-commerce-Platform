@@ -45,3 +45,33 @@
 .transition {
     transition: all 0.2s;
 }
+
+
+/* Badge Styles cho Order Status */
+.bg-success-subtle { background-color: #d1fae5 !important; }
+.text-success { color: #059669 !important; }
+.border-success-subtle { border-color: #a7f3d0 !important; }
+
+.bg-primary-subtle { background-color: #dbeafe !important; }
+.text-primary { color: #2563eb !important; }
+.border-primary-subtle { border-color: #bfdbfe !important; }
+
+.bg-warning-subtle { background-color: #fef3c7 !important; }
+.text-warning { color: #d97706 !important; }
+.border-warning-subtle { border-color: #fde68a !important; }
+
+.bg-danger-subtle { background-color: #fee2e2 !important; }
+.text-danger { color: #dc2626 !important; }
+.border-danger-subtle { border-color: #fecaca !important; }
+
+.input-group-text {
+    background: transparent;
+}
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    border-color: #2563eb;
+}
+
+.object-fit-contain {
+    object-fit: contain;
+}
