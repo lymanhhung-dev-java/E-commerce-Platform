@@ -1,5 +1,7 @@
 package com.example.backend_service.controller.order;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,9 +31,8 @@ public class CheckoutController {
     @Operation(summary = "Checkout - Tạo đơn hàng từ giỏ hàng hoặc list sản phẩm")
     @PostMapping
     public ResponseEntity<Object> checkout(@RequestBody @Valid CheckoutRequest req) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("Checkout request by {} with {} items", username, req.getItems() != null ? req.getItems().size() : 0);
-        Long orderId = checkoutService.checkout(req, username);
+        log.info("Checkout request by {} with {} items", req.getItems() != null ? req.getItems().size() : 0);
+        List<Long> orderId = checkoutService.checkout(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(java.util.Map.of("orderId", orderId));
     }
 }

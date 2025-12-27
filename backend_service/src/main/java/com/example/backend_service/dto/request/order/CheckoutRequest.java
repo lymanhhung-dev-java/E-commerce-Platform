@@ -10,6 +10,7 @@ public class CheckoutRequest {
     private String shippingAddress;
     private String shippingPhone;
     private String  PaymentMethod = "COD";
+    private String note;
 
     @Data
     public static class Item {

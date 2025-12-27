@@ -2,26 +2,28 @@ package com.example.backend_service.service.order.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.Map;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.example.backend_service.common.OrderStatus;
 import com.example.backend_service.dto.request.order.CheckoutRequest;
 import com.example.backend_service.exception.AppException;
 import com.example.backend_service.exception.OutOfStockException;
 import com.example.backend_service.model.auth.User;
+import com.example.backend_service.model.business.Shop;
 import com.example.backend_service.model.order.CartItem;
 import com.example.backend_service.model.order.Order;
 import com.example.backend_service.model.order.OrderItem;
 import com.example.backend_service.model.product.Product;
 import com.example.backend_service.repository.CartItemRepository;
+import com.example.backend_service.repository.OrderItemRepository;
 import com.example.backend_service.repository.OrderRepository;
 import com.example.backend_service.repository.ProductRepository;
 import com.example.backend_service.repository.UserRepository;
 import com.example.backend_service.service.order.CheckoutService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,61 +35,110 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
     private final UserRepository userRepository;
+    
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username);
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long checkout(CheckoutRequest request, String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) throw new AppException("User not found");
+    public List<Long> checkout(CheckoutRequest request) {
+
+        User user = getCurrentUser();
+
+        // Validate và lấy danh sách sản phẩm (Lock row để tránh race condition)
         List<Product> products = new ArrayList<>();
         for (CheckoutRequest.Item it : request.getItems()) {
             Product p = productRepository.findByIdForUpdate(it.getProductId())
-                    .orElseThrow(() -> new AppException("Product not found: " + it.getProductId()));
+                    .orElseThrow(() -> new AppException("Sản phẩm không tồn tại: " + it.getProductId()));
+            
             if (p.getStockQuantity() == null || p.getStockQuantity() < it.getQuantity()) {
                 throw new OutOfStockException("Sản phẩm hết hàng: " + p.getName());
             }
             products.add(p);
         }
 
-        // decrement stock and prepare order items
-        BigDecimal total = BigDecimal.ZERO;
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (CheckoutRequest.Item it : request.getItems()) {
-            Product p = products.stream().filter(x -> x.getId().equals(it.getProductId())).findFirst().get();
-            int newStock = p.getStockQuantity() - it.getQuantity();
-            p.setStockQuantity(newStock);
-            productRepository.save(p);
-
-            OrderItem oi = new OrderItem();
-            oi.setProduct(p);
-            oi.setQuantity(it.getQuantity());
-            oi.setPrice(p.getPrice());
-            orderItems.add(oi);
-
-            total = total.add(p.getPrice().multiply(BigDecimal.valueOf(it.getQuantity())));
+        //  Gom nhóm theo Shop ID (An toàn hơn dùng Object Shop làm key)
+        Map<Long, List<CheckoutRequest.Item>> itemsByShopId = new HashMap<>();
+        
+        for (CheckoutRequest.Item itemReq : request.getItems()) {
+            Product p = products.stream()
+                .filter(prod -> prod.getId().equals(itemReq.getProductId()))
+                .findFirst().orElseThrow();
+            
+            // Dùng ID của Shop làm Key
+            itemsByShopId.computeIfAbsent(p.getShop().getId(), k -> new ArrayList<>()).add(itemReq);
         }
 
-        // create order
-        Order order = new Order();
-        order.setUser(user);
-        // assume same shop for all items; pick from first product
-        order.setShop(products.get(0).getShop());
-        order.setShippingAddress(request.getShippingAddress());
-        order.setShippingPhone(request.getShippingPhone());
-        order.setTotalAmount(total);
-        order.setOrderItems(orderItems);
-        order.setPaymentMethod(request.getPaymentMethod());
-        // set back-reference
-        for (OrderItem oi : orderItems) oi.setOrder(order);
+        List<Long> createdOrderIds = new ArrayList<>();
 
-        Order saved = orderRepository.save(order);
+        // Tạo đơn hàng cho từng Shop
+        for (Map.Entry<Long, List<CheckoutRequest.Item>> entry : itemsByShopId.entrySet()) {
+            Long shopId = entry.getKey();
+            List<CheckoutRequest.Item> itemsInShop = entry.getValue();
+            
+            Product representativeProduct = products.stream()
+                .filter(p -> p.getShop().getId().equals(shopId))
+                .findFirst().orElseThrow();
+            Shop shop = representativeProduct.getShop();
 
-        // remove from cart
-        List<Product> boughtProducts = products.stream().collect(Collectors.toList());
-        List<CartItem> toDelete = cartItemRepository.findByUserAndProductIn(user, boughtProducts);
-        if (!toDelete.isEmpty()) cartItemRepository.deleteAll(toDelete);
+            Order order = new Order();
+            order.setUser(user);
+            order.setShop(shop); 
+            order.setShippingAddress(request.getShippingAddress());
+            order.setShippingPhone(request.getShippingPhone());
+            order.setPaymentMethod(request.getPaymentMethod());
+            order.setNote(request.getNote()); 
+            order.setStatus(OrderStatus.PENDING);
 
-        return saved.getId();
+            order = orderRepository.save(order);
+
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            List<OrderItem> orderItems = new ArrayList<>();
+
+            for (CheckoutRequest.Item itemReq : itemsInShop) {
+                Product p = products.stream()
+                        .filter(prod -> prod.getId().equals(itemReq.getProductId()))
+                        .findFirst().orElseThrow();
+
+                // Trừ kho
+                p.setStockQuantity(p.getStockQuantity() - itemReq.getQuantity());
+                productRepository.save(p);
+
+                OrderItem oi = new OrderItem();
+                oi.setOrder(order);
+                oi.setProduct(p);
+                oi.setQuantity(itemReq.getQuantity());
+                
+                BigDecimal price = p.getPrice();
+                oi.setPrice(p.getPrice()); 
+                
+                orderItems.add(oi);
+                
+                // Cộng dồn tổng tiền: Giá * Số lượng
+                BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
+                totalAmount = totalAmount.add(lineTotal);
+            }
+
+            orderItemRepository.saveAll(orderItems);
+            
+            // Cập nhật lại tổng tiền sau khi đã cộng hết
+            order.setTotalAmount(totalAmount);
+            orderRepository.save(order);
+            
+            createdOrderIds.add(order.getId());
+        }
+
+        //  Xóa giỏ hàng
+        // Chỉ xóa những item có Product nằm trong list đã mua
+        List<CartItem> toDelete = cartItemRepository.findByUserAndProductIn(user, products);
+        if (!toDelete.isEmpty()) {
+            cartItemRepository.deleteAll(toDelete);
+        }
+
+        return createdOrderIds; 
     }
 }
