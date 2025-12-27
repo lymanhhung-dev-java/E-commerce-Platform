@@ -6,16 +6,32 @@ import { DetailProductComponent } from './features/product/product-detail/produc
 import { HomeComponent } from './features/home/home'; 
 import { CartComponent } from './features/cart/cart';
 import { CheckoutComponent } from './features/checkout/checkout';
+import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
+import { MainLayoutComponent } from './shared/layouts/main-layoyt/main-layout';
 
 
 export const routes: Routes = [
-    { path: '', component: HomeComponent },
-    { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
-    { path: 'profile', component: ProfileComponent },
-    { path: 'product/:id', component: DetailProductComponent },
-    { path: 'cart', component: CartComponent },
-    { path: 'checkout', component: CheckoutComponent },
+    {
+        path: '',
+        component: MainLayoutComponent,
+        children: [
+            { path: '', component: HomeComponent },
+            { path: 'login', component: LoginComponent },
+            { path: 'register', component: RegisterComponent },
+            { path: 'profile', component: ProfileComponent },
+            { path: 'product/:id', component: DetailProductComponent },
+            { path: 'cart', component: CartComponent },
+            { path: 'checkout', component: CheckoutComponent },
+        ]
+    },
+
     
+    {
+        path: 'admin',
+        component: AdminLayoutComponent,
+        children: [
+        ]
+    },
+
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

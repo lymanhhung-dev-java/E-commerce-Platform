@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserService } from '../../../core/services/user.service';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
@@ -17,7 +18,11 @@ export class LoginComponent {
   authService = inject(AuthService);
   router = inject(Router);
   toastr = inject(ToastrService);
+  userService = inject(UserService);
+
+
   showPassword: boolean = false;
+
   loginForm = this.fb.group({
     username: ['', Validators.required],
     password: ['', Validators.required]
@@ -27,8 +32,21 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
-          this.toastr.success('Đăng nhập thành công!');
-          this.router.navigate(['/profile']);
+          
+          this.userService.getMyProfile().subscribe({
+            next: (user) => {
+              this.toastr.success(`Chào mừng trở lại, ${user.fullName}!`);
+
+              if (user.role === 'ADMIN' || user.role === 'ROLE_ADMIN') {
+                this.router.navigate(['/admin']); 
+              } else {
+                this.router.navigate(['/']); 
+              }
+            },
+            error: () => {
+              this.router.navigate(['/']);
+            }
+          });
         },
         error: (err) => {
           this.toastr.error('Sai tài khoản hoặc mật khẩu!');

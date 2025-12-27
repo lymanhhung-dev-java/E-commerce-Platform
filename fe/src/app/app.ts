@@ -5,7 +5,7 @@ import { HeaderComponent } from './shared/layouts/header/header.component'; // <
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent], // <--- Khai báo ở đây
+  imports: [RouterOutlet, HeaderComponent], 
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
