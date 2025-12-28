@@ -16,9 +16,12 @@ export class AdminLayoutComponent {
   menuItems = [
     { label: 'Dashboard', icon: 'bi-grid-fill', route: '/admin/dashboard' },
     { label: 'Users', icon: 'bi-people-fill', route: '/admin/users' },
-    { label: 'Shops', icon: 'bi-shop', route: '/admin/shops' },
+    { label: 'Shops Approvals', icon: 'bi-shop', route: '/admin/shopsApprovals' },
+    { label: 'Shops ', icon: 'bi-shop', route: '/admin/shops' },
     { label: 'Categories', icon: 'bi-tags-fill', route: '/admin/categories' },
     { label: 'Products', icon: 'bi-box-seam-fill', route: '/admin/products' },
+    
+
   ];
   
   systemItems = [

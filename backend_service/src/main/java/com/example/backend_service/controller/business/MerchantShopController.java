@@ -1,7 +1,9 @@
 package com.example.backend_service.controller.business;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,5 +27,17 @@ public class MerchantShopController {
     public ResponseEntity<?> registerShop(@RequestBody RegisterShopRequest req) {
         return ResponseEntity.ok(shopService.registerShop(req));
         
+    }
+
+    @Operation(summary = "Get Current Shop", description = "Lấy thông tin Shop của user đang đăng nhập")
+    @GetMapping("/current")
+    public ResponseEntity<?> getCurrentShop() {
+        return ResponseEntity.ok(shopService.getCurrentShop());
+    }
+
+    @Operation(summary = "Resubmit Shop Registration", description = "Sửa thông tin và gửi lại yêu cầu duyệt (khi bị từ chối)")
+    @PutMapping("/resubmit")
+    public ResponseEntity<?> resubmitShop(@RequestBody RegisterShopRequest req) {
+        return ResponseEntity.ok(shopService.updateShopRegistration(req));
     }
 }

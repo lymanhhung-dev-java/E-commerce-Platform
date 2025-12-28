@@ -6,4 +6,5 @@ export interface User {
   phoneNumber?: string;
   avatarUrl?: string;
   role: string;
+  isShopOwner: boolean;
 }

@@ -8,8 +8,13 @@ import { CartComponent } from './features/cart/cart';
 import { CheckoutComponent } from './features/checkout/checkout';
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
 import { MainLayoutComponent } from './shared/layouts/main-layoyt/main-layout';
+import { RegisterShopComponent } from './features/Shop/register-shop/register-shop';
 import { UserListComponent } from './features/admin/user/user-list';
 import { CategoryListComponent } from './features/admin/category/category';
+import { ShopRequestListComponent } from './features/admin/shop-request-list/shop-request-list';
+import { ShopManagementComponent } from './features/admin/shop-management/shop-management';
+
+
 
 
 
@@ -25,8 +30,11 @@ export const routes: Routes = [
             { path: 'product/:id', component: DetailProductComponent },
             { path: 'cart', component: CartComponent },
             { path: 'checkout', component: CheckoutComponent },
+            { path: 'register-shop', component: RegisterShopComponent },
         ]
     },
+
+  
 
     
     {
@@ -35,8 +43,13 @@ export const routes: Routes = [
         children: [
             { path: 'users', component: UserListComponent },
             { path: 'categories', component: CategoryListComponent },
+            { path: 'shopsApprovals', component: ShopRequestListComponent },
+            { path: 'shops', component: ShopManagementComponent },
+
         ]
     },
+
+
 
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
