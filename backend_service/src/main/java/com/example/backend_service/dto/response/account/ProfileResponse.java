@@ -16,7 +16,6 @@ public class ProfileResponse {
     private String avatarUrl;
     private String role; 
 
-    // Helper method to map User entity to ProfileResponse
     public static ProfileResponse fromUser(User user) {
         return ProfileResponse.builder()
                 .id(user.getId())
