@@ -5,6 +5,7 @@ import com.example.backend_service.dto.request.product.MerchantProductUpdateRequ
 import com.example.backend_service.dto.response.product.MerchantProductResponse;
 import com.example.backend_service.dto.response.product.ProductDetailResponse;
 import com.example.backend_service.model.product.Product;
+import com.example.backend_service.model.product.ProductImage;
 import com.example.backend_service.model.auth.User;
 import com.example.backend_service.model.business.Shop;
 import com.example.backend_service.model.product.Category;
@@ -60,12 +61,20 @@ public class MerchantProductServiceImpl implements MerchantProductService {
         product.setDescription(request.getDescription());
         product.setIsActive(true);
         product.setCategory(category);
-        product.setImageUrl(request.getImage());
+        product.setImageUrl(request.getMainImageUrl());
+
+        if (request.getDetailImageUrls() != null && !request.getDetailImageUrls().isEmpty()) {
+            for (String url : request.getDetailImageUrls()) {
+                ProductImage img = new ProductImage();
+                img.setImageUrl(url);
+                product.addImage(img); 
+            }
+        }
 
         product.setShop(shop);
 
-        Product updatedProduct = productRepository.save(product);
-        return ProductDetailResponse.fromEntity(updatedProduct);
+        Product saveProduct = productRepository.save(product);
+        return ProductDetailResponse.fromEntity(saveProduct);
     }
 
     @Override

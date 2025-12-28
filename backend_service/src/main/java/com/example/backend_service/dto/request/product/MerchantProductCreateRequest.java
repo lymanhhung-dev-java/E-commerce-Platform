@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class MerchantProductCreateRequest {
@@ -23,6 +24,8 @@ public class MerchantProductCreateRequest {
 
     private String description;
 
-    private String image;
+    private String mainImageUrl;
+    
+    private List<String> detailImageUrls;
 
 }

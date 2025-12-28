@@ -1,6 +1,7 @@
 package com.example.backend_service.model;
 
 import com.example.backend_service.model.auth.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +28,7 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
     @Column(name = "receiver_name") 
     private String receiverName;

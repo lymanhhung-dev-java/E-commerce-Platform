@@ -2,8 +2,11 @@ package com.example.backend_service.dto.response.product;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.backend_service.model.product.Product;
+import com.example.backend_service.model.product.ProductImage;
 
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +19,7 @@ public class ProductDetailResponse {
     private BigDecimal price;
     private String description;
     private String imageUrl;
+    private List<String> productImages;
     private Integer stockQuantity;
     private Long categoryId;
     private String categoryName;
@@ -40,6 +44,9 @@ public class ProductDetailResponse {
                 .shopAvatar(p.getShop().getLogoUrl())
                 .createdAt(p.getCreatedAt())
                 .updatedAt(p.getUpdatedAt())
+                .productImages(p.getImages().stream()
+                        .map(ProductImage::getImageUrl)
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
