@@ -40,12 +40,11 @@ export class DetailProductComponent implements OnInit {
         this.product = res;
         this.mainImage = res.imageUrl || 'https://via.placeholder.com/500';
         
-        this.thumbnails = [
-          this.mainImage,
-          'https://via.placeholder.com/500/0000FF/808080?text=Side',
-          'https://via.placeholder.com/500/FF0000/FFFFFF?text=Back',
-          'https://via.placeholder.com/500/FFFF00/000000?text=Detail'
-        ];
+        if (res.productImages && res.productImages.length > 0) {
+           this.thumbnails = [this.mainImage, ...res.productImages];
+        } else {
+           this.thumbnails = [this.mainImage];
+        }
       },
       error: (err) => {
         console.error(err);

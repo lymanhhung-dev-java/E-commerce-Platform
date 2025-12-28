@@ -13,6 +13,7 @@ export interface Product {
   createdAt?: string; 
   updatedAt?: string;
   rating?: number;
+  productImages?: string[];
 }
 
 export interface ProductResponse {

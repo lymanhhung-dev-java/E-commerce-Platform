@@ -23,8 +23,8 @@ export class MerchantProductListComponent implements OnInit {
     categories: any[] = [];
 
     filterKeyword: string = '';
-    filterCategoryId: number | null = null; // null = All
-    filterStatus: string = 'ALL'; // 'ALL', 'ACTIVE', 'INACTIVE' (Dùng string cho select option dễ binding)
+    filterCategoryId: number | null = null; 
+    filterStatus: string = 'ALL'; 
 
     // Phân trang
     page: number = 0;
@@ -49,8 +49,6 @@ export class MerchantProductListComponent implements OnInit {
     // 2. Gọi API lấy danh sách sản phẩm
     loadProducts() {
         this.isLoading = true;
-
-        // Convert status string sang boolean hoặc null
         let statusParam: boolean | null = null;
         if (this.filterStatus === 'ACTIVE') statusParam = true;
         if (this.filterStatus === 'INACTIVE') statusParam = false;
@@ -75,13 +73,11 @@ export class MerchantProductListComponent implements OnInit {
         });
     }
 
-    // 3. Sự kiện khi thay đổi bộ lọc
     onFilterChange() {
-        this.page = 0; // Reset về trang 1
+        this.page = 0; 
         this.loadProducts();
     }
 
-    // 4. Sự kiện chuyển trang
     onPageChange(newPage: number) {
         if (newPage >= 0 && newPage < this.totalPages) {
             this.page = newPage;

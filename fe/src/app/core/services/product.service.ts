@@ -2,13 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Product, ProductResponse } from '../models/product';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/products`;
   private apiMerchantUrl = `${environment.apiUrl}/merchant/products`; 
+  private apiUploadUrl = `${environment.apiUrl}/upload/product`; 
+
+  
 
   getProducts(
     page: number = 0, 
@@ -61,6 +64,21 @@ export class ProductService {
     return this.http.get<any>(this.apiMerchantUrl, { params });
   }
 
+  uploadFile(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<any>(this.apiUploadUrl, formData).pipe(
+      map(response => {
+        return response.url || response.secure_url || response.data || response; 
+      })
+    );
+  }
+
+  createProduct(data: any) {
+    return this.http.post(this.apiMerchantUrl, data);
+  }
+
   onToggleStatus(id: number) {
    return this.http.put(`${this.apiMerchantUrl}/${id}/status`, {}, {responseType: 'text'});
 }
@@ -69,4 +87,6 @@ export class ProductService {
   deleteProduct(id: number) {
     return this.http.delete(`${this.apiMerchantUrl}/${id}`, { responseType: 'text' });
   }
+
+
 }
