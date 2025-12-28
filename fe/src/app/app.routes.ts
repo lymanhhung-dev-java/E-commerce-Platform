@@ -8,6 +8,7 @@ import { CartComponent } from './features/cart/cart';
 import { CheckoutComponent } from './features/checkout/checkout';
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
 import { MainLayoutComponent } from './shared/layouts/main-layoyt/main-layout';
+import { UserListComponent } from './features/admin/user/user-list';
 
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
         path: 'admin',
         component: AdminLayoutComponent,
         children: [
+            { path: 'users', component: UserListComponent },
         ]
     },
 
