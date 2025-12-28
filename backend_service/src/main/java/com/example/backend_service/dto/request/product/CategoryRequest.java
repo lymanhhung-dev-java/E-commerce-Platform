@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CategoryRequest {
     private String name;
-    private String imageUrl;
-    private Long parntId;
+    private Long parentId;
+    private Boolean isActive;
 }

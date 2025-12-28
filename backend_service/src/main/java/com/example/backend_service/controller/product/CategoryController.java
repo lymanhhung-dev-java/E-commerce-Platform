@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend_service.dto.response.product.CategoryResponse;
 import com.example.backend_service.model.product.Category;
 import com.example.backend_service.service.product.CategoryService;
 
@@ -28,5 +29,10 @@ public class CategoryController {
     @Transactional(readOnly = true)
     public ResponseEntity<List<Category>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
+    }
+    @Operation(summary = "Get Flattened Categories", description = "Lấy danh sách danh mục dạng phẳng (cho Dropdown)")
+    @GetMapping("/flat") 
+    public ResponseEntity<List<CategoryResponse>> getFlatCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategoriesFlattened());
     }
 }

@@ -9,6 +9,8 @@ import { CheckoutComponent } from './features/checkout/checkout';
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
 import { MainLayoutComponent } from './shared/layouts/main-layoyt/main-layout';
 import { UserListComponent } from './features/admin/user/user-list';
+import { CategoryListComponent } from './features/admin/category/category';
+
 
 
 export const routes: Routes = [
@@ -32,6 +34,7 @@ export const routes: Routes = [
         component: AdminLayoutComponent,
         children: [
             { path: 'users', component: UserListComponent },
+            { path: 'categories', component: CategoryListComponent },
         ]
     },
 

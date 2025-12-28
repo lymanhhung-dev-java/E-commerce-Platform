@@ -3,6 +3,7 @@ package com.example.backend_service.service.product;
 import java.util.List;
 
 import com.example.backend_service.dto.request.product.CategoryRequest;
+import com.example.backend_service.dto.response.product.CategoryResponse;
 import com.example.backend_service.model.product.Category;
 
 public interface CategoryService {
@@ -11,4 +12,5 @@ public interface CategoryService {
     List <Category> getAllCategories();
     Category getCategoryById(Long id);
     void deleteCategory(Long id);
+    List<CategoryResponse> getAllCategoriesFlattened();
 }

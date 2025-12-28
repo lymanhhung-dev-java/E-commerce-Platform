@@ -1,10 +1,12 @@
 package com.example.backend_service.service.product.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.example.backend_service.dto.request.product.CategoryRequest;
+import com.example.backend_service.dto.response.product.CategoryResponse;
 import com.example.backend_service.exception.AppException;
 import com.example.backend_service.model.product.Category;
 import com.example.backend_service.repository.CategoryRepository;
@@ -27,11 +29,14 @@ public class CategoryServiceImpl  implements CategoryService{
     public Category createCategory(CategoryRequest request) {
         Category category = new Category();
         category.setName(request.getName());
-        category.setImageUrl(request.getImageUrl());
-        category.setIsActive(true);
+        if (request.getIsActive() != null) {
+            category.setIsActive(request.getIsActive());
+        } else {
+            category.setIsActive(true);
+        }
 
-        if(request.getParntId() != null){
-            Category parentCategory = categoryRepository.findById(request.getParntId())
+        if(request.getParentId() != null){
+            Category parentCategory = categoryRepository.findById(request.getParentId())
             .orElseThrow(() -> new AppException("Danh mục cha không tồn tại"));
                 category.setParent(parentCategory);
         }
@@ -39,9 +44,31 @@ public class CategoryServiceImpl  implements CategoryService{
     }
 
     @Override
+    @Transactional
     public Category updateCategory(Long id, CategoryRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateCategory'");
+        
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new AppException("Danh mục không tồn tại"));
+
+        category.setName(request.getName());
+        
+        if (request.getIsActive() != null) {
+            category.setIsActive(request.getIsActive());
+        }
+
+        if (request.getParentId() != null) {
+            if (request.getParentId().equals(id)) {
+                throw new AppException("Danh mục không thể làm cha của chính nó");
+            }
+
+            Category parent = categoryRepository.findById(request.getParentId())
+                    .orElseThrow(() -> new AppException("Danh mục cha không tồn tại"));
+            category.setParent(parent);
+        } else {
+            category.setParent(null);
+        }
+
+        return categoryRepository.save(category);
     }
 
     @Override
@@ -56,11 +83,56 @@ public class CategoryServiceImpl  implements CategoryService{
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteCategory'");
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new AppException("Danh mục không tồn tại"));
+
+        if (category.getChildren() != null && !category.getChildren().isEmpty()) {
+            throw new AppException("Không thể xóa vì danh mục này đang chứa các danh mục con. Hãy xóa hoặc di chuyển danh mục con trước.");
+        }      
+        categoryRepository.delete(category);
     }
 
+    @Override
+    public List<CategoryResponse> getAllCategoriesFlattened() {
+       List<Category> rootCategories = categoryRepository.findByParentIsNull();
+        
+        List<CategoryResponse> result = new ArrayList<>();
+        
+        for (Category root : rootCategories) {
+            flattenRecursive(root, 0, result);
+        }
+        
+        return result;
+    }
+    
+
+    private void flattenRecursive(Category category, int level, List<CategoryResponse> result) {
+
+        String prefix = "";
+        if (level > 0) {
+            prefix = "-- ".repeat(level); 
+        }
+
+        CategoryResponse dto = CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .imageUrl(category.getImageUrl())
+                .active(category.getIsActive())
+                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .level(level)
+                .displayName(prefix + " " + category.getName()) // Format tên hiển thị
+                .build();
+
+        result.add(dto);
+
+        if (category.getChildren() != null && !category.getChildren().isEmpty()) {
+            for (Category child : category.getChildren()) {
+                flattenRecursive(child, level + 1, result);
+            }
+        }
+    }
     
     
 }
