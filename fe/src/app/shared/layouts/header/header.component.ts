@@ -85,7 +85,7 @@ export class HeaderComponent implements OnInit {
     }
 
     if (this.currentUser.isShopOwner) {
-      this.router.navigate(['/merchant/dashboard']);
+      this.router.navigate(['/merchant']);
     } else {
       this.router.navigate(['/register-shop']);
     }

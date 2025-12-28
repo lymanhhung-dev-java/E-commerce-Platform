@@ -2,6 +2,7 @@ package com.example.backend_service.service.product.impl;
 
 import com.example.backend_service.dto.request.product.MerchantProductCreateRequest;
 import com.example.backend_service.dto.request.product.MerchantProductUpdateRequest;
+import com.example.backend_service.dto.response.product.MerchantProductResponse;
 import com.example.backend_service.dto.response.product.ProductDetailResponse;
 import com.example.backend_service.model.product.Product;
 import com.example.backend_service.model.auth.User;
@@ -12,6 +13,9 @@ import com.example.backend_service.repository.ProductRepository;
 import com.example.backend_service.repository.UserRepository;
 import com.example.backend_service.common.ShopStatus;
 import com.example.backend_service.service.product.MerchantProductService;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +30,12 @@ public class MerchantProductServiceImpl implements MerchantProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+
+        private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username);
+    }
+
 
     @Override
     public ProductDetailResponse create(MerchantProductCreateRequest request) {
@@ -109,8 +119,40 @@ public class MerchantProductServiceImpl implements MerchantProductService {
         if (!product.getShop().getOwner().getId().equals(merchant.getId())) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa sản phẩm này");
         }
+        product.setIsDeleted(true);
         product.setIsActive(false);
         productRepository.save(product);
     }
 
+    @Override
+    public Page<MerchantProductResponse> getMerchantProducts(String keyword, Long categoryId, Boolean status,
+            Pageable pageable) {
+        User currentUsername = getCurrentUser();
+        
+        Page<Product> products = productRepository.findProductsForMerchant(
+                currentUsername.getUsername(),
+                keyword,
+                categoryId,
+                status,
+                pageable
+        );
+        return products.map(MerchantProductResponse::fromEntity);
+
+    }
+
+
+    @Override
+    public void toggleProductStatus(Long id) {
+    Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+
+     String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User merchant = userRepository.findByUsername(currentUsername);
+        if (!product.getShop().getOwner().getId().equals(merchant.getId())) {
+            throw new RuntimeException("Bạn không có quyền chỉnh sửa sản phẩm này");
+        }      
+    product.setIsActive(!product.getIsActive()); 
+    productRepository.save(product);
 }
+    }
+

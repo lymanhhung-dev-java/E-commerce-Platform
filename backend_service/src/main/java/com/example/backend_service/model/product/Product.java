@@ -50,6 +50,9 @@ public class Product {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

@@ -1,0 +1,102 @@
+/* --- SIDEBAR STYLES --- */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1040;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+}
+
+/* Sidebar khi đóng (trên mobile hoặc toggle) */
+.sidebar.closed {
+    margin-left: -260px;
+}
+
+/* --- NAVIGATION LINKS --- */
+.nav-link {
+    color: #64748b; /* Slate-500 */
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.nav-link:hover {
+    color: #0f172a; /* Slate-900 */
+    background-color: #f1f5f9; /* Slate-100 */
+}
+
+/* Active State - Giống mẫu bạn gửi */
+.nav-link.active {
+    background-color: #0d6efd; /* Primary Blue */
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+}
+
+.nav-link.active i {
+    color: white !important;
+}
+
+.nav-link.active .badge {
+    background-color: rgba(255,255,255,0.2) !important;
+    color: white !important;
+}
+
+/* Icon Styles */
+.nav-link i {
+    font-size: 1.1rem;
+    color: #94a3b8; /* Slate-400 */
+    transition: color 0.2s;
+}
+
+/* --- UTILS --- */
+.object-fit-cover {
+    object-fit: cover;
+}
+
+.hover-danger:hover {
+    color: #dc3545 !important;
+    background-color: #ffeaea;
+}
+
+/* Custom Scrollbar cho Sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        margin-left: -260px; /* Mặc định ẩn trên tablet/mobile */
+    }
+    
+    .sidebar.closed {
+        margin-left: 0; /* Hiện khi toggle class 'closed' bị bỏ (logic ngược xíu, tùy TS bạn set) */
+    }
+    
+    /* Overlay khi mở menu mobile (Optional) */
+    .sidebar:not(.closed)::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.3);
+        z-index: -1;
+    }
+}

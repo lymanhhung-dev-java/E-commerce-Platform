@@ -1,76 +1,92 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ShopService } from '../../../../core/services/shop.Service';
 import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { ReactiveFormsModule } from '@angular/forms';
- 
+import { ShopService } from '../../../../core/services/shop.Service'; 
+
 @Component({
   selector: 'app-merchant-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './merchant-dashboard.html',
-  styleUrl: './merchant-dashboard.css'
+  styleUrls: ['./merchant-dashboard.css']
 })
 export class MerchantDashboardComponent implements OnInit {
-  shopService = inject(ShopService);
-  toastr = inject(ToastrService);
-  
+  private shopService = inject(ShopService);
+
   shop: any = null;
-  isLoading = true;
-  status: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'UNKNOWN' = 'UNKNOWN';
+  currentDate = new Date();
 
-  isEditing = false;
-    resubmitForm: FormGroup;
+  // Mock Data: Thống kê
+  stats = {
+    revenue: 12450.00,
+    revenueGrowth: 12.5,
+    orders: 340,
+    ordersGrowth: 5.2,
+    products: 52,
+    newProducts: 0,
+    rating: 4.8,
+    ratingCount: 120
+  };
 
-  constructor(private fb: FormBuilder) {
-  this.resubmitForm = this.fb.group({
-    shopName: ['', Validators.required],
-    address: ['', Validators.required],
-    description: [''],
-    logoUrl: ['']
-  });
-}
+  // Mock Data: Đơn hàng gần đây
+  recentOrders = [
+    {
+      id: '#ORD-00345',
+      product: 'Wireless Headphones',
+      customer: 'Sarah Smith',
+      avatar: 'https://i.pravatar.cc/150?img=5',
+      date: 'Oct 12, 2023',
+      amount: 129.00,
+      status: 'COMPLETED'
+    },
+    {
+      id: '#ORD-00344',
+      product: 'Smart Watch Series 5',
+      customer: 'Michael Chen',
+      avatar: 'https://i.pravatar.cc/150?img=3',
+      date: 'Oct 11, 2023',
+      amount: 249.50,
+      status: 'PENDING'
+    },
+    {
+      id: '#ORD-00343',
+      product: 'Gaming Mouse',
+      customer: 'Tom Hardy',
+      avatar: 'https://i.pravatar.cc/150?img=12',
+      date: 'Oct 10, 2023',
+      amount: 59.99,
+      status: 'CANCELLED'
+    },
+    {
+      id: '#ORD-00342',
+      product: 'Mechanical Keyboard',
+      customer: 'Jessica Lee',
+      avatar: 'https://i.pravatar.cc/150?img=1',
+      date: 'Oct 09, 2023',
+      amount: 89.99,
+      status: 'SHIPPING'
+    }
+  ];
 
   ngOnInit() {
-    this.fetchShopInfo();
+    this.getShopInfo();
   }
 
-  startEdit() {
-  this.isEditing = true;
-  this.resubmitForm.patchValue({
-    shopName: this.shop.shopName,
-    address: this.shop.address,
-    description: this.shop.description,
-    logoUrl: this.shop.logoUrl
-  });
-}
-  fetchShopInfo() {
-    this.isLoading = true;
+  getShopInfo() {
     this.shopService.getCurrentShop().subscribe({
-      next: (res) => {
-        this.shop = res;
-        this.status = res.status; 
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Lỗi lấy thông tin shop', err);
-        this.isLoading = false;
-      }
+      next: (res) => this.shop = res,
+      error: (err) => console.error(err)
     });
   }
-  onResubmit() {
-  if (this.resubmitForm.invalid) return;
-  
-  this.shopService.resubmitShop(this.resubmitForm.value).subscribe({
-    next: () => {
-      this.toastr.success('Đã gửi lại yêu cầu thành công!');
-      this.isEditing = false;
-      this.fetchShopInfo(); 
-    },
-    error: (err) => this.toastr.error(err.error?.message || 'Lỗi gửi lại')
-  });
-}
 
+  // Helper: Màu sắc trạng thái đơn hàng
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'COMPLETED': return 'bg-success bg-opacity-10 text-success';
+      case 'PENDING': return 'bg-warning bg-opacity-10 text-warning';
+      case 'CANCELLED': return 'bg-danger bg-opacity-10 text-danger';
+      case 'SHIPPING': return 'bg-primary bg-opacity-10 text-primary';
+      default: return 'bg-secondary bg-opacity-10 text-secondary';
+    }
+  }
 }

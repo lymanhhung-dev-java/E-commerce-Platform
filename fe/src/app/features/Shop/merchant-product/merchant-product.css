@@ -1,0 +1,55 @@
+/* Tùy chỉnh kích thước switch */
+.form-check-input {
+    width: 2.5em;
+    height: 1.25em;
+    cursor: default; /* Disabled cursor vì chỉ để view */
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Header bảng */
+.table thead th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background-color: #f8f9fa;
+    border-bottom: 0;
+}
+
+/* Căn giữa nội dung trong ô */
+.table tbody td {
+    vertical-align: middle;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* Ảnh sản phẩm */
+.object-fit-cover {
+    object-fit: cover;
+}
+
+/* Hiệu ứng nút hành động */
+.btn-light:hover {
+    background-color: #e2e6ea;
+    transform: scale(1.05);
+    transition: all 0.2s;
+}
+
+/* Pagination */
+.page-link {
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    color: #6c757d;
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+    color: #0d6efd;
+}

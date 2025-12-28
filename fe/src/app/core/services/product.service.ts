@@ -2,11 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Product, ProductResponse } from '../models/product';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/products`; // API: http://localhost:8080/api/products
+  private apiUrl = `${environment.apiUrl}/products`;
+  private apiMerchantUrl = `${environment.apiUrl}/merchant/products`; 
 
   getProducts(
     page: number = 0, 
@@ -35,5 +37,36 @@ export class ProductService {
   
   getProductById(id: number) {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
+  }
+
+ //----------------- // merchant // ---------------------------------------------------------------------------------------//
+  getMerchantProducts(
+    keyword: string,
+    categoryId: number | null,
+    status: boolean | null,
+    page: number,
+    size: number
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    if (keyword) params = params.set('keyword', keyword);
+    if (categoryId) params = params.set('categoryId', categoryId);
+    
+    if (status !== null) {
+      params = params.set('status', status);
+    }
+
+    return this.http.get<any>(this.apiMerchantUrl, { params });
+  }
+
+  onToggleStatus(id: number) {
+   return this.http.put(`${this.apiMerchantUrl}/${id}/status`, {}, {responseType: 'text'});
+}
+
+  // Hàm xóa mềm (ẩn sản phẩm)
+  deleteProduct(id: number) {
+    return this.http.delete(`${this.apiMerchantUrl}/${id}`, { responseType: 'text' });
   }
 }

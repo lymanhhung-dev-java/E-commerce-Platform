@@ -8,7 +8,10 @@ import { CartComponent } from './features/cart/cart';
 import { CheckoutComponent } from './features/checkout/checkout';
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
 import { MainLayoutComponent } from './shared/layouts/main-layoyt/main-layout';
+import { MerchantLayoutComponent } from './shared/layouts/merchant-layout/merchant-layout';
 import { RegisterShopComponent } from './features/Shop/register-shop/register-shop';
+import { MerchantDashboardComponent } from './features/Shop/merchant/merchant-dashboard/merchant-dashboard';
+import { MerchantProductListComponent } from './features/Shop/merchant-product/merchant-product';
 import { UserListComponent } from './features/admin/user/user-list';
 import { CategoryListComponent } from './features/admin/category/category';
 import { ShopRequestListComponent } from './features/admin/shop-request-list/shop-request-list';
@@ -34,8 +37,14 @@ export const routes: Routes = [
         ]
     },
 
-  
-
+    {
+        path: 'merchant',
+        component: MerchantLayoutComponent,
+        children: [
+            { path: 'dashboard', component: MerchantDashboardComponent },
+            { path: 'products', component: MerchantProductListComponent }
+        ]
+    },
     
     {
         path: 'admin',
