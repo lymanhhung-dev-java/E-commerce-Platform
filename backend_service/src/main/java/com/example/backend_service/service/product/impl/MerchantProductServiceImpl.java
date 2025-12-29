@@ -114,6 +114,18 @@ public class MerchantProductServiceImpl implements MerchantProductService {
                     .orElseThrow(() -> new RuntimeException("Category không tồn tại"));
             product.setCategory(category);
         }
+        if (request.getDetailImages() != null) {
+            product.getImages().clear(); 
+
+            if (!request.getDetailImages().isEmpty()) {
+                for (String url : request.getDetailImages()) {
+                    ProductImage img = new ProductImage();
+                    img.setImageUrl(url);
+                    img.setProduct(product); 
+                    product.addImage(img);   
+                }
+            }
+        }
         Product updatedProduct = productRepository.save(product);
         return ProductDetailResponse.fromEntity(updatedProduct);
     }

@@ -13,6 +13,7 @@ import { RegisterShopComponent } from './features/Shop/register-shop/register-sh
 import { MerchantDashboardComponent } from './features/Shop/merchant/merchant-dashboard/merchant-dashboard';
 import { MerchantProductListComponent } from './features/Shop/merchant-product/merchant-product';
 import { MerchantProductCreateComponent } from './features/Shop/merchant-product-create/merchant-product-create';
+import { MerchantProductFormComponent } from './features/Shop/merchant-update-product/merchant-update-product';
 import { UserListComponent } from './features/admin/user/user-list';
 import { CategoryListComponent } from './features/admin/category/category';
 import { ShopRequestListComponent } from './features/admin/shop-request-list/shop-request-list';
@@ -45,6 +46,7 @@ export const routes: Routes = [
             { path: 'dashboard', component: MerchantDashboardComponent },
             { path: 'products', component: MerchantProductListComponent },
             { path: 'products/create', component: MerchantProductCreateComponent },
+            { path: 'products/edit/:id', component: MerchantProductFormComponent },
         ]
     },
     

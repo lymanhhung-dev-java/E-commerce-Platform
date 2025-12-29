@@ -88,5 +88,10 @@ export class ProductService {
     return this.http.delete(`${this.apiMerchantUrl}/${id}`, { responseType: 'text' });
   }
 
+  updateProduct(id: number, data: any) {
+    return this.http.put(`${this.apiMerchantUrl}/${id}`, data);
+  }
+
+
 
 }
