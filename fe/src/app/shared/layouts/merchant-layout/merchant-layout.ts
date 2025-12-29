@@ -40,11 +40,11 @@ export class MerchantLayoutComponent implements OnInit {
 
   
   mainMenuItems: MenuItem[] = [
-    { label: 'Dashboard', icon: 'bi-grid-fill', route: '/merchant/dashboard' },
-    { label: 'Orders', icon: 'bi-bag', route: '/merchant/orders', }, 
-    { label: 'Products', icon: 'bi-box-seam', route: '/merchant/products' },
-    { label: 'Customers', icon: 'bi-people', route: '/merchant/customers' },
-    { label: 'Reports', icon: 'bi-bar-chart', route: '/merchant/reports' }
+    { label: 'Trang chủ', icon: 'bi-grid-fill', route: '/merchant/dashboard' },
+    { label: 'Danh sách đơn hàng', icon: 'bi-bag', route: '/merchant/orders', }, 
+    { label: 'Quản lý sản phẩm', icon: 'bi-box-seam', route: '/merchant/products' },
+    { label: 'Doanh thu', icon: 'bi-people', route: '/merchant/' },
+    { label: '', icon: 'bi-bar-chart', route: '/merchant/reports' }
   ];
 
   settingsMenuItems: MenuItem[] = [

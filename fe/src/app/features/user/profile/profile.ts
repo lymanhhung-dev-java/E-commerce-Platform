@@ -78,6 +78,7 @@ export class ProfileComponent implements OnInit {
       this.loadAddresses();
       this.loadOrders();
     }
+
   }
 
   switchTab(tab: 'info' | 'security' | 'address' | 'orders') {
@@ -235,7 +236,12 @@ export class ProfileComponent implements OnInit {
   }
 
   saveAddress() {
-    if (this.addressForm.invalid) return;
+
+    if (this.addressForm.invalid) {
+      this.addressForm.markAllAsTouched(); 
+      this.toastr.warning('Vui lòng kiểm tra lại thông tin nhập!');
+      return;
+    }
 
     const val = this.addressForm.value as Address;
 
@@ -246,7 +252,7 @@ export class ProfileComponent implements OnInit {
           this.loadAddresses();
           this.showAddressForm = false;
         },
-        error: () => this.toastr.error('Lỗi cập nhật')
+        error: (err) => this.toastr.error(err.error?.message || 'Lỗi cập nhật')
       });
     } else {
       this.addressService.createAddress(val).subscribe({
@@ -255,7 +261,7 @@ export class ProfileComponent implements OnInit {
           this.loadAddresses();
           this.showAddressForm = false;
         },
-        error: () => this.toastr.error('Lỗi thêm mới')
+        error: (err) => this.toastr.error(err.error?.message || 'Lỗi thêm mới')
       });
     }
   }
