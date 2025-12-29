@@ -17,6 +17,7 @@ public class ProductListResponse {
     private String categoryName;
     private String shopName;
     private Double rating; 
+    private Boolean isActive;
     public static ProductListResponse fromEntity(Product p) {
         return ProductListResponse.builder()
                 .id(p.getId())
@@ -25,6 +26,7 @@ public class ProductListResponse {
                 .imageUrl(p.getImageUrl())
                 .categoryName(p.getCategory().getName())
                 .shopName(p.getShop().getShopName())
+                .isActive(p.getIsActive())
                 .rating(5.0)
                 .build();
     }

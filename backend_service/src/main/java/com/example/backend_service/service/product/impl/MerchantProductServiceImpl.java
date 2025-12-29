@@ -172,7 +172,7 @@ public class MerchantProductServiceImpl implements MerchantProductService {
         if (!product.getShop().getOwner().getId().equals(merchant.getId())) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa sản phẩm này");
         }      
-    product.setIsActive(!product.getIsActive()); 
+    product.setIsActive(!product.getIsActive());
     productRepository.save(product);
 }
     }

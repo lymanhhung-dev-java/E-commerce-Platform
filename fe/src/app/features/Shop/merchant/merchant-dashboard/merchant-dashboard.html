@@ -1,132 +1,51 @@
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-end mb-4 gap-3">
-  <div>
-    <h3 class="fw-bold mb-1">Dashboard Overview</h3>
-    <p class="text-muted mb-0">
-      Chào mừng trở lại, <strong>{{ shop?.shopName || 'Shop' }}</strong>! Đây là tình hình kinh doanh hôm nay.
-    </p>
-  </div>
-  <div class="d-flex gap-2">
-    <button class="btn btn-white border bg-white shadow-sm fw-medium">
-      <i class="bi bi-calendar me-2"></i> {{ currentDate | date:'mediumDate' }}
-    </button>
-    <button class="btn btn-primary fw-bold shadow-sm">
-      <i class="bi bi-download me-2"></i> Export Data
-    </button>
-  </div>
-</div>
-
 <div class="row g-3 mb-4">
   <div class="col-md-6 col-xl-3">
     <div class="card border-0 shadow-sm rounded-4 p-3 h-100 card-hover">
       <div class="d-flex justify-content-between mb-3">
-        <span class="text-muted small fw-bold text-uppercase">Total Revenue</span>
+        <span class="text-muted small fw-bold text-uppercase">Doanh Thu (Kỳ này)</span>
         <div class="icon-box bg-primary bg-opacity-10 text-primary">
           <i class="bi bi-wallet2"></i>
         </div>
       </div>
-      <h3 class="fw-bold mb-2">{{ stats.revenue | currency:'USD' }}</h3>
-      <div class="small text-success fw-bold">
-        <i class="bi bi-graph-up-arrow"></i> +{{ stats.revenueGrowth }}% 
-        <span class="text-muted fw-normal ms-1">from last month</span>
+      <h3 class="fw-bold mb-2">{{ stats.revenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h3> 
       </div>
+  </div>
+  </div>
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+  <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h5 class="fw-bold mb-0">Biểu đồ doanh thu</h5>
+      <small class="text-muted">Theo dõi hiệu quả kinh doanh theo thời gian</small>
+    </div>
+    
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-sm px-3" 
+              [class.btn-primary]="selectedType === 'WEEK'" 
+              [class.btn-outline-secondary]="selectedType !== 'WEEK'"
+              (click)="loadRevenueStatistics('WEEK')">Tuần</button>
+              
+      <button type="button" class="btn btn-sm px-3" 
+              [class.btn-primary]="selectedType === 'MONTH'" 
+              [class.btn-outline-secondary]="selectedType !== 'MONTH'"
+              (click)="loadRevenueStatistics('MONTH')">Tháng</button>
+              
+      <button type="button" class="btn btn-sm px-3" 
+              [class.btn-primary]="selectedType === 'YEAR'" 
+              [class.btn-outline-secondary]="selectedType !== 'YEAR'"
+              (click)="loadRevenueStatistics('YEAR')">Năm</button>
     </div>
   </div>
 
-  <div class="col-md-6 col-xl-3">
-    <div class="card border-0 shadow-sm rounded-4 p-3 h-100 card-hover">
-      <div class="d-flex justify-content-between mb-3">
-        <span class="text-muted small fw-bold text-uppercase">Total Orders</span>
-        <div class="icon-box bg-purple-light text-purple">
-          <i class="bi bi-bag-check"></i>
+  <div class="card-body p-4">
+    <div style="height: 350px; position: relative;">
+      <canvas #revenueChart></canvas>
+      
+      <div *ngIf="isLoadingChart" class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-      <h3 class="fw-bold mb-2">{{ stats.orders }}</h3>
-      <div class="small text-success fw-bold">
-        <i class="bi bi-graph-up-arrow"></i> +{{ stats.ordersGrowth }}% 
-        <span class="text-muted fw-normal ms-1">from last month</span>
-      </div>
     </div>
-  </div>
-
-  <div class="col-md-6 col-xl-3">
-    <div class="card border-0 shadow-sm rounded-4 p-3 h-100 card-hover">
-      <div class="d-flex justify-content-between mb-3">
-        <span class="text-muted small fw-bold text-uppercase">Active Products</span>
-        <div class="icon-box bg-warning bg-opacity-10 text-warning">
-          <i class="bi bi-box"></i>
-        </div>
-      </div>
-      <h3 class="fw-bold mb-2">{{ stats.products }}</h3>
-      <div class="small text-muted fw-bold">
-        <i class="bi bi-dash"></i> {{ stats.newProducts }} 
-        <span class="text-muted fw-normal ms-1">new added</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-6 col-xl-3">
-    <div class="card border-0 shadow-sm rounded-4 p-3 h-100 card-hover">
-      <div class="d-flex justify-content-between mb-3">
-        <span class="text-muted small fw-bold text-uppercase">Avg. Rating</span>
-        <div class="icon-box bg-info bg-opacity-10 text-info">
-          <i class="bi bi-star"></i>
-        </div>
-      </div>
-      <h3 class="fw-bold mb-2">{{ stats.rating }} <span class="fs-6 text-muted">/ 5.0</span></h3>
-      <div class="small text-success fw-bold">
-        <i class="bi bi-person-check"></i> {{ stats.ratingCount }} 
-        <span class="text-muted fw-normal ms-1">total reviews</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-  <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
-    <h5 class="fw-bold mb-0">Recent Orders</h5>
-    <a routerLink="/merchant/orders" class="text-decoration-none small fw-bold text-primary">
-      View All <i class="bi bi-arrow-right"></i>
-    </a>
-  </div>
-  
-  <div class="table-responsive">
-    <table class="table align-middle mb-0 table-hover">
-      <thead class="bg-light text-muted small text-uppercase">
-        <tr>
-          <th class="ps-4 py-3">Order ID</th>
-          <th>Product</th>
-          <th>Customer</th>
-          <th>Date</th>
-          <th>Amount</th>
-          <th>Status</th>
-          <th class="text-end pe-4">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let order of recentOrders">
-          <td class="ps-4 fw-bold text-primary">{{ order.id }}</td>
-          <td>{{ order.product }}</td>
-          <td>
-            <div class="d-flex align-items-center gap-2">
-              <img [src]="order.avatar" class="rounded-circle border" width="24" height="24">
-              <span class="fw-medium">{{ order.customer }}</span>
-            </div>
-          </td>
-          <td class="text-muted small">{{ order.date }}</td>
-          <td class="fw-bold">{{ order.amount | currency:'USD' }}</td>
-          <td>
-            <span class="badge rounded-pill px-3 py-2 fw-normal" 
-                  [ngClass]="getStatusClass(order.status)">
-              {{ order.status }}
-            </span>
-          </td>
-          <td class="text-end pe-4">
-            <button class="btn btn-sm btn-light rounded-circle text-muted">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>

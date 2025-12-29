@@ -9,7 +9,10 @@ import { tokenInterceptor } from './core/interceptors/token.interceptor';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
+import { registerLocaleData } from '@angular/common';
+import localeVi from '@angular/common/locales/vi';
 
+registerLocaleData(localeVi);
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),

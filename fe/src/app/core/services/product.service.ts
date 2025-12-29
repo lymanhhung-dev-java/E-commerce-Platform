@@ -41,7 +41,6 @@ export class ProductService {
   getProductById(id: number) {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
-
  //----------------- // merchant // ---------------------------------------------------------------------------------------//
   getMerchantProducts(
     keyword: string,
@@ -91,7 +90,5 @@ export class ProductService {
   updateProduct(id: number, data: any) {
     return this.http.put(`${this.apiMerchantUrl}/${id}`, data);
   }
-
-
 
 }

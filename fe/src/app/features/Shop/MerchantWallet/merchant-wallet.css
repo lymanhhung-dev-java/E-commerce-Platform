@@ -1,0 +1,28 @@
+/* Card Styles */
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.bg-primary-subtle { background-color: #ecf5ff !important; }
+.bg-success-subtle { background-color: #f0f9eb !important; }
+.bg-warning-subtle { background-color: #fdf6ec !important; }
+
+/* Modal Styles */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+}
+.modal {
+    z-index: 1050;
+}
+
+/* Remove spin button for number input */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}

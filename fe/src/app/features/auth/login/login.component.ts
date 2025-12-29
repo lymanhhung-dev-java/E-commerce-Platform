@@ -20,7 +20,6 @@ export class LoginComponent {
   toastr = inject(ToastrService);
   userService = inject(UserService);
 
-
   showPassword: boolean = false;
 
   loginForm = this.fb.group({
@@ -28,7 +27,7 @@ export class LoginComponent {
     password: ['', Validators.required]
   });
 
-  onSubmit() {
+  onSubmit() { 
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
@@ -38,7 +37,7 @@ export class LoginComponent {
               this.toastr.success(`Chào mừng trở lại, ${user.fullName}!`);
 
               if (user.role === 'ADMIN' || user.role === 'ROLE_ADMIN') {
-                this.router.navigate(['/admin']); 
+                this.router.navigate(['/admin/dashboard']); 
               } else {
                 this.router.navigate(['/']); 
               }

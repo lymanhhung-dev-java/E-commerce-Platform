@@ -62,6 +62,10 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setStatus(status);
+        if(status == OrderStatus.DELIVERED){
+            Shop merchant = order.getUser().getShop();
+            merchant.setBalance(merchant.getBalance().add(order.getTotalAmount()));
+        }
         orderRepository.save(order);
     }
 

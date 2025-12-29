@@ -14,14 +14,13 @@ export class AdminLayoutComponent {
   authService = inject(AuthService);
 
   menuItems = [
-    { label: 'Dashboard', icon: 'bi-grid-fill', route: '/admin/dashboard' },
-    { label: 'Users', icon: 'bi-people-fill', route: '/admin/users' },
-    { label: 'Shops Approvals', icon: 'bi-shop', route: '/admin/shopsApprovals' },
-    { label: 'Shops ', icon: 'bi-shop', route: '/admin/shops' },
-    { label: 'Categories', icon: 'bi-tags-fill', route: '/admin/categories' },
-    { label: 'Products', icon: 'bi-box-seam-fill', route: '/admin/products' },
-    
-
+    { label: 'Trang chủ', icon: 'bi-grid-fill', route: '/admin/dashboard' },
+    { label: 'Người dùng', icon: 'bi-people-fill', route: '/admin/users' },
+    { label: 'Yêu cầu ', icon: 'bi-shop', route: '/admin/shopsApprovals' },
+    { label: 'Quản lý cửa hàng', icon: 'bi-shop', route: '/admin/shops' },
+    { label: 'Quản lý danh mục', icon: 'bi-tags-fill', route: '/admin/categories' },
+    { label: 'Quản lý sản phẩm', icon: 'bi-box-seam-fill', route: '/admin/products' },
+    { label: 'Yêu cầu rút tiền', icon: 'bi-bag-fill', route: '/admin/wallets' },
   ];
   
   systemItems = [

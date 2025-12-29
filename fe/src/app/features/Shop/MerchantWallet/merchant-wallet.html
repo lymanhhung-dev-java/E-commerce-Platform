@@ -1,0 +1,124 @@
+<div class="container-fluid p-4">
+  <h3 class="fw-bold mb-4">Ví Của Tôi</h3>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card bg-primary text-white border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-uppercase opacity-75">Tổng doanh thu (All time)</h6>
+          <h2 class="fw-bold mb-0">{{ walletData?.totalRevenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-success text-white border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="text-uppercase opacity-75">Doanh thu theo</h6>
+            <select class="form-select form-select-sm w-auto bg-white text-dark border-0" 
+                    (change)="onChangePeriod($event)">
+              <option value="MONTH">Tháng này</option>
+              <option value="WEEK">Tuần này</option>
+              <option value="YEAR">Năm nay</option>
+            </select>
+          </div>
+          <h2 class="fw-bold mb-0 mt-2">
+            {{ periodRevenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-warning text-dark border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-uppercase opacity-75">Số dư khả dụng</h6>
+          <h2 class="fw-bold mb-3">{{ walletData?.currentBalance | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h2>
+          <button class="btn btn-dark w-100" (click)="openWithdrawModal()">
+            <i class="bi bi-cash-stack"></i> Rút tiền ngay
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white fw-bold">Lịch sử rút tiền</div>
+    <div class="card-body">
+        <div class="text-center text-muted py-3">Chưa có giao dịch nào.</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" id="withdrawModal" tabindex="-1" *ngIf="showWithdrawModal" style="display: block;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold">Yêu cầu rút tiền</h5>
+        <button type="button" class="btn-close" (click)="showWithdrawModal = false"></button>
+      </div>
+      
+      <div class="modal-body pt-2">
+        <div class="alert alert-primary d-flex align-items-center mb-4" role="alert">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Logo_MB_new.png" 
+               alt="MB Bank Logo" style="height: 40px;" class="me-3">
+          <div>
+            <div class="fw-bold text-primary">Lưu ý quan trọng:</div>
+            <div class="small">Hệ thống hiện tại <span class="fw-bold text-danger text-uppercase">chỉ hỗ trợ rút về ngân hàng MBBank</span>.</div>
+          </div>
+        </div>
+
+        <form [formGroup]="withdrawForm" (ngSubmit)="onWithdraw()">
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-secondary text-uppercase">Số tiền muốn rút</label>
+            <div class="input-group">
+              <input type="number" class="form-control fw-bold text-primary" formControlName="amount" placeholder="Nhập số tiền...">
+              <span class="input-group-text fw-bold">VNĐ</span>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+               <small class="text-muted">Tối thiểu: 50.000 đ</small>
+               <small class="text-primary cursor-pointer fw-bold" (click)="fillMaxAmount()">
+                 Rút tất cả ({{ walletData?.currentBalance | number }} đ)
+               </small>
+            </div>
+            <div *ngIf="withdrawForm.get('amount')?.invalid && withdrawForm.get('amount')?.touched" class="text-danger small mt-1">
+              Số tiền không hợp lệ hoặc vượt quá số dư.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-secondary text-uppercase">Ngân hàng thụ hưởng</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-bank2"></i></span>
+                <input type="text" class="form-control bg-light" value="MBBank (Ngân hàng Quân Đội)" readonly>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-secondary text-uppercase">Số tài khoản MBBank <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="accountNumber" placeholder="Nhập số tài khoản...">
+            <div *ngIf="withdrawForm.get('accountNumber')?.invalid && withdrawForm.get('accountNumber')?.touched" class="text-danger small mt-1">
+              Vui lòng nhập số tài khoản.
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-secondary text-uppercase">Tên chủ tài khoản <span class="text-danger">*</span></label>
+            <input type="text" class="form-control text-uppercase" formControlName="accountName" placeholder="VD: NGUYEN VAN A">
+            <div *ngIf="withdrawForm.get('accountName')?.invalid && withdrawForm.get('accountName')?.touched" class="text-danger small mt-1">
+              Vui lòng nhập tên chủ tài khoản (viết hoa không dấu).
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" [disabled]="withdrawForm.invalid">
+            XÁC NHẬN RÚT TIỀN
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show" *ngIf="showWithdrawModal"></div>

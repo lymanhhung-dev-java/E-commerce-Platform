@@ -18,7 +18,9 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     Page<Shop> findByStatus(ShopStatus status, Pageable pageable);
 
     Optional<Shop> findByOwner(User user);
-    
+
+    long countByStatus(ShopStatus status);
+
     @Query("SELECT s FROM Shop s WHERE " +
            "(:keyword IS NULL OR LOWER(s.shopName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(s.owner.username) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
            "(:status IS NULL OR s.status = :status)")

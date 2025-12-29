@@ -1,6 +1,8 @@
 package com.example.backend_service.model.business;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.example.backend_service.common.ShopStatus;
 import com.example.backend_service.model.AbstractEntity;
@@ -36,6 +38,9 @@ public class Shop extends AbstractEntity<Long> implements Serializable {
     private String shopName;
 
     private String description;
+
+    @Column(name = "balance", precision = 19, scale = 2)
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @Column(name = "logo_url")
     private String logoUrl;
