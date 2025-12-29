@@ -1,0 +1,20 @@
+.status-select {
+    min-width: 140px;
+    font-weight: 500;
+    border-color: #dee2e6;
+}
+
+.status-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Badge colors overrides nếu Bootstrap mặc định chưa đủ đẹp */
+.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000;
+}
+.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #000;
+}
