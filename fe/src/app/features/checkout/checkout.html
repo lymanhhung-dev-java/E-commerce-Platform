@@ -57,27 +57,27 @@
     <p class="text-muted small mb-3">All transactions are secure and encrypted.</p>
 
     <div class="payment-box">
-      <div class="payment-option" [class.selected]="checkoutForm.get('paymentMethod')?.value === 'COD'">
-        <input class="form-check-input mt-0 me-3" type="radio" value="COD" id="cod" formControlName="paymentMethod">
-        <label class="form-check-label w-100 fw-bold cursor-pointer" for="cod">
-          Cash on Delivery (COD)
-        </label>
-        <i class="bi bi-cash-stack fs-5 text-muted"></i>
-      </div>
 
-      <div class="payment-details small text-muted" *ngIf="checkoutForm.get('paymentMethod')?.value === 'COD'">
-        Thanh toán bằng tiền mặt khi nhận hàng. Phí thu hộ: 0đ.
-      </div>
+      <ng-container *ngFor="let method of paymentMethods">
 
-      <div class="payment-option">
-        <input class="form-check-input mt-0 me-3" type="radio" value="VNPAY" id="vnpay" formControlName="paymentMethod"
-          [disabled]="true">
+        <div class="payment-option" [class.selected]="checkoutForm.get('paymentMethod')?.value === method.code">
 
-        <label class="form-check-label w-100 text-muted cursor-pointer" for="vnpay">
-          VNPay / Banking (Đang bảo trì)
-        </label>
-        <i class="bi bi-credit-card fs-5 text-muted"></i>
-      </div>
+          <input class="form-check-input mt-0 me-3" type="radio" [value]="method.code" [id]="method.code"
+            formControlName="paymentMethod">
+
+          <label class="form-check-label w-100 fw-bold cursor-pointer" [for]="method.code">
+            {{ method.name }}
+          </label>
+
+          <i class="bi fs-5 text-muted" [ngClass]="method.icon"></i>
+        </div>
+
+        <div class="payment-details small text-muted"
+          *ngIf="checkoutForm.get('paymentMethod')?.value === method.code && method.description">
+          {{ method.description }}
+        </div>
+
+      </ng-container>
     </div>
 
   </div>
@@ -136,3 +136,72 @@
 
   </div>
 </form>
+<div class="row mt-4">
+    <div class="col-12">
+        <button (click)="onSubmit()" class="btn btn-primary w-100 py-3 fw-bold text-uppercase">
+            Xác nhận đặt hàng
+        </button>
+    </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0,0,0,0.7); z-index: 1055;" *ngIf="showQrModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4 border-0 shadow-lg rounded-4">
+      
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="modal-title fw-bold text-primary">Thanh toán chuyển khoản</h5>
+        <button type="button" class="btn-close" (click)="closeModal()" [disabled]="isPaymentSuccess"></button>
+      </div>
+
+      <div class="modal-body position-relative" style="min-height: 300px;">
+        
+        <div *ngIf="!isPaymentSuccess && !isExpired" class="animate-fade-in">
+            <p class="text-muted mb-3">Mở App Ngân hàng và quét mã bên dưới</p>
+            
+            <div class="qr-wrapper position-relative d-inline-block p-2 border rounded-3 bg-white shadow-sm mb-3">
+                <img [src]="qrCodeUrl" alt="QR Code" class="img-fluid" style="max-width: 220px;">
+                <div class="spinner-border text-primary position-absolute top-50 start-50 translate-middle" role="status" style="width: 3rem; height: 3rem; opacity: 0.3; z-index: 0;"></div>
+            </div>
+
+            <div>
+                <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill border border-danger">
+                    Hết hạn sau: <span class="fw-bold fs-5 ms-1">{{ displayTime }}</span>
+                </span>
+            </div>
+            <p class="small text-primary mt-3 fst-italic">
+                <i class="bi bi-shield-check"></i> Hệ thống đang tự động kiểm tra giao dịch...
+            </p>
+        </div>
+
+        <div *ngIf="isPaymentSuccess" class="py-4 text-center success-container">
+            <div class="checkmark-wrapper mb-4">
+                <div class="checkmark-circle">
+                    <div class="background"></div>
+                    <div class="checkmark draw"></div>
+                </div>
+            </div>
+            <h3 class="text-success fw-bold mb-2">Thanh toán thành công!</h3>
+            <p class="text-muted mb-4">Đang chuyển hướng...</p>
+            <div class="progress" style="height: 4px; width: 50%; margin: 0 auto;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div *ngIf="isExpired" class="py-5">
+            <i class="bi bi-clock-history text-warning" style="font-size: 4rem;"></i>
+            <h4 class="text-danger mt-3">Hết thời gian thanh toán</h4>
+            <p class="text-muted">Đơn hàng sẽ bị hủy. Vui lòng đặt lại.</p>
+            <button class="btn btn-outline-dark mt-2" (click)="closeModal()">Đóng & Đặt lại</button>
+        </div>
+
+      </div>
+      
+      <div class="modal-footer justify-content-center border-0 pt-0" *ngIf="!isPaymentSuccess && !isExpired">
+        <button type="button" class="btn btn-link text-decoration-none text-muted" (click)="closeModal()">
+            <i class="bi bi-arrow-left"></i> Hủy & Chọn phương thức khác
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

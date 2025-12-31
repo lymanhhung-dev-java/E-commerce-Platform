@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -8,6 +8,7 @@ import { CartService } from '../../core/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
 import { AddressService } from '../../core/services/address.service';
 import { Address } from '../../core/models/address';
+import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
 
 @Component({
   selector: 'app-checkout',
@@ -20,10 +21,22 @@ export class CheckoutComponent implements OnInit {
   fb = inject(FormBuilder);
   router = inject(Router);
   toastr = inject(ToastrService);
-
+  cdr = inject(ChangeDetectorRef);
   cartService = inject(CartService);
   checkoutService = inject(CheckoutService);
   addressService = inject(AddressService);
+
+  showQrModal: boolean = false;
+  qrCodeUrl: string = '';
+  currentOrderId: number | null = null;
+
+  countdownTime: number = 180; // 3 phút = 180 giây
+  displayTime: string = '03:00';
+  isPaymentSuccess: boolean = false;
+  isExpired: boolean = false;
+
+  private countdownSubscription: Subscription | null = null;
+  private pollingSubscription: Subscription | null = null;
 
   savedAddresses: Address[] = [];
 
@@ -37,8 +50,95 @@ export class CheckoutComponent implements OnInit {
     paymentMethod: ['COD', Validators.required]
   });
 
+
+  paymentMethods = [
+    {
+      code: 'COD',
+      name: 'Cash on Delivery (COD)',
+      icon: 'bi-cash-stack',
+      description: 'Thanh toán bằng tiền mặt khi nhận hàng. Phí thu hộ: 0đ.'
+    },
+    {
+      code: 'BANK_TRANSFER',
+      name: 'Chuyển khoản ngân hàng',
+      icon: 'bi-credit-card',
+      description: 'Thực hiện chuyển khoản vào STK công ty. Đơn hàng sẽ được xử lý sau khi nhận tiền.'
+    },
+    {
+      code: 'VNPAY',
+      name: 'Ví VNPAY',
+      icon: 'bi-wallet2',
+      description: 'Cái này mình không muốn làm .'
+    }
+  ];
+
   ngOnInit() {
     this.loadSavedAddresses();
+  }
+
+  onBankTransferCheckout(orderId: number) {
+    this.currentOrderId = orderId;
+
+    // 1. Lấy mã QR
+    this.checkoutService.getPaymentQrUrl(orderId).subscribe(url => {
+      this.qrCodeUrl = url;
+      this.showQrModal = true;
+
+      // 2. Bắt đầu đếm ngược và kiểm tra tự động
+      this.startPaymentProcess();
+    });
+  }
+
+  startPaymentProcess() {
+    this.countdownTime = 180; // Reset về 3 phút
+    this.isPaymentSuccess = false;
+    this.isExpired = false;
+
+    // --- LUỒNG 1: Đếm ngược thời gian (1s chạy 1 lần) ---
+    this.countdownSubscription = interval(1000).subscribe(() => {
+      this.countdownTime--;
+      this.displayTime = this.formatTime(this.countdownTime);
+
+      this.cdr.detectChanges();
+
+      if (this.countdownTime <= 0) {
+        this.stopPaymentProcess();
+        this.isExpired = true;
+        this.cdr.detectChanges(); // Cập nhật lần cuối để hiện thông báo hết hạn
+      }
+    });
+
+    this.pollingSubscription = interval(5000)
+      .pipe(
+        switchMap(() => this.checkoutService.checkPaymentStatus(this.currentOrderId!)),
+        takeWhile(() => this.countdownTime > 0 && !this.isPaymentSuccess)
+      )
+      .subscribe((isPaid: boolean) => {
+        if (isPaid) {
+          this.handlePaymentSuccess();
+        } else {
+          console.log('Đang kiểm tra thanh toán... Chưa thấy tiền.');
+        }
+      });
+  }
+  handlePaymentSuccess() {
+    this.isPaymentSuccess = true;
+    this.stopPaymentProcess();
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.showQrModal = false;
+      this.router.navigate(['/order-success']);
+    }, 3500);
+  }
+
+  stopPaymentProcess() {
+    // Hủy các luồng đếm giờ và gọi API
+    if (this.countdownSubscription) {
+      this.countdownSubscription.unsubscribe();
+    }
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
   }
 
   loadSavedAddresses() {
@@ -83,6 +183,45 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  closeModal() {
+    if (this.isPaymentSuccess) return; // Nếu đã thành công thì ko cho hủy
+    
+    // Nếu hết giờ hoặc người dùng bấm nút Quay lại -> Gọi API hủy đơn
+    if (this.currentOrderId) {
+        this.stopPaymentProcess(); // Dừng check ngay
+        
+        this.checkoutService.cancelOrder(this.currentOrderId).subscribe({
+            next: () => {
+                this.toastr.info('Đã hủy đơn hàng. Giỏ hàng đã được khôi phục.');
+                this.showQrModal = false;
+                this.currentOrderId = null;
+                this.cartService.loadCart(); // Load lại giỏ hàng cũ
+            },
+            error: (err) => {
+                const msg = err.error?.message || '';
+                // CASE ĐẶC BIỆT: Backend phát hiện tiền đã vào rồi -> Không cho hủy
+                if (msg.includes('đã vào tài khoản') || msg.includes('thành công')) {
+                    this.handlePaymentSuccess();
+                    this.toastr.success('Phát hiện tiền vừa vào! Đơn hàng được xác nhận.');
+                } else {
+                    this.toastr.error('Lỗi khi hủy đơn: ' + msg);
+                }
+            }
+        });
+    } else {
+        this.showQrModal = false;
+    }
+  }
+
+  formatTime(seconds: number): string {
+    const minutes: number = Math.floor(seconds / 60);
+    const remainingSeconds: number = seconds % 60;
+    return `${this.pad(minutes)}:${this.pad(remainingSeconds)}`;
+  }
+  pad(val: number): string {
+    return val < 10 ? `0${val}` : `${val}`;
+  }
+
   // Reset form để nhập mới
   onUseNewAddress() {
     this.checkoutForm.reset();
@@ -118,37 +257,27 @@ export class CheckoutComponent implements OnInit {
       paymentMethod: formValue.paymentMethod
     };
 
-    // app/features/checkout/checkout.ts
-
-    this.checkoutService.checkout(requestData).subscribe({
+   this.checkoutService.checkout(requestData).subscribe({
       next: (response: any) => {
-        console.log('Backend trả về:', response);
+        let orderIds: number[] = [];
+        if (Array.isArray(response)) orderIds = response;
+        else if (response?.orderId) orderIds = response.orderId;
+        else if (response?.id) orderIds = [response.id];
 
-        let orderListStr = '';
+        this.cartService.loadCart(); 
 
-        // Case 1: Nếu Backend sửa lại trả về mảng trực tiếp [1, 2]
-        if (Array.isArray(response)) {
-          orderListStr = response.join(', #');
+        if (formValue.paymentMethod === 'BANK_TRANSFER' && orderIds.length > 0) {
+          this.onBankTransferCheckout(orderIds[0]);
+        } else {
+          this.toastr.success('Đặt hàng thành công!');
+          this.router.navigate(['/profile/orders']);
         }
-        // Case 2: Nếu Backend trả về Object { "orderId": [1, 2] } <-- ĐÂY LÀ CASE CỦA BẠN
-        else if (response && typeof response === 'object') {
-          if (response.orderId && Array.isArray(response.orderId)) {
-            // Hứng đúng key "orderId"
-            orderListStr = response.orderId.join(', #');
-          }
-          else if (response.id) {
-            orderListStr = response.id.toString();
-          }
-        }
-
-        this.toastr.success(`Đặt hàng thành công! Mã đơn: #${orderListStr}`);
-        this.cartService.loadCart();
-        this.router.navigate(['/profile']);
       },
-      error: (err) => {
-        const msg = err.error?.message || 'Có lỗi xảy ra khi đặt hàng!';
-        this.toastr.error(msg);
-      }
+      error: (err) => this.toastr.error(err.error?.message || 'Lỗi đặt hàng')
     });
+  }
+
+  ngOnDestroy() {
+    this.stopPaymentProcess();
   }
 }

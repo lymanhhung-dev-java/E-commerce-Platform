@@ -73,15 +73,12 @@ public class OrderServiceImpl implements OrderService {
    public Page<OrderResponse> getMyOrders(String search, OrderStatus status, Pageable pageable) {
         User currentUser = getCurrentUser();
 
-        // Xây dựng điều kiện lọc
         Specification<Order> spec = Specification.where(OrderSpecification.hasUser(currentUser))
                 .and(OrderSpecification.hasStatus(status))
                 .and(OrderSpecification.containsKeyword(search));
 
-        // Gọi Repo lấy Page
         Page<Order> orderPage = orderRepository.findAll(spec, pageable);
 
-        // Map sang DTO
         return orderPage.map(OrderResponse::fromEntity);
     }
     }

@@ -67,6 +67,10 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String note;
 
+    @Column(name = "payment_code")
+    private String paymentCode;
+
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 

@@ -13,18 +13,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.cors.CorsConfigurationSource; 
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.config.Customizer;
-
 import com.example.backend_service.service.auth.UserServiceDetail;
-
 import lombok.RequiredArgsConstructor;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -95,6 +91,11 @@ public class AppConfig {
         authProvider.setUserDetailsService(userServiceDetail.userDetailsService());
         return authProvider;
        
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
 }

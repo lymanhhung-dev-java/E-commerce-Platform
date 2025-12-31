@@ -19,6 +19,9 @@ public interface OrderRepository extends JpaRepository<Order, Long>,JpaSpecifica
 
     List<Order> findByUserOrderByCreatedAtDesc(User user);
 
+
+
+
     @Query("SELECT FUNCTION('MONTH', o.createdAt), SUM(o.totalAmount) " +
            "FROM Order o " +
            "WHERE o.shop.id = :shopId " +
@@ -65,5 +68,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>,JpaSpecifica
 
     @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = 'DELIVERED'")
     BigDecimal sumTotalPlatformRevenue();
+
+    
+    
 
 }
