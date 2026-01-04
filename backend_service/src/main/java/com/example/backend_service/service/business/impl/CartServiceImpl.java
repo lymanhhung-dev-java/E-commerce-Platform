@@ -36,7 +36,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private ProductRepository productRepository;
 
-    // Hàm phụ trợ: Lấy thông tin User đang đăng nhập
+    
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username);
@@ -70,8 +70,6 @@ public class CartServiceImpl implements CartService {
             newItem.setUser(user);
             newItem.setProduct(product);
             newItem.setQuantity(request.getQuantity());
-            // Các trường createdAt sẽ tự động được set nhờ @EntityListeners trong Model của
-            // bạn
             cartItemRepository.save(newItem);
         }
     }

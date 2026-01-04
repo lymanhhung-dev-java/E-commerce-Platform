@@ -30,7 +30,7 @@ export class CheckoutComponent implements OnInit {
   qrCodeUrl: string = '';
   currentOrderId: number | null = null;
 
-  countdownTime: number = 180; // 3 phút = 180 giây
+  countdownTime: number = 180; 
   displayTime: string = '03:00';
   isPaymentSuccess: boolean = false;
   isExpired: boolean = false;
@@ -63,12 +63,6 @@ export class CheckoutComponent implements OnInit {
       name: 'Chuyển khoản ngân hàng',
       icon: 'bi-credit-card',
       description: 'Thực hiện chuyển khoản vào STK công ty. Đơn hàng sẽ được xử lý sau khi nhận tiền.'
-    },
-    {
-      code: 'VNPAY',
-      name: 'Ví VNPAY',
-      icon: 'bi-wallet2',
-      description: 'Cái này mình không muốn làm .'
     }
   ];
 
@@ -94,7 +88,7 @@ export class CheckoutComponent implements OnInit {
     this.isPaymentSuccess = false;
     this.isExpired = false;
 
-    // --- LUỒNG 1: Đếm ngược thời gian (1s chạy 1 lần) ---
+    //Đếm ngược thời gian (1s chạy 1 lần) ---
     this.countdownSubscription = interval(1000).subscribe(() => {
       this.countdownTime--;
       this.displayTime = this.formatTime(this.countdownTime);

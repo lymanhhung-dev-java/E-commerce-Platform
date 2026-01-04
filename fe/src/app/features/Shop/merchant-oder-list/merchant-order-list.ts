@@ -61,7 +61,6 @@ export class MerchantOrderListComponent implements OnInit {
     const oldStatus = order.status;
 
     if (!confirm(`Bạn có chắc muốn đổi trạng thái đơn hàng #${order.id} sang ${newStatus}?`)) {
-      // Nếu user hủy, reset lại dropdown về giá trị cũ
       event.target.value = oldStatus;
       return;
     }

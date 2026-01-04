@@ -1,13 +1,11 @@
 package com.example.backend_service.service.order.impl;
 
-import java.util.List;
-
+import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import com.example.backend_service.common.OrderStatus;
 import com.example.backend_service.dto.response.order.OrderResponse;
 import com.example.backend_service.exception.AppException;
@@ -18,7 +16,6 @@ import com.example.backend_service.repository.OrderRepository;
 import com.example.backend_service.repository.UserRepository;
 import com.example.backend_service.repository.specification.OrderSpecification;
 import com.example.backend_service.service.order.OrderService;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    private final UserRepository userRepository;    
+    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
-    
-     private User getCurrentUser() {
+
+    private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username);
     }
@@ -62,15 +59,16 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setStatus(status);
-        if(status == OrderStatus.DELIVERED){
-            Shop merchant = order.getUser().getShop();
-            merchant.setBalance(merchant.getBalance().add(order.getTotalAmount()));
+        if (status == OrderStatus.DELIVERED) {
+            Shop merchant = order.getShop();
+            BigDecimal currentBalance = merchant.getBalance() == null ? BigDecimal.ZERO : merchant.getBalance();
+            merchant.setBalance(currentBalance.add(order.getTotalAmount()));
         }
         orderRepository.save(order);
     }
 
     @Override
-   public Page<OrderResponse> getMyOrders(String search, OrderStatus status, Pageable pageable) {
+    public Page<OrderResponse> getMyOrders(String search, OrderStatus status, Pageable pageable) {
         User currentUser = getCurrentUser();
 
         Specification<Order> spec = Specification.where(OrderSpecification.hasUser(currentUser))
@@ -81,5 +79,4 @@ public class OrderServiceImpl implements OrderService {
 
         return orderPage.map(OrderResponse::fromEntity);
     }
-    }
-    
+}
