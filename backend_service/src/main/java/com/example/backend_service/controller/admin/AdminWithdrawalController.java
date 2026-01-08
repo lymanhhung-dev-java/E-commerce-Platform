@@ -2,7 +2,8 @@ package com.example.backend_service.controller.admin;
 
 import com.example.backend_service.dto.request.wallet.AdminUpdateWithdrawalRequest;
 import com.example.backend_service.model.business.Withdrawal;
-import com.example.backend_service.service.wallet.AdminWithdrawalService;
+import com.example.backend_service.service.Admin.AdminWithdrawalService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

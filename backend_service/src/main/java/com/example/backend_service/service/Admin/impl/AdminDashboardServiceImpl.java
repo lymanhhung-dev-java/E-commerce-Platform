@@ -1,4 +1,4 @@
-package com.example.backend_service.service.common.impl;
+package com.example.backend_service.service.Admin.impl;
 
 import java.math.BigDecimal;
 
@@ -11,7 +11,7 @@ import com.example.backend_service.repository.OrderRepository;
 import com.example.backend_service.repository.ShopRepository;
 import com.example.backend_service.repository.UserRepository;
 import com.example.backend_service.repository.WithdrawalRepository;
-import com.example.backend_service.service.common.AdminDashboardService;
+import com.example.backend_service.service.Admin.AdminDashboardService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.example.backend_service.service.common.impl;
+package com.example.backend_service.service.Admin.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import com.example.backend_service.dto.response.product.ProductListResponse;
 import com.example.backend_service.exception.AppException;
 import com.example.backend_service.model.product.Product;
 import com.example.backend_service.repository.ProductRepository;
-import com.example.backend_service.service.common.AdminProductService;
+import com.example.backend_service.service.Admin.AdminProductService;
 
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;

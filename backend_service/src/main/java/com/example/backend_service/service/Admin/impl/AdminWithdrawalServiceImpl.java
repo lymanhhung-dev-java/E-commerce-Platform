@@ -1,4 +1,4 @@
-package com.example.backend_service.service.wallet.impl;
+package com.example.backend_service.service.Admin.impl;
 
 import com.example.backend_service.common.WithdrawalStatus;
 import com.example.backend_service.dto.request.wallet.AdminUpdateWithdrawalRequest;
@@ -6,7 +6,8 @@ import com.example.backend_service.model.business.Shop;
 import com.example.backend_service.model.business.Withdrawal;
 import com.example.backend_service.repository.ShopRepository;
 import com.example.backend_service.repository.WithdrawalRepository;
-import com.example.backend_service.service.wallet.AdminWithdrawalService;
+import com.example.backend_service.service.Admin.AdminWithdrawalService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

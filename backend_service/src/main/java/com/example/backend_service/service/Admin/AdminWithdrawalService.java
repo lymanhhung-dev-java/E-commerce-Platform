@@ -1,4 +1,4 @@
-package com.example.backend_service.service.wallet;
+package com.example.backend_service.service.Admin;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
