@@ -1,274 +1,179 @@
-/* Container chính: Chia màn hình nếu màn hình to */
-.checkout-container {
-    min-height: 100vh;
-    display: flex;
-    flex-wrap: wrap;
+.checkout-wrapper {
+  background-color: white;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* CỘT TRÁI: Nhập liệu */
+.breadcrumb-item a {
+  text-decoration: none;
+  color: #888;
+  font-size: 0.85rem;
+}
+.breadcrumb-item.active {
+  color: #ccc; 
+  font-size: 0.85rem;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #ccc;
+  content: ">"; 
+}
+
+.page-title {
+  font-family: "Times New Roman", Times, serif; 
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #222;
+  font-size: 2rem;
+  margin-top: 10px; 
+}
+
+.checkout-frame {
+  border: 1px solid #1e317a;
+  border-radius: 12px;
+  overflow: hidden;
+}
 .main-content {
-    background-color: #fff;
-    padding: 40px;
-    border-right: 1px solid #e1e1e1;
+  background-color: #FAFAFA;
+  border-right: 1px solid #1e317a;
 }
-
-/* CỘT PHẢI: Summary */
 .sidebar-summary {
-    background-color: #fafafa;
-    padding: 40px;
+  background-color: #E5E7EB;
 }
 
-/* Breadcrumb (Đường dẫn) */
-.breadcrumb-custom a {
-    color: #197bbd;
-    text-decoration: none;
-    font-size: 13px;
-}
-.breadcrumb-custom .active {
-    color: #333;
-    font-weight: 500;
-}
-
-/* Section Title */
-h4.section-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-/* Input Styling giống mẫu */
 .form-label {
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 5px;
-    color: #555;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 5px;
 }
-
-.form-control {
-    border-radius: 5px;
-    padding: 12px;
-    border: 1px solid #d9d9d9;
-    font-size: 14px;
-    transition: all 0.2s;
+.form-control, .form-select {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  font-size: 0.9rem;
 }
-
 .form-control:focus {
-    border-color: #f97316; /* Màu cam khi focus */
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  border-color: #333;
+  box-shadow: none; 
+}
+.qty-badge-custom {
+  position: absolute;
+  top: -5px;  
+  right: -5px;  
+  font-size: 0.75rem;
+  border: 2px solid #fff; 
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+  z-index: 10; 
 }
 
-/* Payment Box Styles */
-.payment-box {
-    border: 1px solid #d9d9d9;
-    border-radius: 5px;
-    overflow: hidden;
+.sidebar-summary {
+  overflow: visible!important;
 }
 
-.payment-option {
-    padding: 15px;
-    border-bottom: 1px solid #d9d9d9;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    background: #fff;
+.product-img-box {
+  background-color: #eee; 
 }
 
-.payment-option:last-child {
-    border-bottom: none;
-}
 
-.payment-option.selected {
-    background-color: #f0fdf4; /* Xanh rất nhạt hoặc trắng */
-    border-left: 4px solid #f97316;
-}
-
-.payment-details {
-    padding: 20px;
-    background-color: #fafafa;
-    border-top: 1px solid #e1e1e1;
-}
-
-/* Order Summary Styles (Cột phải) */
-.product-thumbnail {
-    position: relative;
-    width: 64px;
-    height: 64px;
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 8px;
-    background: #fff;
-    padding: 5px;
-}
-
-.product-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.qty-badge {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background-color: #777;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.price-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #555;
-}
-
-.total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #e1e1e1;
-    padding-top: 20px;
-    margin-top: 20px;
-}
-
-.total-price {
-    font-size: 24px;
-    font-weight: 700;
-    color: #333;
-}
-
-.usd {
-    font-size: 12px;
-    color: #777;
-    margin-right: 5px;
-    font-weight: normal;
-}
-
-/* Nút đặt hàng */
-.btn-place-order {
-    background-color: #ea580c; /* Màu cam đậm */
-    color: white;
-    font-weight: 600;
-    padding: 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    width: 100%;
-    border: none;
-    margin-top: 20px;
-    transition: opacity 0.2s;
-}
-
-.btn-place-order:hover {
-    opacity: 0.9;
-}
-
-.btn-place-order:disabled {
-    background-color: #fdba74;
-    cursor: not-allowed;
-}
-
-/* Discount Input */
-.discount-group {
-    display: flex;
-    gap: 10px;
-    margin: 20px 0;
-    padding: 20px 0;
-    border-top: 1px solid #e1e1e1;
-    border-bottom: 1px solid #e1e1e1;
+.payment-item:last-child {
+  border-bottom: none!important;
 }
 
 /* Responsive */
-@media (max-width: 991px) {
-    .main-content, .sidebar-summary {
-        width: 100%;
-        border-right: none;
-    }
-    .sidebar-summary {
-        order: -1; /* Đưa summary lên đầu trên mobile giống Shopee/Shopify */
-        border-bottom: 1px solid #e1e1e1;
-    }
+@media(max-width: 991px) {
+  .checkout-header {
+    text-align: left;
+  }
+  .sidebar-summary {
+    order: -1; 
+    border-bottom: 1px solid #ddd;
+  }
 }
-
-/* Container chính */
-.success-container {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- ANIMATION DẤU TÍCH (Checkmark) --- */
-.checkmark-wrapper {
+.breadcrumb {
   display: flex;
-  justify-content: center;
+  flex-wrap: nowrap;
   align-items: center;
 }
 
-.checkmark-circle {
-  width: 80px;
-  height: 80px;
-  position: relative;
-  display: inline-block;
-  vertical-align: top;
+.breadcrumb-item {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
 }
 
-.checkmark-circle .background {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #28a745; /* Màu xanh lá */
-  position: absolute;
-  animation: scaleIn 0.3s ease-in-out 0s both;
-  box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
-  animation: pulseGreen 2s infinite;
+.breadcrumb-item.active {
+  color: #ccc;
+  font-size: 0.85rem;
 }
 
-.checkmark-circle .checkmark.draw:after {
-  animation-delay: 300ms;
-  animation-duration: 1s;
-  animation-timing-function: ease;
-  animation-name: checkmark;
-  transform: scaleX(-1) rotate(135deg);
-  animation-fill-mode: forwards;
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  margin: 0 6px;
+  color: #ccc;
 }
 
-.checkmark-circle .checkmark:after {
-  opacity: 1;
-  height: 40px;
-  width: 20px;
-  transform-origin: left top;
-  border-right: 4px solid white;
-  border-top: 4px solid white;
-  content: "";
-  left: 22px;
-  top: 40px;
-  position: absolute;
+.form-control:focus, 
+.form-select:focus {
+  border-color: #1e317a !important;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
 }
 
-/* Hiệu ứng nảy (Pulse) tỏa ra xung quanh */
-@keyframes pulseGreen {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(40, 167, 69, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+.form-check-input:checked {
+  background-color: #1e317a !important;
+  border-color: #1e317a !important;
 }
 
-@keyframes scaleIn {
-  0% { transform: scale(0); }
-  100% { transform: scale(1); }
+.form-check-input:focus {
+  border-color: #1e317a !important;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
 }
 
-@keyframes checkmark {
-  0% { height: 0; width: 0; opacity: 1; }
-  20% { height: 0; width: 20px; opacity: 1; }
-  40% { height: 40px; width: 20px; opacity: 1; }
-  100% { height: 40px; width: 20px; opacity: 1; }
+.btn-primary {
+  background-color: #1e317a !important; 
+  border-color: #1e317a !important;
+  transition: all 0.2s;
 }
+
+.btn-primary:hover {
+  background-color: #1E40AF !important; 
+  border-color: #1E40AF !important;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  background-color: #1e317a !important;
+  border-color: #1e317a !important;
+  transform: translateY(0);
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(29, 78, 216, 0.5) !important;
+}
+
+.btn-primary:disabled {
+  background-color: #93C5FD !important; 
+  border-color: #93C5FD !important;
+  color: #6B7280 !important;
+}
+
+.payment-item.bg-light {
+  background-color: #EFF6FF !important; 
+  border-left: 3px solid #1e317a;
+}
+
+.payment-item.bg-light + .bg-light {
+  background-color: #EFF6FF !important;
+  border-left: 3px solid #1e317a;
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: #93C5FD !important; 
+}
+
+.form-control::placeholder {
+  color: #6B7280;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
