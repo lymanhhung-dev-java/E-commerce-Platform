@@ -3,7 +3,7 @@
     <h3 class="fw-bold">Quản lý danh mục</h3>
     
     <button class="btn btn-primary fw-bold" (click)="openCreateModal()">
-      <i class="bi bi-plus-lg me-1"></i> Add New Category
+      <i class="bi bi-plus-lg me-1"></i> Thêm danh mục mới
     </button>
   </div>
 
@@ -12,22 +12,22 @@
       <table class="table align-middle mb-0 table-hover">
         <thead class="bg-light">
           <tr>
-            <th class="ps-4">Category Name</th>
-            <th>Parent</th>
-            <th>Status</th>
-            <th class="text-end pe-4">Actions</th>
+            <th class="ps-4">Tên danh mục</th>
+            <th>Danh mục</th>
+            <th>Trạng thái</th>
+            <th class="text-end pe-4">Hành động</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let cat of categories">
             <td class="ps-4 fw-bold">{{ cat.displayName }}</td>
             <td>
-               <span *ngIf="!cat.parentId" class="badge bg-secondary">ROOT</span>
-               <span *ngIf="cat.parentId" class="text-muted small">Sub-category</span>
+               <span *ngIf="!cat.parentId" class="badge bg-secondary">Danh mục gốc</span>
+               <span *ngIf="cat.parentId" class="text-muted small">Danh mục con</span>
             </td>
             <td>
               <span class="badge rounded-pill" [ngClass]="cat.active ? 'bg-success' : 'bg-danger'">
-                 {{ cat.active ? 'Active' : 'Inactive' }}
+                 {{ cat.active ? 'Hoạt động' : 'Không hoạt động' }}
               </span>
             </td>
             <td class="text-end pe-4">
@@ -66,7 +66,7 @@
           <div class="mb-3">
             <label class="form-label fw-bold small">Danh mục cha</label>
             <select class="form-select" formControlName="parentId">
-              <option [ngValue]="null">-- Là danh mục gốc (Root) --</option>
+              <option [ngValue]="null">-- Là danh mục gốc --</option>
               
               <ng-container *ngFor="let cat of flatCategories">
                  <option *ngIf="cat.id !== currentCategoryId" [ngValue]="cat.id">
