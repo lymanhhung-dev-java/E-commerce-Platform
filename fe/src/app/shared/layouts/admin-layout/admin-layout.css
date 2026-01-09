@@ -1,0 +1,83 @@
+/* Container chính */
+.admin-wrapper {
+    min-height: 100vh;
+    background-color: #f3f4f6; /* Màu nền xám nhạt bên phải */
+    font-family: 'Inter', sans-serif;
+}
+
+/* 1. SIDEBAR STYLES */
+.sidebar {
+    width: 260px;
+    background-color: #111827; /* Màu xanh đen đậm (Dark Blue/Black) giống ảnh */
+    position: fixed; /* Cố định sidebar */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+/* Logo */
+.logo-icon {
+    width: 32px; 
+    height: 32px; 
+    background: #2563eb; /* Xanh dương sáng */
+    color: white; 
+    border-radius: 6px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+/* Menu Links */
+.nav-link {
+    color: #9ca3af !important; /* Màu chữ xám nhạt khi chưa active */
+    font-weight: 500;
+    font-size: 14px;
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+    border-radius: 8px; /* Bo góc nút menu */
+}
+
+.nav-link:hover {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Active State (Màu xanh dương nổi bật) */
+.nav-pills .nav-link.active {
+    background-color: #2563eb !important; /* Màu xanh Primary */
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); /* Đổ bóng nhẹ cho nút active */
+}
+
+/* Icons */
+.nav-link i {
+    font-size: 1.1rem;
+}
+
+
+/* 2. MAIN CONTENT STYLES */
+.main-content {
+    margin-left: 260px; /* Đẩy nội dung sang phải bằng chiều rộng sidebar */
+    width: calc(100% - 260px);
+}
+
+/* Header Styles */
+header {
+    height: 70px;
+    z-index: 99;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.line-height-sm {
+    line-height: 1.2;
+}
+
+/* Nội dung bên trong (Router Outlet) */
+.content-area {
+    min-height: calc(100vh - 70px);
+}

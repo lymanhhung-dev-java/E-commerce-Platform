@@ -1,0 +1,217 @@
+/* Tổng thể trang: Nền gradient mờ ảo */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0f7fa 0%, #e3f2fd 50%, #f3e5f5 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 20px;
+}
+
+/* Card đăng nhập */
+.login-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.card-header-custom {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #e3f2fd; /* Màu nền icon xanh nhạt */
+  color: #1565c0;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.card-header-custom h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.card-header-custom p {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* Input container để chứa icon */
+.input-container {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 40px 12px 16px; /* Padding phải lớn để tránh icon */
+  background-color: #f9fafb; /* Màu nền input xám nhạt */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  transition: all 0.2s;
+  box-sizing: border-box; /* Quan trọng để không bị vỡ layout */
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Forgot Password */
+.forgot-password {
+  text-align: right;
+  margin-bottom: 24px;
+}
+
+.forgot-password a {
+  color: #2563eb;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Nút Submit */
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background-color: #1d4ed8; /* Màu xanh đậm */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover {
+  background-color: #1e40af;
+}
+
+.btn-submit:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+/* Divider "OR CONTINUE WITH" */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: #9ca3af;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid #e5e7eb;
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+/* Social Buttons */
+.social-login {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.btn-social {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.btn-social:hover {
+  background-color: #f9fafb;
+}
+
+/* Footer Link (Create Account) */
+.footer-link {
+  text-align: center;
+  font-size: 14px;
+  color: #374151;
+}
+
+.footer-link a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Page Footer (Terms, Privacy) */
+.page-footer {
+  margin-top: 32px;
+  display: flex;
+  gap: 24px;
+}
+
+.page-footer a {
+  color: #6b7280;
+  font-size: 13px;
+  text-decoration: none;
+}
+.page-footer a:hover {
+  color: #374151;
+}

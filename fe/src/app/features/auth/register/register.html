@@ -1,0 +1,106 @@
+<div class="register-wrapper">
+  <div class="register-card">
+    
+    <div class="card-header-custom">
+      <h2>Đăng ký tài khoản</h2>
+      <p>Bắt đầu mua sắm hoặc bán hàng ngay hôm nay.</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label>Tên đăng nhập</label>
+          <div class="input-container">
+            <span class="input-icon left"><i class="fas fa-user"></i></span>
+            <input type="text" class="form-input with-icon-left" formControlName="username" placeholder="Nhập tên đăng nhập">
+          </div>
+        </div>
+        
+        <div class="form-group half-width">
+          <label>Họ và tên</label>
+          <div class="input-container">
+            <span class="input-icon left"><i class="fas fa-id-card"></i></span>
+            <input type="text" class="form-input with-icon-left" formControlName="fullName" placeholder="Nhập họ và tên">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <div class="input-container">
+          <span class="input-icon left"><i class="fas fa-envelope"></i></span>
+          <input type="email" class="form-input with-icon-left" formControlName="email" placeholder="Nhập email">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Số điện thoại</label>
+        <div class="input-container">
+          <span class="input-icon left"><i class="fas fa-phone"></i></span>
+          <input type="text" class="form-input with-icon-left" formControlName="phone" placeholder="Nhập số điện thoại  ">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label>Mật khẩu</label>
+          <div class="input-container">
+            <span class="input-icon left"><i class="fas fa-lock"></i></span>
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              class="form-input with-icon-left with-icon-right" 
+              formControlName="password" 
+              placeholder="Ít nhất 6 ký tự">
+            <span class="input-icon right cursor-pointer" (click)="showPassword = !showPassword">
+              <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group half-width">
+          <label>Xác nhận mật khẩu</label>
+          <div class="input-container">
+            <span class="input-icon left"><i class="fas fa-redo"></i></span>
+            <input 
+              [type]="showConfirmPassword ? 'text' : 'password'" 
+              class="form-input with-icon-left with-icon-right" 
+              formControlName="confirmPassword" 
+              placeholder="Nhập lại mật khẩu">
+             <span class="input-icon right cursor-pointer" (click)="showConfirmPassword = !showConfirmPassword">
+              <i class="fas" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="terms-checkbox">
+        <input type="checkbox" id="terms">
+        <label for="terms">Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a>.</label>
+      </div>
+
+      <button type="submit" class="btn-register" [disabled]="registerForm.invalid">
+        Đăng ký <i class="fas fa-arrow-right"></i>
+      </button>
+
+    </form>
+    
+    <div class="divider">
+      <span>HOẶC ĐĂNG KÝ BẰNG</span>
+    </div>
+
+    <div class="social-login">
+      <button type="button" class="btn-social">
+        <i class="fab fa-google text-danger"></i> Google
+      </button>
+      <button type="button" class="btn-social">
+        <i class="fab fa-facebook text-primary"></i> Facebook
+      </button>
+    </div>
+
+    <div class="footer-link">
+      Đã có tài khoản? <a routerLink="/login">Đăng nhập</a>
+    </div>
+
+  </div>
+</div>

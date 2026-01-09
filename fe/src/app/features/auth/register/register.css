@@ -1,0 +1,230 @@
+/* Container chính */
+.register-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3f4f6; /* Xám nhạt */
+  font-family: 'Inter', sans-serif;
+  padding: 40px 20px;
+}
+
+/* Card */
+.register-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 600px; /* Rộng hơn login form một chút vì có 2 cột */
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Header */
+.card-header-custom {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.card-header-custom h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.card-header-custom p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Layout Form */
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Labels & Inputs */
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.input-container {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+/* Xử lý padding khi có icon */
+.form-input.with-icon-left {
+  padding-left: 40px;
+}
+
+.form-input.with-icon-right {
+  padding-right: 40px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #f97316; /* Màu cam khi focus */
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Icons styling */
+.input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.input-icon.left {
+  left: 14px;
+}
+
+.input-icon.right {
+  right: 14px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Checkbox */
+.terms-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.terms-checkbox a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+/* Register Button (Orange) */
+.btn-register {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(to right, #f97316, #ea580c); /* Gradient cam */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+
+.btn-register:hover {
+  opacity: 0.9;
+}
+
+.btn-register:disabled {
+  background: #fdba74;
+  cursor: not-allowed;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: #9ca3af;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid #e5e7eb;
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+/* Social Buttons */
+.social-login {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.btn-social {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+  transition: background 0.2s;
+}
+
+.btn-social:hover {
+  background-color: #f9fafb;
+}
+
+/* Footer Link */
+.footer-link {
+  text-align: center;
+  font-size: 14px;
+  color: #374151;
+}
+
+.footer-link a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .register-card {
+    padding: 24px;
+  }
+}

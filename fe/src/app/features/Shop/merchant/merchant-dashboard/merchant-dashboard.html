@@ -1,0 +1,51 @@
+<div class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-3">
+    <div class="card border-0 shadow-sm rounded-4 p-3 h-100 card-hover">
+      <div class="d-flex justify-content-between mb-3">
+        <span class="text-muted small fw-bold text-uppercase">Doanh Thu (Kỳ này)</span>
+        <div class="icon-box bg-primary bg-opacity-10 text-primary">
+          <i class="bi bi-wallet2"></i>
+        </div>
+      </div>
+      <h3 class="fw-bold mb-2">{{ stats.revenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h3> 
+      </div>
+  </div>
+  </div>
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+  <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h5 class="fw-bold mb-0">Biểu đồ doanh thu</h5>
+      <small class="text-muted">Theo dõi hiệu quả kinh doanh theo thời gian</small>
+    </div>
+    
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-sm px-3" 
+              [class.btn-primary]="selectedType === 'WEEK'" 
+              [class.btn-outline-secondary]="selectedType !== 'WEEK'"
+              (click)="loadRevenueStatistics('WEEK')">Tuần</button>
+              
+      <button type="button" class="btn btn-sm px-3" 
+              [class.btn-primary]="selectedType === 'MONTH'" 
+              [class.btn-outline-secondary]="selectedType !== 'MONTH'"
+              (click)="loadRevenueStatistics('MONTH')">Tháng</button>
+              
+      <button type="button" class="btn btn-sm px-3" 
+              [class.btn-primary]="selectedType === 'YEAR'" 
+              [class.btn-outline-secondary]="selectedType !== 'YEAR'"
+              (click)="loadRevenueStatistics('YEAR')">Năm</button>
+    </div>
+  </div>
+
+  <div class="card-body p-4">
+    <div style="height: 350px; position: relative;">
+      <canvas #revenueChart></canvas>
+      
+      <div *ngIf="isLoadingChart" class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,122 @@
+<div class="container-fluid p-4 bg-light min-vh-100">
+  <div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+      
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pt-4 px-4">
+           <h4 class="fw-bold text-primary"><i class="bi bi-box-seam me-2"></i>Thêm sản phẩm mới</h4>
+        </div>
+        
+        <div class="card-body p-4">
+          <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+            
+            <div class="mb-4">
+              <label class="form-label fw-bold mb-3">Hình ảnh sản phẩm</label>
+              
+              <div class="row g-3">
+                <div class="col-md-5">
+                   <div class="p-3 bg-light rounded-3 border h-100">
+                      <label class="small fw-bold text-muted mb-2 d-block">Ảnh đại diện *</label>
+                      
+                      <div class="upload-box main-upload-box" (click)="triggerMainInput()">
+                        
+                        <ng-container *ngIf="mainImagePreview; else noMainImage">
+                           <img [src]="mainImagePreview" class="preview-img">
+                           <button type="button" class="remove-btn" (click)="removeMainImage($event)">
+                             <i class="bi bi-x"></i>
+                           </button>
+                        </ng-container>
+
+                        <ng-template #noMainImage>
+                           <i class="bi bi-cloud-upload upload-icon"></i>
+                           <span class="upload-text">Chọn ảnh chính</span>
+                        </ng-template>
+
+                        <input #mainInput type="file" hidden accept="image/*" (change)="onMainImageSelect($event)">
+                      </div>
+                   </div>
+                </div>
+
+                <div class="col-md-7">
+                  <div class="p-3 bg-light rounded-3 border h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                       <label class="small fw-bold text-muted">Ảnh chi tiết ({{ detailImagesPreview.length }}/5)</label>
+                       <span class="badge bg-primary bg-opacity-10 text-primary" *ngIf="detailImagesPreview.length >= 5">Đã đầy</span>
+                    </div>
+
+                    <div class="row g-2">
+                      
+                      <div class="col-4" *ngFor="let img of detailImagesPreview; let i = index">
+                         <div class="upload-box detail-upload-box cursor-default">
+                            <img [src]="img" class="preview-img">
+                            <button type="button" class="remove-btn" (click)="removeDetailImage(i)">
+                              <i class="bi bi-x"></i>
+                            </button>
+                         </div>
+                      </div>
+
+                      <div class="col-4" *ngIf="detailImagesPreview.length < 5">
+                         <div class="upload-box detail-upload-box" (click)="triggerDetailInput()">
+                            <i class="bi bi-plus-lg fs-3"></i>
+                            <span class="upload-text" style="font-size: 0.7rem">Thêm ảnh</span>
+                            <input #detailInput type="file" hidden accept="image/*" multiple (change)="onDetailImagesSelect($event)">
+                         </div>
+                      </div>
+
+                    </div>
+                    <div class="form-text small mt-2"><i class="bi bi-info-circle me-1"></i>Tối đa 5 ảnh phụ.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="text-muted opacity-25 my-4">
+
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label fw-bold">Tên sản phẩm</label>
+                <input type="text" class="form-control" formControlName="name" placeholder="Nhập tên sản phẩm...">
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Danh mục</label>
+                <select class="form-select" formControlName="categoryId">
+                   <option [ngValue]="null">-- Chọn danh mục --</option>
+                   <option *ngFor="let c of categories" [ngValue]="c.id">{{ c.displayName }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Giá bán</label>
+                <div class="input-group">
+                  <input type="number" class="form-control" formControlName="price">
+                  <span class="input-group-text">₫</span>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+                 <label class="form-label fw-bold">Kho</label>
+                 <input type="number" class="form-control" formControlName="stock">
+              </div>
+
+              <div class="col-md-12">
+                 <label class="form-label fw-bold">Mô tả sản phẩm</label>
+                 <textarea class="form-control" rows="4" formControlName="description" placeholder="Mô tả chi tiết chất liệu, kích thước..."></textarea>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3 justify-content-end mt-4">
+               <button type="button" class="btn btn-light px-4 fw-bold text-secondary" routerLink="/merchant/products">Hủy bỏ</button>
+               <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm" [disabled]="isSubmitting">
+                 <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                 {{ isSubmitting ? 'Đang lưu...' : 'Hoàn tất' }}
+               </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

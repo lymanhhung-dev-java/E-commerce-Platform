@@ -1,0 +1,142 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>{{ isEditMode ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới' }}</h4>
+        </div>
+        <div class="card-body">
+            <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" formControlName="name"
+                                placeholder="Nhập tên sản phẩm">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giá (VNĐ) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" formControlName="price">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kho hàng <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" formControlName="stock">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Danh mục <span class="text-danger">*</span></label>
+                            <select class="form-select" formControlName="categoryId">
+                                <option [ngValue]="null">-- Chọn danh mục --</option>
+                                <option *ngFor="let cat of categories" [value]="cat.id">
+                                    {{ cat.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" rows="5" formControlName="description"></textarea>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="activeCheck" formControlName="isActive">
+                            <label class="form-check-label" for="activeCheck">Đang hoạt động</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-header bg-light fw-bold">
+                                Ảnh đại diện chính
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="mb-3 border rounded d-flex align-items-center justify-content-center bg-light"
+                                    style="height: 250px; overflow: hidden;">
+
+                                    <img *ngIf="mainImagePreview; else noMainImage" [src]="mainImagePreview"
+                                        class="img-fluid" style="max-height: 100%; object-fit: contain;">
+
+                                    <ng-template #noMainImage>
+                                        <div class="text-muted">
+                                            <i class="bi bi-image fs-1"></i>
+                                            <p>Chưa có ảnh</p>
+                                        </div>
+                                    </ng-template>
+                                </div>
+
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="mainImageInput"
+                                        (change)="onMainImageSelected($event)" accept="image/*">
+                                </div>
+                                <small class="text-muted d-block mt-2">Chọn ảnh mới để thay thế ảnh hiện tại</small>
+                            </div>
+                        </div>
+
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
+                                <span>Ảnh chi tiết</span>
+                                <span class="badge bg-secondary">{{ existingDetailImages.length +
+                                    newDetailImagePreviews.length }} ảnh</span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="detailImagesInput" class="form-label text-primary"
+                                        style="cursor: pointer;">
+                                        <i class="bi bi-cloud-upload-fill"></i> Tải thêm ảnh mới
+                                    </label>
+                                    <input type="file" class="form-control" id="detailImagesInput" multiple
+                                        (change)="onDetailImagesSelected($event)" accept="image/*">
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2">
+
+                                    <ng-container *ngFor="let url of existingDetailImages; let i = index">
+                                        <div class="image-preview-container border border-secondary">
+                                            <img [src]="url">
+                                            <button type="button" class="btn btn-danger btn-remove-image"
+                                                (click)="removeExistingDetailImage(i)">
+                                                &times;
+                                            </button>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-container *ngFor="let preview of newDetailImagePreviews; let i = index">
+                                        <div class="image-preview-container border border-primary">
+                                            <img [src]="preview">
+                                            <button type="button" class="btn btn-primary btn-remove-image"
+                                                (click)="removeNewDetailImage(i)">
+                                                &times;
+                                            </button>
+                                            <span class="badge bg-primary badge-new">Mới</span>
+                                        </div>
+                                    </ng-container>
+
+                                </div>
+
+                                <div *ngIf="existingDetailImages.length === 0 && newDetailImagePreviews.length === 0"
+                                    class="text-center text-muted mt-3 py-4 border border-dashed rounded bg-light">
+                                    <small>Chưa có ảnh chi tiết nào</small>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="button" class="btn btn-secondary me-md-2" routerLink="/merchant/products">Hủy
+                        bỏ</button>
+                    <button type="submit" class="btn btn-success" [disabled]="productForm.invalid || isLoading">
+                        {{ isLoading ? 'Đang xử lý...' : (isEditMode ? 'Cập nhật' : 'Thêm mới') }}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
