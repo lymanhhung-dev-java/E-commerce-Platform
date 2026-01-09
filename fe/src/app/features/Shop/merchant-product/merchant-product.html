@@ -52,7 +52,7 @@
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="table-responsive">
             <table class="table align-middle mb-0 table-hover">
-                <thead class="bg-light text-secondary small text-uppercase fw-bold">
+                <thead class="bg-white text-secondary small text-uppercase fw-bold border-bottom">
                     <tr>
                         <th class="ps-4 py-3">Sản phẩm</th>
                         <th>Danh mục</th>
@@ -69,11 +69,11 @@
                         </td>
                     </tr>
 
-                    <tr *ngFor="let p of products">
-                        <td class="ps-4">
+                    <tr *ngFor="let p of products" class="bg-light border-bottom border-white">
+                        <td class="ps-4 py-3">
                             <div class="d-flex align-items-center gap-3">
                                 <img [src]="p.imageUrl || 'assets/no-image.png'"
-                                    class="rounded-3 border object-fit-cover" width="50" height="50">
+                                    class="rounded-3 border object-fit-cover bg-white" width="50" height="50">
                                 <div>
                                     <div class="fw-bold text-dark text-truncate" style="max-width: 250px;">{{ p.name }}
                                     </div>
@@ -81,33 +81,38 @@
                                 </div>
                             </div>
                         </td>
+
                         <td>
-                            <span class="badge bg-light text-dark border">{{ p.categoryName }}</span>
+                            <span class="badge bg-white text-dark border shadow-sm">{{ p.categoryName }}</span>
                         </td>
+
                         <td class="fw-bold text-primary">
                             {{ p.price | number }} ₫
                         </td>
+
                         <td>
-                            <span class="badge rounded-pill" [ngClass]="{
-                  'bg-success bg-opacity-10 text-success': p.stock > 10,
-                  'bg-warning bg-opacity-10 text-warning': p.stock <= 10 && p.stock > 0,
-                  'bg-danger bg-opacity-10 text-danger': p.stock === 0
-                }">
-                                {{ p.stock }} sp
-                            </span>
-                        </td>
+    <span class="badge rounded-pill px-3 py-2 border shadow-sm" [ngClass]="{
+      'bg-success bg-opacity-25 text-success border-success': p.stock > 10,
+      'bg-secondary bg-opacity-10 text-primary border-secondary': p.stock <= 10 && p.stock > 0,
+      'bg-danger bg-opacity-25 text-danger border-danger': p.stock === 0
+    }">
+        {{ p.stock }} sp
+    </span>
+</td>
+
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" [checked]="p.active"
                                     (click)="onToggleStatus(p.id)">
                             </div>
                         </td>
+
                         <td class="text-end pe-4">
-                            <button class="btn btn-light btn-sm rounded-circle me-2 text-primary"
+                            <button class="btn btn-white bg-white border btn-sm rounded-circle me-2 text-primary shadow-sm"
                                 [routerLink]="['/merchant/products/edit', p.id]" title="Sửa">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
-                            <button class="btn btn-light btn-sm rounded-circle text-danger" (click)="onDelete(p.id)"
+                            <button class="btn btn-white bg-white border btn-sm rounded-circle text-danger shadow-sm" (click)="onDelete(p.id)"
                                 title="Xóa">
                                 <i class="bi bi-trash-fill"></i>
                             </button>
@@ -115,7 +120,7 @@
                     </tr>
 
                     <tr *ngIf="!isLoading && products.length === 0">
-                        <td colspan="6" class="text-center py-5 text-muted">
+                        <td colspan="6" class="text-center py-5 text-muted bg-white">
                             <i class="bi bi-box-seam display-4 d-block mb-2 opacity-50"></i>
                             Không tìm thấy sản phẩm nào phù hợp.
                         </td>
@@ -124,7 +129,7 @@
             </table>
         </div>
 
-        <div class="card-footer bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center"
+        <div class="card-footer bg-white border-top py-3 px-4 d-flex justify-content-between align-items-center"
             *ngIf="totalElements > 0">
             <div class="text-muted small">
                 Hiển thị {{ page * size + 1 }} - {{ (page + 1) * size > totalElements ? totalElements : (page + 1) *
