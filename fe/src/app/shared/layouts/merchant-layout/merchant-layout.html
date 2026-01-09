@@ -23,7 +23,7 @@
 
       <div class="px-3 py-2 flex-grow-1 overflow-y-auto custom-scrollbar">
         
-        <small class="text-muted fw-bold text-uppercase px-3 mt-3 d-block" style="font-size: 11px;">Main Menu</small>
+        <small class="text-muted fw-bold text-uppercase px-3 mt-3 d-block" style="font-size: 11px;">Bảng điều khiển</small>
         <ul class="nav flex-column mt-2 gap-1">
           <li class="nav-item" *ngFor="let item of mainMenuItems">
             <a [routerLink]="item.route" 
@@ -38,7 +38,7 @@
           </li>
         </ul>
 
-        <small class="text-muted fw-bold text-uppercase px-3 mt-4 d-block" style="font-size: 11px;">Settings</small>
+        <small class="text-muted fw-bold text-uppercase px-3 mt-4 d-block" style="font-size: 11px;">Cài đặt</small>
         <ul class="nav flex-column mt-2 gap-1">
           <li class="nav-item" *ngFor="let item of settingsMenuItems">
             <a [routerLink]="item.route" 
@@ -57,7 +57,7 @@
                class="rounded-circle border" width="40" height="40" alt="Avatar">
           <div class="overflow-hidden nav-label">
             <div class="fw-bold text-truncate text-dark" style="font-size: 14px;">{{ shop?.shopName }}</div>
-            <div class="text-muted small text-truncate">Store Owner</div>
+            <div class="text-muted small text-truncate">Chủ cửa hàng</div>
           </div>
           <button class="btn btn-sm text-secondary ms-auto hover-danger" (click)="logout()" title="Đăng xuất">
             <i class="bi bi-box-arrow-right"></i>
@@ -77,7 +77,7 @@
           
           <div class="input-group bg-light rounded-pill border-0 d-none d-md-flex" style="width: 300px;">
              <span class="input-group-text bg-transparent border-0 ps-3"><i class="bi bi-search text-muted"></i></span>
-             <input type="text" class="form-control bg-transparent border-0 shadow-none" placeholder="Search orders, products...">
+             <input type="text" class="form-control bg-transparent border-0 shadow-none" placeholder="Tìm kiếm đơn hàng, sản phẩm...">
           </div>
         </div>
 
@@ -87,7 +87,7 @@
               <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
            </button>
            <div class="vr mx-2"></div>
-           <span class="fw-bold small text-secondary d-none d-sm-block">{{ status }}</span>
+           <span class="fw-bold small text-secondary d-none d-sm-block">{{ status === 'ACTIVE' ? 'Hoạt động' : status === 'PENDING' ? 'Đang chờ xét duyệt' : status === 'REJECTED' ? 'Bị từ chối' : status === 'BANNED' ? 'Bị khóa' : 'Không xác định' }}</span>
         </div>
       </header>
 
