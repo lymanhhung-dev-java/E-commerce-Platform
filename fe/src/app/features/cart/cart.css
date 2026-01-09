@@ -4,6 +4,7 @@
     border: none;
     transition: opacity 0.2s;
 }
+
 .btn-orange:hover {
     opacity: 0.9;
 }
@@ -13,10 +14,10 @@
     border-bottom: none !important;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .card {
@@ -28,4 +29,15 @@ input[type=number]::-webkit-outer-spin-button {
     width: 1.2em;
     height: 1.2em;
     cursor: pointer;
+}
+
+.product-info {
+  min-width: 0;    
+  max-width: 220px;  
+}
+
+.product-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

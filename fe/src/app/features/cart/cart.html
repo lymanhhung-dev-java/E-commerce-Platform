@@ -1,5 +1,5 @@
 <div class="container my-5">
-  <h2 class="fw-bold mb-4">Shopping Cart</h2>
+  <h2 class="fw-bold mb-4">Giỏ hàng</h2>
   <p class="text-muted mb-4" *ngIf="cartService.cartItems().length > 0">
     Bạn có {{ cartService.cartItems().length }} sản phẩm trong giỏ hàng.
   </p>
@@ -17,27 +17,32 @@
         <div class="card-body p-0">
 
           <div class="d-none d-md-flex p-3 border-bottom bg-light fw-bold text-muted small">
-            <div class="col-md-5 ps-4">PRODUCT</div>
-            <div class="col-md-2 text-center">PRICE</div>
-            <div class="col-md-2 text-center">QUANTITY</div>
-            <div class="col-md-2 text-end pe-4">SUBTOTAL</div>
+            <div class="col-md-5 ps-4">SẢN PHẨM</div>
+            <div class="col-md-2 text-center">ĐƠN GIÁ</div>
+            <div class="col-md-2 text-center">SỐ LƯỢNG</div>
+            <div class="col-md-2 text-end pe-4">SỐ TIỀN</div>
             <div class="col-md-1"></div>
           </div>
 
           <div *ngFor="let item of cartService.cartItems()" class="p-3 border-bottom cart-item-row">
             <div class="row align-items-center">
 
-              <div class="col-md-5 d-flex align-items-center gap-3">
+              <div class="col-md-5 d-flex align-items-center gap-3 overflow-hidden">
                 <input type="checkbox" class="form-check-input mt-0" checked>
                 <img [src]="item.product.imageUrl || 'https://via.placeholder.com/80'" class="rounded bg-light"
                   style="width: 80px; height: 80px; object-fit: cover;">
                 <div>
-                  <h6 class="mb-1 text-truncate" style="max-width: 200px;" [title]="item.product.name">
-                    <a [routerLink]="['/product', item.product.id]" class="text-dark text-decoration-none">
-                      {{ item.product.name }}
-                    </a>
-                  </h6>
-                  <div class="small text-muted">{{ item.product.shopName || 'Shop' }}</div>
+
+                  <div class="product-info">
+                    <h6 class="mb-1 product-name" [title]="item.product.name">
+                      <a [routerLink]="['/product', item.product.id]" class="text-dark text-decoration-none">
+                        {{ item.product.name }}
+                      </a>
+                    </h6>
+                    <div class="small text-muted">
+                      {{ item.product.shopName || 'Shop' }}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -72,19 +77,19 @@
       </div>
 
       <a routerLink="/" class="text-decoration-none text-primary fw-bold">
-        <i class="bi bi-arrow-left"></i> Continue Shopping
+        <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
       </a>
 
       <div class="mt-5">
-        <h5 class="fw-bold mb-3">You might also like</h5>
+        <h5 class="fw-bold mb-3">Có thể bạn cũng thích</h5>
         <div class="row row-cols-2 row-cols-md-4 g-3">
           <div class="col">
             <div class="card h-100 border-0 shadow-sm">
               <img src="https://via.placeholder.com/150" class="card-img-top p-3 rounded">
               <div class="card-body pt-0">
-                <p class="card-text small fw-bold">Pro Wireless Mouse</p>
+                <p class="card-text small fw-bold">Chuột không dây Pro</p>
                 <p class="text-muted small">$49.99</p>
-                <button class="btn btn-outline-primary btn-sm w-100">Add</button>
+                <button class="btn btn-outline-primary btn-sm w-100">Thêm vàp giỏ</button>
               </div>
             </div>
           </div>
@@ -96,42 +101,42 @@
     <div class="col-lg-4">
       <div class="card border shadow-sm">
         <div class="card-body p-4">
-          <h5 class="card-title fw-bold mb-4">Order Summary</h5>
+          <h5 class="card-title fw-bold mb-4">Tóm tắt đơn hàng</h5>
 
           <div class="d-flex justify-content-between mb-2 text-muted">
-            <span>Subtotal ({{ cartService.totalCount() }} items)</span>
+            <span>Tạm tính ({{ cartService.totalCount() }} sản phẩm)</span>
             <span>{{ cartService.subTotal() | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
 
           <div class="d-flex justify-content-between mb-2 text-muted">
-            <span>Shipping estimate</span>
-            <span class="text-success">Free</span>
+            <span>Phí vận chuyển</span>
+            <span class="text-success">Miễn phí</span>
           </div>
 
           <div class="d-flex justify-content-between mb-2 text-muted">
-            <span>Tax estimate</span>
+            <span>Thuế ước tính</span>
             <span>{{ taxEstimate | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
 
           <div class="d-flex justify-content-between mb-4 text-danger">
-            <span>Discount</span>
+            <span>Giảm giá</span>
             <span>-{{ discount | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
 
           <hr>
 
           <div class="d-flex justify-content-between align-items-center mb-4">
-            <span class="fw-bold fs-5">Order Total</span>
+            <span class="fw-bold fs-5">Tổng cộng</span>
             <span class="fw-bold fs-4">{{ finalTotal | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
 
           <div class="input-group mb-4">
-            <input type="text" class="form-control" placeholder="Promo code">
-            <button class="btn btn-light border">Apply</button>
+            <input type="text" class="form-control" placeholder="Mã giảm giá">
+            <button class="btn btn-light border">Áp dụng</button>
           </div>
 
-          <button class="btn btn-orange w-100 py-3 fw-bold text-white mb-3 shadow-sm" routerLink="/checkout"> Proceed to
-            Checkout <i class="bi bi-arrow-right ms-2"></i>
+          <button class="btn btn-orange w-100 py-3 fw-bold text-white mb-3 shadow-sm" routerLink="/checkout"> Tiến hành
+            thanh toán <i class="bi bi-arrow-right ms-2"></i>
           </button>
 
           <div class="text-center small text-muted">
@@ -140,7 +145,7 @@
               <i class="bi bi-shield-check"></i>
               <i class="bi bi-truck"></i>
             </div>
-            Secure Checkout • 30-Day Returns
+            Thanh toán an toàn • Đổi trả trong 30 ngày
           </div>
 
         </div>
