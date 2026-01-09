@@ -1,10 +1,28 @@
-
 <div class="container mb-5">
-  
-  <div class="promo-banner p-5 mb-5 text-center d-flex align-items-center justify-content-center">
-    <div>
-      <h2 class="text-primary fw-bold display-5 opacity-50">PAGE CONTENT AREA</h2>
-      <p class="text-muted">Banner quảng cáo / Slider sẽ đặt ở đây</p>
+
+  <div class="banner-carousel mb-5 position-relative overflow-hidden rounded-3 shadow-sm">
+    <div class="banner-inner d-flex" [style.transform]="'translateX(' + (-currentBannerIndex * 100) + '%)'">
+      <div class="banner-item flex-shrink-0 w-100" *ngFor="let banner of banners">
+        <img [src]="banner" alt="Banner" class="d-block w-100 object-fit-cover" style="height: 320px;">
+      </div>
+    </div>
+
+    <button
+      class="banner-control prev position-absolute top-50 start-0 translate-middle-y ms-3 border-0 rounded-circle text-white d-flex align-items-center justify-content-center"
+      (click)="prevBanner()">
+      <i class="bi bi-chevron-left fs-5"></i>
+    </button>
+
+    <button
+      class="banner-control next position-absolute top-50 end-0 translate-middle-y me-3 border-0 rounded-circle text-white d-flex align-items-center justify-content-center"
+      (click)="nextBanner()">
+      <i class="bi bi-chevron-right fs-5"></i>
+    </button>
+
+    <div class="banner-indicators position-absolute bottom-0 start-50 translate-middle-x mb-3 d-flex gap-2">
+      <button *ngFor="let b of banners; let i = index" class="indicator-dot p-0 rounded-circle border-0"
+        [class.active]="i === currentBannerIndex" (click)="setBanner(i)">
+      </button>
     </div>
   </div>
 
@@ -12,11 +30,12 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">Sản phẩm dành cho bạn</h4>
     <div class="d-flex gap-2">
-       <select class="form-select form-select-sm" style="width: 150px;" [(ngModel)]="selectedPriceRange" (change)="onPriceChange()">
-         <option value="all">Giá: Tất cả</option>
-         <option value="under5">Dưới 5 triệu</option>
-         <option value="over20">Trên 20 triệu</option>
-       </select>
+      <select class="form-select form-select-sm" style="width: 150px;" [(ngModel)]="selectedPriceRange"
+        (change)="onPriceChange()">
+        <option value="all">Giá: Tất cả</option>
+        <option value="under5">Dưới 5 triệu</option>
+        <option value="over20">Trên 20 triệu</option>
+      </select>
     </div>
   </div>
 

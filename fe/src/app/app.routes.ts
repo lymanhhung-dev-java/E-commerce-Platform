@@ -55,7 +55,7 @@ export const routes: Routes = [
             { path: 'products/create', component: MerchantProductCreateComponent },
             { path: 'products/edit/:id', component: MerchantProductFormComponent },
             { path: 'orders', component: MerchantOrderListComponent },
-            { path: 'wallet', component: MerchantWalletComponent },
+            { path: 'wallets', component: MerchantWalletComponent },
 
 
         ]

@@ -1,9 +1,35 @@
+.banner-carousel {
+    width: 100%;
+}
 
-.promo-banner {
-    background-color: #eef2ff; 
-    border: 2px dashed #c7d2fe;
-    border-radius: 12px;
-    min-height: 250px;
+.banner-inner {
+    transition: transform 0.5s ease-in-out;
+}
+
+.banner-control {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.2s;
+}
+
+.banner-control:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.indicator-dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.indicator-dot.active {
+    background-color: #fff;
+    transform: scale(1.2);
 }
 
 .nav-link {
@@ -26,6 +52,7 @@
     justify-content: center;
     color: #333;
 }
+
 .page-link:hover {
     background-color: #eef2ff;
     color: #0d6efd;
