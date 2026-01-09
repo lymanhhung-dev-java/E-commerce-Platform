@@ -27,7 +27,7 @@ export class HeaderComponent implements OnInit {
   currentUser: User | null = null;
 
   categories: Category[] = [];
-  selectedCategoryName: string = 'All Categories';
+  selectedCategoryName: string = 'Tất cả danh mục';
 
   constructor() {
     effect(() => {
