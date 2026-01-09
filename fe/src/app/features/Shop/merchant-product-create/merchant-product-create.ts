@@ -38,8 +38,8 @@ export class MerchantProductCreateComponent {
   constructor() {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
-      price: [0, [Validators.required, Validators.min(1000)]],
-      stock: [10, [Validators.required, Validators.min(0)]],
+      price: [0, [Validators.required, Validators.min(1)]],
+      stock: [10, [Validators.required, Validators.min(1)]],
       categoryId: [null, Validators.required],
       description: ['']
     });
