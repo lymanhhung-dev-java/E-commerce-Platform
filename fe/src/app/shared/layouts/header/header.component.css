@@ -82,3 +82,18 @@
   background-color: #f8f9fa;
   color: #0d6efd; 
 }
+/* Đảm bảo logo nằm gọn gàng */
+.logo img {
+  max-height: 50px; /* Điều chỉnh chiều cao cho phù hợp với header */
+  width: auto;      /* Giữ nguyên tỷ lệ ảnh */
+  display: block;
+}
+
+/* Căn chỉnh lại khung tìm kiếm nếu chữ tiếng Việt dài hơn tiếng Anh */
+.search-box .select-category select {
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  /* Thêm padding nếu cần */
+  padding: 0 10px;
+}

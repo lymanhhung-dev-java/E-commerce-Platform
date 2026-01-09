@@ -4,14 +4,15 @@
 
       <div class="col-md-2 d-flex align-items-center">
         <a routerLink="/" class="text-decoration-none d-flex align-items-center gap-2">
-          <div class="bg-primary text-white rounded p-2 d-flex justify-content-center align-items-center"
-            style="width: 40px; height: 40px;">
-            <i class="bi bi-bag-fill fs-5"></i>
-          </div>
+          
+          <img src="logo.png" 
+                
+               style="width: 40px; height: 40px; object-fit: contain;">
+
           <span class="fw-bold fs-4 text-dark font-primary">E-Market</span>
+
         </a>
       </div>
-
       <div class="col-md-6 my-2 my-md-0">
         <div class="input-group">
           <button class="btn btn-outline-secondary dropdown-toggle bg-light border-end-0" type="button"
@@ -21,7 +22,7 @@
 
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item cursor-pointer fw-bold" (click)="onSelectCategory(null, 'All Categories')">
+              <a class="dropdown-item cursor-pointer fw-bold" (click)="onSelectCategory(null, 'Tất cả danh mục')">
                 <i class="bi bi-grid-fill me-2"></i> Tất cả danh mục
               </a>
             </li>
@@ -107,7 +108,7 @@
           </button>
 
           } @else {
-          <a routerLink="/login" class="btn btn-sm btn-primary">Sign In</a>
+          <a routerLink="/login" class="btn btn-sm btn-primary">  Đăng nhập</a>
           }
         </div>
       </div>
