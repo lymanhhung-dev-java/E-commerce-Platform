@@ -54,7 +54,7 @@ export class CheckoutComponent implements OnInit {
   paymentMethods = [
     {
       code: 'COD',
-      name: 'Cash on Delivery (COD)',
+      name: 'Thanh toán khi nhận hàng (COD)',
       icon: 'bi-cash-stack',
       description: 'Thanh toán bằng tiền mặt khi nhận hàng. Phí thu hộ: 0đ.'
     },
