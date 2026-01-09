@@ -60,7 +60,12 @@ export class HeaderComponent implements OnInit {
   loadCategories() {
     this.categoryService.getCategories().subscribe({
       next: (res) => {
-        this.categories = res;
+        this.categories = res
+          .filter(cat => cat.isActive !== false)
+          .map(cat => ({
+            ...cat,
+            children: cat.children?.filter(child => child.isActive !== false) || []
+          }));       
       },
       error: (err) => console.error('Lỗi tải danh mục:', err)
     });
