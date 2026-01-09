@@ -24,6 +24,7 @@ export class DetailProductComponent implements OnInit {
   quantity: number = 1;
   description : string = "";
   thumbnails: string[] = []; 
+  isZoomOpen: boolean = false;
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -53,6 +54,14 @@ export class DetailProductComponent implements OnInit {
     });
   }
 
+  openZoom() {
+    this.isZoomOpen = true;
+  }
+
+  closeZoom() {
+    this.isZoomOpen = false;
+  }
+
   changeImage(img: string) {
     this.mainImage = img;
   }
@@ -64,7 +73,6 @@ export class DetailProductComponent implements OnInit {
   decreaseQty() {
     if (this.quantity > 1) this.quantity--;
   }
-
 
   addToCart() {
     if (this.product) {
