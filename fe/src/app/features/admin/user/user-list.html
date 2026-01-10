@@ -75,7 +75,7 @@
                         <td>
                             <span class="badge rounded-pill"
                                 [ngClass]="user.status === 'ACTIVE' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
-                                {{ user.status }}
+                                {{ user.status  === 'ACTIVE' ? 'Hoạt động' : 'Đã khóa' }}
                             </span>
                         </td>
                         <td class="text-end pe-4">
