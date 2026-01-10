@@ -27,28 +27,30 @@
           <div *ngFor="let item of cartService.cartItems()" class="p-3 border-bottom cart-item-row">
             <div class="row align-items-center">
 
-              <div class="col-md-5 d-flex align-items-center gap-3 overflow-hidden">
+              <div class="col-md-5 d-flex align-items-center gap-3">
                 <input type="checkbox" class="form-check-input mt-0" checked>
-                <img [src]="item.product.imageUrl || 'https://via.placeholder.com/80'" class="rounded bg-light"
-                  style="width: 80px; height: 80px; object-fit: cover;">
-                <div>
 
-                  <div class="product-info">
-                    <h6 class="mb-1 product-name" [title]="item.product.name">
-                      <a [routerLink]="['/product', item.product.id]" class="text-dark text-decoration-none">
-                        {{ item.product.name }}
-                      </a>
-                    </h6>
-                    <div class="small text-muted">
-                      {{ item.product.shopName || 'Shop' }}
-                    </div>
+                <div class="product-image">
+                  <img [src]="item.product.imageUrl || 'https://via.placeholder.com/80'" alt="product" />
+                </div>
+
+                <div class="product-info">
+                  <h6 class="mb-1 product-name" [title]="item.product.name">
+                    <a [routerLink]="['/product', item.product.id]" class="text-dark text-decoration-none">
+                      {{ item.product.name }}
+                    </a>
+                  </h6>
+                  <div class="small text-muted">
+                    {{ item.product.shopName || 'Shop' }}
                   </div>
                 </div>
               </div>
 
+
               <div class="col-md-2 text-center fw-bold text-secondary d-none d-md-block">
                 {{ item.product.price | currency:'VND':'symbol':'1.0-0' }}
               </div>
+
 
               <div class="col-md-2 d-flex justify-content-center">
                 <div class="input-group input-group-sm" style="width: 100px;">
@@ -60,9 +62,11 @@
                 </div>
               </div>
 
+
               <div class="col-md-2 text-end fw-bold d-none d-md-block">
                 {{ item.product.price * item.quantity | currency:'VND':'symbol':'1.0-0' }}
               </div>
+
 
               <div class="col-md-1 text-end">
                 <button class="btn btn-link text-danger p-0" (click)="removeItem(item.product.id)">
@@ -72,6 +76,7 @@
 
             </div>
           </div>
+
 
         </div>
       </div>
