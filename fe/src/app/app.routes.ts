@@ -2,8 +2,9 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register';
 import { ProfileComponent } from './features/user/profile/profile';
+import { OrderDetailComponent } from './features/user/order-detail/order-detail.component';
 import { DetailProductComponent } from './features/product/product-detail/product-detail';
-import { HomeComponent } from './features/home/home'; 
+import { HomeComponent } from './features/home/home';
 import { CartComponent } from './features/cart/cart';
 import { CheckoutComponent } from './features/checkout/checkout';
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
@@ -17,7 +18,7 @@ import { MerchantProductFormComponent } from './features/Shop/merchant-update-pr
 import { MerchantOrderListComponent } from './features/Shop/merchant-oder-list/merchant-order-list';
 import { MerchantWalletComponent } from './features/Shop/MerchantWallet/merchant-wallet';
 import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-dashboard';
-import {WithdrawalRequestListComponent} from './features/admin/withdrawal-request-list/withdrawal-request-list';
+import { WithdrawalRequestListComponent } from './features/admin/withdrawal-request-list/withdrawal-request-list';
 import { UserListComponent } from './features/admin/user/user-list';
 import { CategoryListComponent } from './features/admin/category/category';
 import { ShopRequestListComponent } from './features/admin/shop-request-list/shop-request-list';
@@ -37,12 +38,13 @@ export const routes: Routes = [
             { path: 'login', component: LoginComponent },
             { path: 'register', component: RegisterComponent },
             { path: 'profile', component: ProfileComponent },
+            { path: 'profile/order/:id', component: OrderDetailComponent },
             { path: 'product/:id', component: DetailProductComponent },
             { path: 'cart', component: CartComponent },
             { path: 'checkout', component: CheckoutComponent },
             { path: 'register-shop', component: RegisterShopComponent },
-            
-            
+
+
         ]
     },
 
@@ -60,7 +62,7 @@ export const routes: Routes = [
 
         ]
     },
-    
+
     {
         path: 'admin',
         component: AdminLayoutComponent,

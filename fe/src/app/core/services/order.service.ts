@@ -22,6 +22,10 @@ export class OrderService {
     return this.http.get<any>(`${this.apiUrl}/my-orders`, { params });
   }
 
+  getOrderById(orderId: number) {
+    return this.http.get<Order>(`${this.apiUrl}/my-orders/${orderId}`);
+  }
+
   //-------------------------------------Merchant--------------------------------------.
 
   getShopOrders(page: number = 0, size: number = 10){
