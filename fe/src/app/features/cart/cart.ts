@@ -14,24 +14,29 @@ import { FormsModule } from '@angular/forms';
 export class CartComponent {
   cartService = inject(CartService);
 
-  shippingCost = 0; 
+  shippingCost = 0;
   taxEstimate = 55.04;
   discount = 20.00;
 
   get finalTotal() {
-    return this.cartService.subTotal() + this.taxEstimate - this.discount;
+    return this.cartService.subTotalSelected()
+      + this.taxEstimate
+      - this.discount;
   }
 
   increaseQty(itemId: number, currentQty: number) {
     this.cartService.updateQuantity(itemId, currentQty + 1);
   }
 
-  decreaseQty(itemId: number, currentQty: number) {
-    this.cartService.updateQuantity(itemId, currentQty - 1);
+decreaseQty(itemId: number, currentQty: number) {
+  if (currentQty <= 1) {
+    return;
   }
+  this.cartService.updateQuantity(itemId, currentQty - 1);
+}
 
   removeItem(itemId: number) {
-    if(confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
       this.cartService.removeFromCart(itemId);
     }
   }

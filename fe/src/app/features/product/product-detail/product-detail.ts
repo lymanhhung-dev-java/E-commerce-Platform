@@ -98,9 +98,11 @@ export class DetailProductComponent implements OnInit {
     this.mainImage = img;
   }
 
-  increaseQty() {
+increaseQty() {
+  if (this.product && this.quantity < this.product.stockQuantity) {
     this.quantity++;
   }
+}
 
   decreaseQty() {
     if (this.quantity > 1) this.quantity--;

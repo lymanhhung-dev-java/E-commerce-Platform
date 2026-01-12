@@ -54,7 +54,8 @@ export class CartService {
             imageUrl: item.productImageUrl, 
             stockQuantity: item.stockQuantity
           } as Product,
-          quantity: item.quantity
+          quantity: item.quantity,
+          selected: false
         }));
         
         this.cartItems.set(mappedItems);
@@ -135,4 +136,18 @@ export class CartService {
   clearCart() {
     this.cartItems.set([]);
   }
+
+  selectedCount() {
+  return this.cartItems().filter(i => i.selected).length;
 }
+
+subTotalSelected() {
+  return this.cartItems()
+    .filter(i => i.selected)
+    .reduce(
+      (sum, i) => sum + i.product.price * i.quantity,
+      0
+    );
+}
+}
+

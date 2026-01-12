@@ -60,7 +60,8 @@
 
       <div class="mb-4">
         <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
-          <i class="bi bi-dot"></i> Kho: còn 12 sản phẩm
+          <i class="bi bi-dot"></i>
+          Kho: còn {{ product.stockQuantity }} sản phẩm
         </span>
       </div>
 
@@ -68,10 +69,13 @@
         <div class="input-group" style="width: 130px;">
           <button class="btn btn-outline-secondary" type="button" (click)="decreaseQty()">-</button>
           <input type="text" class="form-control text-center border-secondary" [value]="quantity" readonly>
-          <button class="btn btn-outline-secondary" type="button" (click)="increaseQty()">+</button>
+          <button class="btn btn-outline-secondary" type="button" (click)="increaseQty()"
+            [disabled]="quantity >= product.stockQuantity">
+            +
+          </button>
         </div>
-
-        <button class="btn btn-outline-primary px-4 fw-bold flex-grow-1" (click)="addToCart()">
+        <button class="btn btn-outline-primary px-4 fw-bold flex-grow-1" (click)="addToCart()"
+          [disabled]="product.stockQuantity === 0">
           <i class="bi bi-cart3 me-2"></i> Thêm vào Giỏ hàng
         </button>
         <button class="btn btn-orange text-white px-5 fw-bold flex-grow-1 shadow-sm">
