@@ -4,6 +4,9 @@ import { environment } from '../../../environments/environment';
 import { Product } from '../models/product';
 import { CartItem } from '../models/cart';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { ProductService } from './product.service';
 
 interface CartItemResponse {
   id: number;
@@ -21,6 +24,7 @@ interface CartItemResponse {
 export class CartService {
   private http = inject(HttpClient);
   private toastr = inject(ToastrService);
+  private productService = inject(ProductService);
 
   // URL API: http://localhost:8080/api/cart
   private apiUrl = `${environment.apiUrl}/cart`;
@@ -45,9 +49,27 @@ export class CartService {
 
   // 1. Lấy giỏ hàng từ Backend (GET /api/cart)
   loadCart() {
-    this.http.get<CartItemResponse[]>(this.apiUrl).subscribe({
-      next: (response) => {
-        const mappedItems: CartItem[] = response.map(item => ({
+    this.http.get<CartItemResponse[]>(this.apiUrl).pipe(
+      switchMap(response => {
+        if (!response || response.length === 0) {
+          return of([]);
+        }
+
+        const requests = response.map(item =>
+          this.productService.getProductById(item.productId).pipe(
+            map(product => ({
+              ...item,
+              shopName: product.shopName || 'Shop',
+              stockQuantity: product.stockQuantity
+            }))
+          )
+        );
+
+        return forkJoin(requests);
+      })
+    ).subscribe({
+      next: (updatedItems) => {
+        const mappedItems: CartItem[] = updatedItems.map((item: any) => ({
           product: {
             id: item.productId,
             name: item.productName,

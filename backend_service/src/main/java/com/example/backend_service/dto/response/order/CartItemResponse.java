@@ -13,6 +13,7 @@ public class CartItemResponse {
     private Long id;
     private Long productId;
     private String productName;
+    private String ShopName;
     private String productImageUrl;
     private Integer quantity;
     private BigDecimal price;
@@ -25,6 +26,7 @@ public class CartItemResponse {
                 .id(item.getId())
                 .productId(item.getProduct().getId())
                 .productName(item.getProduct().getName())
+                .ShopName(item.getProduct().getShop().getShopName())
                 .productImageUrl(item.getProduct().getImageUrl())
                 .price(item.getProduct().getPrice())
                 .quantity(item.getQuantity())
