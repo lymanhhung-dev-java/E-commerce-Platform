@@ -14,32 +14,33 @@ interface CartItemResponse {
   price: number;
   subTotal: number;
   stockQuantity: number;
+  shopName: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private http = inject(HttpClient);
   private toastr = inject(ToastrService);
-  
+
   // URL API: http://localhost:8080/api/cart
-  private apiUrl = `${environment.apiUrl}/cart`; 
+  private apiUrl = `${environment.apiUrl}/cart`;
 
 
   cartItems = signal<CartItem[]>([]);
 
 
-  totalCount = computed(() => 
+  totalCount = computed(() =>
     this.cartItems().length
   );
 
-  subTotal = computed(() => 
+  subTotal = computed(() =>
     this.cartItems().reduce((acc, item) => acc + (item.product.price * item.quantity), 0)
   );
 
-  totalAmount = computed(() => this.subTotal()); 
+  totalAmount = computed(() => this.subTotal());
 
   constructor() {
-    this.loadCart(); 
+    this.loadCart();
   }
 
   // 1. Lấy giỏ hàng từ Backend (GET /api/cart)
@@ -48,16 +49,17 @@ export class CartService {
       next: (response) => {
         const mappedItems: CartItem[] = response.map(item => ({
           product: {
-            id: item.productId,          
-            name: item.productName,      
-            price: item.price,           
-            imageUrl: item.productImageUrl, 
-            stockQuantity: item.stockQuantity
+            id: item.productId,
+            name: item.productName,
+            price: item.price,
+            imageUrl: item.productImageUrl,
+            stockQuantity: item.stockQuantity,
+            shopName: item.shopName
           } as Product,
           quantity: item.quantity,
           selected: false
         }));
-        
+
         this.cartItems.set(mappedItems);
       },
       error: (err) => {
@@ -72,24 +74,33 @@ export class CartService {
 
   // 2. Thêm vào giỏ (POST /api/cart/add)
   addToCart(product: Product, quantity: number = 1) {
-    this.http.post(`${this.apiUrl}/add`, { 
-      productId: product.id, 
-      quantity: quantity 
-    }, { responseType: 'text' }) 
-    .subscribe({
-      next: () => {
-        this.toastr.success('Đã thêm vào giỏ hàng');
-        this.loadCart();
-      },
-      error: (err) => {
-        if (err.status === 401) {
-          this.toastr.warning('Vui lòng đăng nhập để mua hàng');
-        } else {
-          const msg = err.error?.message || err.message || 'Lỗi khi thêm vào giỏ';
-          this.toastr.error(msg);
+    const currentItem = this.cartItems().find(item => item.product.id === product.id);
+    const currentQty = currentItem ? currentItem.quantity : 0;
+
+    if (currentQty + quantity > product.stockQuantity) {
+      this.toastr.warning('Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này');
+      return;
+    }
+
+    this.http.post(`${this.apiUrl}/add`, {
+      productId: product.id,
+      quantity: quantity
+    }, { responseType: 'text' })
+      .subscribe({
+        next: () => {
+          this.toastr.success('Đã thêm vào giỏ hàng');
+          this.loadCart();
+        },
+        error: (err) => {
+          if (err.status === 401) {
+            this.toastr.warning('Vui lòng đăng nhập để mua hàng');
+          } else {
+            // Try to handle text response if it's not JSON
+            const msg = err.error || err.message || 'Lỗi khi thêm vào giỏ';
+            this.toastr.error(msg);
+          }
         }
-      }
-    });
+      });
   }
 
   // 3. Cập nhật số lượng (PUT /api/cart/update)
@@ -100,21 +111,21 @@ export class CartService {
     }
 
     const oldCart = this.cartItems();
-    this.cartItems.update(items => 
+    this.cartItems.update(items =>
       items.map(item => item.product.id === productId ? { ...item, quantity } : item)
     );
 
-    this.http.put(`${this.apiUrl}/update`, { 
-      productId: productId, 
-      quantity: quantity 
+    this.http.put(`${this.apiUrl}/update`, {
+      productId: productId,
+      quantity: quantity
     }, { responseType: 'text' })
-    .subscribe({
-      error: (err) => {
-        this.cartItems.set(oldCart);
-        const msg = err.error?.message || 'Không thể cập nhật số lượng';
-        this.toastr.error(msg);
-      }
-    });
+      .subscribe({
+        error: (err) => {
+          this.cartItems.set(oldCart);
+          const msg = err.error?.message || 'Không thể cập nhật số lượng';
+          this.toastr.error(msg);
+        }
+      });
   }
 
   // 4. Xóa sản phẩm (DELETE /api/cart/remove)
@@ -122,9 +133,9 @@ export class CartService {
     const oldCart = this.cartItems();
     this.cartItems.update(items => items.filter(i => i.product.id !== productId));
 
-    this.http.delete(`${this.apiUrl}/remove`, { 
+    this.http.delete(`${this.apiUrl}/remove`, {
       params: { productId: productId.toString() },
-      responseType: 'text' 
+      responseType: 'text'
     }).subscribe({
       error: (err) => {
         this.cartItems.set(oldCart);
@@ -138,16 +149,16 @@ export class CartService {
   }
 
   selectedCount() {
-  return this.cartItems().filter(i => i.selected).length;
-}
+    return this.cartItems().filter(i => i.selected).length;
+  }
 
-subTotalSelected() {
-  return this.cartItems()
-    .filter(i => i.selected)
-    .reduce(
-      (sum, i) => sum + i.product.price * i.quantity,
-      0
-    );
-}
+  subTotalSelected() {
+    return this.cartItems()
+      .filter(i => i.selected)
+      .reduce(
+        (sum, i) => sum + i.product.price * i.quantity,
+        0
+      );
+  }
 }
 

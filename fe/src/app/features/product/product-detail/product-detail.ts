@@ -98,11 +98,13 @@ export class DetailProductComponent implements OnInit {
     this.mainImage = img;
   }
 
-increaseQty() {
-  if (this.product && this.quantity < this.product.stockQuantity) {
-    this.quantity++;
+  increaseQty() {
+    if (this.product && this.quantity < this.product.stockQuantity) {
+      this.quantity++;
+    } else {
+      this.toastr.warning('Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này');
+    }
   }
-}
 
   decreaseQty() {
     if (this.quantity > 1) this.quantity--;
