@@ -4,11 +4,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order';
 import { ToastrService } from 'ngx-toastr';
+import { ReviewModalComponent } from '../review-modal/review-modal.component';
+import { OrderItem } from '../../../core/models/order';
 
 @Component({
     selector: 'app-order-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, ReviewModalComponent],
     templateUrl: './order-detail.component.html',
     styleUrl: './order-detail.component.css'
 })
@@ -54,6 +56,27 @@ export class OrderDetailComponent implements OnInit {
             case 'PENDING': return 'bg-warning-subtle text-warning border-warning-subtle';
             case 'CANCELED': return 'bg-danger-subtle text-danger border-danger-subtle';
             default: return 'bg-light text-secondary';
+        }
+    }
+
+    selectedItem: OrderItem | null = null;
+    isReviewModalOpen = false;
+
+    openReviewModal(item: OrderItem) {
+        this.selectedItem = item;
+        this.isReviewModalOpen = true;
+    }
+
+    closeReviewModal() {
+        this.isReviewModalOpen = false;
+        this.selectedItem = null;
+    }
+
+    onReviewSuccess() {
+        this.toastr.success('Cập nhật trạng thái đơn hàng...');
+        if (this.order) {
+            // Refresh order to get updated isReviewed status
+            this.loadOrder(this.order.id);
         }
     }
 }

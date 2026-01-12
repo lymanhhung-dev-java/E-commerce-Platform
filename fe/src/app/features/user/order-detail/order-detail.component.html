@@ -1,10 +1,11 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-10">
-      
+
       <!-- Back Button -->
       <div class="mb-4">
-        <a routerLink="/profile" class="text-decoration-none text-muted d-inline-flex align-items-center gap-2 hover-back">
+        <a routerLink="/profile"
+          class="text-decoration-none text-muted d-inline-flex align-items-center gap-2 hover-back">
           <i class="bi bi-arrow-left"></i> Quay lại danh sách đơn hàng
         </a>
       </div>
@@ -16,7 +17,7 @@
       </div>
 
       <div *ngIf="!isLoading && order" class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        
+
         <!-- Header -->
         <div class="card-header bg-white border-bottom p-4">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -24,19 +25,19 @@
               <h5 class="fw-bold mb-1">Chi tiết đơn hàng #{{ order.id }}</h5>
               <span class="text-muted small">Ngày đặt: {{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
             </div>
-            
+
             <span class="badge rounded-pill border px-3 py-2" [ngClass]="getStatusClass(order.status)">
               <i class="bi bi-circle-fill me-1 small" style="font-size: 6px; vertical-align: middle;"></i>
-              {{ order.status === 'PENDING' ? 'Chờ xử lý' : 
-                 order.status === 'SHIPPED' ? 'Đang giao' : 
-                 order.status === 'DELIVERED' ? 'Đã giao' : 
-                 order.status === 'CANCELED' ? 'Đã hủy' : order.status }}
+              {{ order.status === 'PENDING' ? 'Chờ xử lý' :
+              order.status === 'SHIPPED' ? 'Đang giao' :
+              order.status === 'DELIVERED' ? 'Đã giao' :
+              order.status === 'CANCELED' ? 'Đã hủy' : order.status }}
             </span>
           </div>
         </div>
 
         <div class="card-body p-4">
-          
+
           <!-- Info Grid -->
           <div class="row g-4 mb-4">
             <div class="col-md-6">
@@ -79,17 +80,33 @@
                   <td class="ps-3">
                     <div class="d-flex align-items-center gap-3">
                       <div class="bg-white border rounded p-1" style="width: 60px; height: 60px;">
-                        <img [src]="item.productImageUrl || 'https://via.placeholder.com/60'" class="w-100 h-100 object-fit-contain">
+                        <img [src]="item.productImageUrl || 'https://via.placeholder.com/60'"
+                          class="w-100 h-100 object-fit-contain">
                       </div>
                       <div>
                         <h6 class="mb-0 small fw-bold text-dark">{{ item.productName }}</h6>
                         <small class="text-muted" style="font-size: 11px;">Mã SP: #{{ item.productId }}</small>
+
+                        <!-- Review Button -->
+                        <div *ngIf="order.status === 'DELIVERED' && !item.isReviewed" class="mt-1">
+                          <button class="btn btn-outline-warning btn-sm py-0 px-2 small" style="font-size: 11px;"
+                            (click)="openReviewModal(item)">
+                            <i class="bi bi-star-fill me-1"></i>Đánh giá
+                          </button>
+                        </div>
+                        <div *ngIf="order.status === 'DELIVERED' && item.isReviewed" class="mt-1">
+                          <span class="text-success small" style="font-size: 11px;">
+                            <i class="bi bi-check-circle-fill me-1"></i>Đã đánh giá
+                          </span>
+                        </div>
+
                       </div>
                     </div>
                   </td>
                   <td class="text-center text-muted">{{ item.price | currency:'VND':'symbol':'1.0-0' }}</td>
                   <td class="text-center text-muted">x{{ item.quantity }}</td>
-                  <td class="text-end fw-bold pe-3">{{ (item.price * item.quantity) | currency:'VND':'symbol':'1.0-0' }}</td>
+                  <td class="text-end fw-bold pe-3">{{ (item.price * item.quantity) | currency:'VND':'symbol':'1.0-0' }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -120,3 +137,7 @@
     </div>
   </div>
 </div>
+
+<app-review-modal [isOpen]="isReviewModalOpen" [item]="selectedItem" (closeEvent)="closeReviewModal()"
+  (successEvent)="onReviewSuccess()">
+</app-review-modal>

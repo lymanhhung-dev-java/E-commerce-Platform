@@ -12,11 +12,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice 
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<Map<String, Object>> handleAppException(AppException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        if (errorCode != null) {
+            return buildResponse(errorCode.getHttpStatus(), errorCode.getMessage(), null);
+        }
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
     }
 
@@ -27,13 +31,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
-        return buildResponse(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập tài nguyên này", request.getRequestURI());
+    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex,
+            HttpServletRequest request) {
+        return buildResponse(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập tài nguyên này",
+                request.getRequestURI());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleUnwantedException(Exception ex) {
-        ex.printStackTrace(); 
+        ex.printStackTrace();
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống vui lòng thử lại sau", null);
     }
 
@@ -47,7 +53,6 @@ public class GlobalExceptionHandler {
         response.put("success", false);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
-
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message, String path) {
         Map<String, Object> response = new HashMap<>();

@@ -1,4 +1,5 @@
 package com.example.backend_service.model.product;
+
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,6 +29,10 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @OneToOne
+    @JoinColumn(name = "order_item_id")
+    private com.example.backend_service.model.order.OrderItem orderItem;
 
     private Integer rating;
 
