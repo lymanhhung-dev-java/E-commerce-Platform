@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
@@ -19,6 +19,7 @@ export class DetailProductComponent implements OnInit {
   private productService = inject(ProductService);
   private toastr = inject(ToastrService);
   private cartService = inject(CartService);
+  private cdr = inject(ChangeDetectorRef);
 
   product: Product | null = null;
   mainImage: string = '';
@@ -31,7 +32,9 @@ export class DetailProductComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id = Number(params.get('id'));
       if (id) {
+        // Load product and reviews in parallel for better performance
         this.loadProduct(id);
+        this.loadReviews(id);
       }
     });
   }
@@ -47,9 +50,6 @@ export class DetailProductComponent implements OnInit {
         } else {
           this.thumbnails = [this.mainImage];
         }
-
-        // Fetch reviews
-        this.loadReviews(id);
       },
       error: (err) => {
         console.error(err);
@@ -69,6 +69,10 @@ export class DetailProductComponent implements OnInit {
         this.reviews = res.content || [];
         this.totalReviews = res.totalElements || 0;
         this.calculateAverageRating();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading reviews:', err);
       }
     });
   }

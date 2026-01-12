@@ -32,10 +32,11 @@ export class HeaderComponent implements OnInit {
   constructor() {
     effect(() => {
       if (this.authService.isLoggedIn()) {
-
         this.loadCurrentUser();
+        this.cartService.loadCart();
       } else {
         this.currentUser = null;
+        this.cartService.clearCart();
       }
     });
   }
@@ -65,7 +66,7 @@ export class HeaderComponent implements OnInit {
           .map(cat => ({
             ...cat,
             children: cat.children?.filter(child => child.isActive !== false) || []
-          }));       
+          }));
       },
       error: (err) => console.error('Lỗi tải danh mục:', err)
     });
