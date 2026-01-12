@@ -110,9 +110,19 @@ export class DetailProductComponent implements OnInit {
     if (this.quantity > 1) this.quantity--;
   }
 
-  addToCart() {
-    if (this.product) {
-      this.cartService.addToCart(this.product!, this.quantity);
+addToCart() {
+  if (!this.product) return;
+
+  this.cartService.addToCart(this.product, this.quantity).subscribe({
+    next: () => {
+      this.toastr.success('Đã thêm vào giỏ hàng');
+    },
+    error: (err) => {
+      this.toastr.error(
+        err?.error?.message || 'Không thể thêm sản phẩm vào giỏ'
+      );
     }
-  }
+  });
+}
+
 }

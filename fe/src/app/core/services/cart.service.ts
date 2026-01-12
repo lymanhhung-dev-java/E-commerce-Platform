@@ -100,9 +100,13 @@ export class CartService {
     const currentQty = currentItem ? currentItem.quantity : 0;
 
     if (currentQty + quantity > product.stockQuantity) {
-      this.toastr.warning('Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này');
-      return;
+      return of({ warning: 'MAX_STOCK' });
     }
+
+    return this.http.post(`${this.apiUrl}/add`, {
+      productId: product.id,
+      quantity
+    });
 
     this.http.post(`${this.apiUrl}/add`, {
       productId: product.id,
