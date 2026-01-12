@@ -61,4 +61,8 @@ export class ShopService {
   updateShopInfo(data: any) {
     return this.http.put(`${this.apiUrl}/merchant/shops/info`, data);
   }
+
+  getShopById(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/shops/${id}`);
+  }
 }

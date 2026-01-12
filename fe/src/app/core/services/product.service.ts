@@ -99,4 +99,11 @@ export class ProductService {
     return this.http.put(`${this.apiMerchantUrl}/${id}`, data);
   }
 
+  getShopProducts(shopId: number, page: number = 0, size: number = 12) {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'createdAt,desc');
+    return this.http.get<ProductResponse>(`${this.apiUrl}/shop/${shopId}`, { params });
+  }
 }

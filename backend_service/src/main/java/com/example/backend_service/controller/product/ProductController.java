@@ -1,4 +1,5 @@
 package com.example.backend_service.controller.product;
+
 import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,22 +29,34 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Page<ProductListResponse>> getProducts(
-        @RequestParam(required = false) String search,
-        @RequestParam(required = false) Long categoryId,
-        @RequestParam(required = false) BigDecimal minPrice,
-        @RequestParam(required = false) BigDecimal maxPrice,
-        @PageableDefault(size = 10,sort = "createdAt",  direction = Sort.Direction.DESC) Pageable pageable
-    ){
-        var productPage= productService.getProducts(search, categoryId, minPrice, maxPrice, pageable);
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long shopId,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        var productPage = productService.getProducts(search, categoryId, shopId, minPrice, maxPrice, pageable);
 
         Page<ProductListResponse> response = productPage.map(ProductListResponse::fromEntity);
         return ResponseEntity.ok(response);
     }
 
-     @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getProductDetail(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         return ResponseEntity.ok(ProductDetailResponse.fromEntity(product));
+    }
+
+    @GetMapping("/shop/{shopId}")
+    public ResponseEntity<Page<ProductListResponse>> getProductsByShop(@PathVariable Long shopId,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        var productPage = productService.getProducts(search, categoryId, shopId, minPrice, maxPrice, pageable);
+        Page<ProductListResponse> response = productPage.map(ProductListResponse::fromEntity);
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -25,4 +25,6 @@ public interface ShopService {
     Shop updateShopRegistration(RegisterShopRequest req);
 
     Shop updateShopInfo(UpdateShopRequest req);
+
+    ShopResponse getShopById(Long id);
 }

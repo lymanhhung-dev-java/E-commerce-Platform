@@ -50,6 +50,14 @@ public class ProductSpecification {
         };
     }
 
+    public static Specification<Product> hasShop(Long shopId) {
+        return (root, query, criteriaBuilder) -> {
+            if (shopId == null)
+                return null;
+            return criteriaBuilder.equal(root.get("shop").get("id"), shopId);
+        };
+    }
+
     public static Specification<Product> isActive() {
         return (root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("isActive"));
     }

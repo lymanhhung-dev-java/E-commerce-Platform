@@ -52,8 +52,9 @@
         </div>
         <div class="flex-grow-1">
           <div class="small text-muted">Bán bởi</div>
-          <div class="fw-bold text-primary cursor-pointer">{{ product.shopName || 'Shop Chính Chủ' }} <i
-              class="bi bi-box-arrow-up-right small"></i></div>
+          <div class="fw-bold text-primary cursor-pointer" [routerLink]="['/shop', product.shopId]">
+            {{ product.shopName || 'Shop Chính Chủ' }} <i class="bi bi-box-arrow-up-right small"></i>
+          </div>
         </div>
         <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-chat-dots"></i> Nhắn tin</button>
       </div>

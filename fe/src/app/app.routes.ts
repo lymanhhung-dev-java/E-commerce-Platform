@@ -43,6 +43,7 @@ export const routes: Routes = [
             { path: 'cart', component: CartComponent },
             { path: 'checkout', component: CheckoutComponent },
             { path: 'register-shop', component: RegisterShopComponent },
+            { path: 'shop/:id', loadComponent: () => import('./features/shop-detail/shop-detail').then(m => m.ShopDetailComponent) },
 
 
         ]

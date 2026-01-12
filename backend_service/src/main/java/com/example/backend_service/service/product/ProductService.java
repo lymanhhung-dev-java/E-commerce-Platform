@@ -7,5 +7,7 @@ import java.math.BigDecimal;
 
 public interface ProductService {
     Product getProductById(Long id);
-    Page<Product> getProducts(String search, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+
+    Page<Product> getProducts(String search, Long categoryId, Long shopId, BigDecimal minPrice, BigDecimal maxPrice,
+            Pageable pageable);
 }

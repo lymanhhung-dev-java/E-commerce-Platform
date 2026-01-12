@@ -21,28 +21,30 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
-    
+
     @Override
-    public Page<Product> getProducts(String search, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice,
+    public Page<Product> getProducts(String search, Long categoryId, Long shopId, BigDecimal minPrice,
+            BigDecimal maxPrice,
             Pageable pageable) {
         Specification<Product> spec = Specification.where(ProductSpecification.isActive());
-        if(search != null &&  !search.isEmpty()){
+        if (search != null && !search.isEmpty()) {
             spec = spec.and(ProductSpecification.hasName(search));
         }
-        if(categoryId != null){
+        if (categoryId != null) {
             spec = spec.and(ProductSpecification.hasCategory(categoryId));
         }
-        if(minPrice != null || maxPrice != null){
+        if (shopId != null) {
+            spec = spec.and(ProductSpecification.hasShop(shopId));
+        }
+        if (minPrice != null || maxPrice != null) {
             spec = spec.and(ProductSpecification.hasPriceRange(minPrice, maxPrice));
         }
         return productRepository.findAll(spec, pageable);
 
     }
 }
-

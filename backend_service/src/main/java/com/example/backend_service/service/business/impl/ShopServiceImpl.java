@@ -148,4 +148,11 @@ public class ShopServiceImpl implements ShopService {
 
         return shopRepository.save(shop);
     }
+
+    @Override
+    public ShopResponse getShopById(Long id) {
+        Shop shop = shopRepository.findById(id)
+                .orElseThrow(() -> new AppException("Shop not found"));
+        return ShopResponse.fromEntity(shop);
+    }
 }
