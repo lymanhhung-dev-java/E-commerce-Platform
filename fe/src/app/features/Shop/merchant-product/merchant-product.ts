@@ -23,8 +23,8 @@ export class MerchantProductListComponent implements OnInit {
     categories: any[] = [];
 
     filterKeyword: string = '';
-    filterCategoryId: number | null = null; 
-    filterStatus: string = 'ALL'; 
+    filterCategoryId: number | null = null;
+    filterStatus: string = 'ALL';
 
     // Phân trang
     page: number = 0;
@@ -74,7 +74,7 @@ export class MerchantProductListComponent implements OnInit {
     }
 
     onFilterChange() {
-        this.page = 0; 
+        this.page = 0;
         this.loadProducts();
     }
 
@@ -86,19 +86,30 @@ export class MerchantProductListComponent implements OnInit {
     }
 
     onToggleStatus(id: number) {
-       if (confirm('Bạn có chắc muốn thay đổi trạng thái không?')) {
-         this.productService.onToggleStatus(id).subscribe({
-            next: () => {
-                this.toastr.success('Thay đổi trạng thái thành công');
-                this.loadProducts();
-            },
-            error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
-        });
-       }
+        if (confirm('Bạn có chắc muốn thay đổi trạng thái không?')) {
+            this.productService.onToggleStatus(id).subscribe({
+                next: () => {
+                    this.toastr.success('Thay đổi trạng thái thành công');
+                    this.loadProducts();
+                },
+                error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
+            });
+        }
     }
 
 
     // 5. Xóa sản phẩm
+    // Helper để lấy stock an toàn từ nhiều trường có thể có
+    getStock(p: any): number {
+        return p.stockQuantity ?? p.stock ?? p.quantity ?? 0;
+    }
+
+    // Helper để lấy status an toàn
+    isActive(p: any): boolean {
+        // Kiểm tra kỹ các trường hợp true/false
+        return (p.active === true) || (p.status === true) || (p.isActive === true);
+    }
+
     onDelete(id: number) {
         if (confirm('Bạn có chắc muốn xóa sản phẩm này không?')) {
             this.productService.deleteProduct(id).subscribe({

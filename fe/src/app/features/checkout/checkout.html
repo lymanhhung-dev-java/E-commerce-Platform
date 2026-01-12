@@ -1,6 +1,6 @@
 <div class="checkout-wrapper">
   <div class="container">
-    
+
     <div class="checkout-header py-4">
       <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb m-0">
@@ -19,11 +19,11 @@
       <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="row g-0">
 
         <div class="col-lg-7 main-content p-4 p-md-5 ">
-          
+
           <h5 class="section-title mb-4">Thông tin nhận hàng</h5>
 
           <div class="mb-4" *ngIf="savedAddresses.length > 0">
-            <select class="form-select" (change)="onAddressChange($event)">
+            <select class="form-select" (change)="onAddressChange($event)" [value]="selectedAddressIndex">
               <option value="null">-- Chọn địa chỉ có sẵn --</option>
               <option *ngFor="let addr of savedAddresses; let i = index" [value]="i">
                 {{ addr.receiverName }} - {{ addr.street }}
@@ -34,8 +34,10 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Tên người nhận</label>
-              <input type="text" class="form-control border border-1" formControlName="receiverName" placeholder="VD: Nguyễn Văn A">
-              <div *ngIf="checkoutForm.get('receiverName')?.invalid && checkoutForm.get('receiverName')?.touched" class="text-danger small mt-1">
+              <input type="text" class="form-control border border-1" formControlName="receiverName"
+                placeholder="VD: Nguyễn Văn A">
+              <div *ngIf="checkoutForm.get('receiverName')?.invalid && checkoutForm.get('receiverName')?.touched"
+                class="text-danger small mt-1">
                 Bắt buộc nhập tên
               </div>
             </div>
@@ -43,14 +45,16 @@
             <div class="col-md-6">
               <label class="form-label">Số điện thoại</label>
               <input type="text" class="form-control border border-1" formControlName="phone" placeholder="VD: 098...">
-              <div *ngIf="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched" class="text-danger small mt-1">
+              <div *ngIf="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched"
+                class="text-danger small mt-1">
                 SĐT không hợp lệ
               </div>
             </div>
 
             <div class="col-12">
               <label class="form-label">Địa chỉ</label>
-              <input type="text" class="form-control border border-1" formControlName="address" placeholder="Số nhà, tên đường, phường/xã...">
+              <input type="text" class="form-control border border-1" formControlName="address"
+                placeholder="Số nhà, tên đường, phường/xã...">
             </div>
 
             <div class="col-md-6">
@@ -60,25 +64,27 @@
 
             <div class="col-md-6">
               <label class="form-label">Ghi chú</label>
-              <input type="text" class="form-control border border-1" formControlName="note" placeholder="Ghi chú tùy chọn">
+              <input type="text" class="form-control border border-1" formControlName="note"
+                placeholder="Ghi chú tùy chọn">
             </div>
           </div>
 
           <h5 class="section-title mt-5 mb-3">Phương thức thanh toán</h5>
-          
+
           <div class="payment-group border rounded-2 overflow-hidden">
             <ng-container *ngFor="let method of paymentMethods">
-              <div class="payment-item p-3 border-bottom d-flex align-items-center" 
-                   [class.bg-light]="checkoutForm.get('paymentMethod')?.value === method.code">
-                <input class="form-check-input mt-0 me-3" type="radio" [value]="method.code" [id]="method.code" formControlName="paymentMethod" style="cursor: pointer;">
+              <div class="payment-item p-3 border-bottom d-flex align-items-center"
+                [class.bg-light]="checkoutForm.get('paymentMethod')?.value === method.code">
+                <input class="form-check-input mt-0 me-3" type="radio" [value]="method.code" [id]="method.code"
+                  formControlName="paymentMethod" style="cursor: pointer;">
                 <label class="form-check-label flex-grow-1 fw-bold" [for]="method.code" style="cursor: pointer;">
                   {{ method.name }}
                 </label>
                 <i class="bi fs-5 text-secondary" [ngClass]="method.icon"></i>
               </div>
-              
-              <div class="p-3 bg-light text-muted small" 
-                   *ngIf="checkoutForm.get('paymentMethod')?.value === method.code && method.description">
+
+              <div class="p-3 bg-light text-muted small"
+                *ngIf="checkoutForm.get('paymentMethod')?.value === method.code && method.description">
                 {{ method.description }}
               </div>
             </ng-container>
@@ -87,12 +93,14 @@
         </div>
 
         <div class="col-lg-5 sidebar-summary bg-light p-4 p-md-5">
-          
+
           <div class="order-items mb-4">
-            <div *ngFor="let item of cartService.cartItems()" class="d-flex align-items-center mb-3">
+            <div *ngFor="let item of selectedItems" class="d-flex align-items-center mb-3">
               <div class="position-relative me-3">
-                <div class="product-img-box border rounded bg-white d-flex align-items-center justify-content-center" style="width: 65px; height: 65px;">
-                  <img [src]="item.product.imageUrl || 'https://via.placeholder.com/64'" [alt]="item.product.name" class="mw-100 mh-100">
+                <div class="product-img-box border rounded bg-white d-flex align-items-center justify-content-center"
+                  style="width: 65px; height: 65px;">
+                  <img [src]="item.product.imageUrl || 'https://via.placeholder.com/64'" [alt]="item.product.name"
+                    class="mw-100 mh-100">
                   <span *ngIf="!item.product.imageUrl" class="text-muted small">Img</span>
                 </div>
                 <span class="qty-badge-custom badge rounded-pill bg-secondary text-white">
@@ -102,7 +110,7 @@
 
               <div class="flex-grow-1">
                 <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;">{{ item.product.name }}</h6>
-                <small class="text-muted">{{ item.product.shopName || 'Size M' }}</small>
+                <small class="text-muted">{{ item.product.shopName || 'Shop' }}</small>
               </div>
               <div class="fw-bold text-dark">
                 {{ item.product.price * item.quantity | currency:'VND':'symbol':'1.0-0' }}
@@ -119,27 +127,31 @@
 
           <div class="d-flex justify-content-between mb-2">
             <span class="text-muted">Tạm tính</span>
-            <span class="fw-bold">{{ cartService.subTotal() | currency:'VND':'symbol':'1.0-0' }}</span>
+            <span class="fw-bold">{{ cartService.subTotalSelected() | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
-          <div class="d-flex justify-content-between mb-3">
+          <div class="d-flex justify-content-between mb-2">
             <span class="text-muted">Phí vận chuyển</span>
-            <span class="small text-success">Miễn phí</span>
+            <span class="fw-bold">{{ shippingCost | currency:'VND':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3 text-danger">
+            <span class="text-muted">Giảm giá</span>
+            <span class="fw-bold">-{{ discount | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
 
           <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">
             <span class="fs-5 text-dark">Tổng cộng</span>
             <div>
               <span class="small text-muted me-1">VND</span>
-              <span class="fs-3 fw-bold text-dark">{{ cartService.subTotal() | currency:'VND':'symbol':'1.0-0' }}</span>
+              <span class="fs-3 fw-bold text-dark">{{ finalTotal | currency:'VND':'symbol':'1.0-0' }}</span>
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold text-uppercase" 
-                  style="background-color: #1e317a; border: none;"
-                  [disabled]="cartService.cartItems().length === 0 || checkoutForm.invalid">
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold text-uppercase"
+            style="background-color: #1e317a; border: none;"
+            [disabled]="selectedItems.length === 0 || checkoutForm.invalid">
             ĐẶT HÀNG
           </button>
-          
+
           <div class="text-center mt-3 small text-muted">
             <i class="bi bi-shield-lock"></i> Bảo mật thanh toán bởi E-Market
           </div>
@@ -150,7 +162,8 @@
   </div>
 </div>
 
-<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0,0,0,0.7); z-index: 1055;" *ngIf="showQrModal">
+<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0,0,0,0.7); z-index: 1055;"
+  *ngIf="showQrModal">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center p-4 border-0 shadow-lg rounded-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
@@ -159,24 +172,25 @@
       </div>
       <div class="modal-body position-relative" style="min-height: 300px;">
         <div *ngIf="!isPaymentSuccess && !isExpired">
-            <p class="text-muted mb-3">Mở App Ngân hàng và quét mã bên dưới</p>
-            <div class="qr-wrapper position-relative d-inline-block p-2 border rounded-3 bg-white shadow-sm mb-3">
-                <img [src]="qrCodeUrl" alt="QR Code" class="img-fluid" style="max-width: 220px;">
-                <div class="spinner-border text-primary position-absolute top-50 start-50 translate-middle" role="status" style="width: 3rem; height: 3rem; opacity: 0.3; z-index: 0;"></div>
-            </div>
-            <div>
-                <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill border border-danger">
-                    Hết hạn sau: <span class="fw-bold fs-5 ms-1">{{ displayTime }}</span>
-                </span>
-            </div>
+          <p class="text-muted mb-3">Mở App Ngân hàng và quét mã bên dưới</p>
+          <div class="qr-wrapper position-relative d-inline-block p-2 border rounded-3 bg-white shadow-sm mb-3">
+            <img [src]="qrCodeUrl" alt="QR Code" class="img-fluid" style="max-width: 220px;">
+            <div class="spinner-border text-primary position-absolute top-50 start-50 translate-middle" role="status"
+              style="width: 3rem; height: 3rem; opacity: 0.3; z-index: 0;"></div>
+          </div>
+          <div>
+            <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill border border-danger">
+              Hết hạn sau: <span class="fw-bold fs-5 ms-1">{{ displayTime }}</span>
+            </span>
+          </div>
         </div>
         <div *ngIf="isPaymentSuccess" class="py-4 text-center success-container">
-            <h3 class="text-success fw-bold mb-2">Thanh toán thành công!</h3>
-            <p class="text-muted mb-4">Đang chuyển hướng...</p>
+          <h3 class="text-success fw-bold mb-2">Thanh toán thành công!</h3>
+          <p class="text-muted mb-4">Đang chuyển hướng...</p>
         </div>
         <div *ngIf="isExpired" class="py-5">
-            <h4 class="text-danger mt-3">Hết thời gian</h4>
-            <button class="btn btn-outline-dark mt-2" (click)="closeModal()">Đóng</button>
+          <h4 class="text-danger mt-3">Hết thời gian</h4>
+          <button class="btn btn-outline-dark mt-2" (click)="closeModal()">Đóng</button>
         </div>
       </div>
     </div>

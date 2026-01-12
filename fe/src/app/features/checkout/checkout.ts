@@ -30,7 +30,7 @@ export class CheckoutComponent implements OnInit {
   qrCodeUrl: string = '';
   currentOrderId: number | null = null;
 
-  countdownTime: number = 180; 
+  countdownTime: number = 180;
   displayTime: string = '03:00';
   isPaymentSuccess: boolean = false;
   isExpired: boolean = false;
@@ -39,6 +39,7 @@ export class CheckoutComponent implements OnInit {
   private pollingSubscription: Subscription | null = null;
 
   savedAddresses: Address[] = [];
+  selectedAddressIndex: any = 'null';
 
   // Form giữ nguyên
   checkoutForm = this.fb.group({
@@ -140,9 +141,10 @@ export class CheckoutComponent implements OnInit {
       next: (res) => {
         this.savedAddresses = res;
         // Tự động chọn địa chỉ mặc định (nếu có)
-        const defaultAddr = res.find(a => a.isDefault);
-        if (defaultAddr) {
-          this.onSelectAddress(defaultAddr);
+        const defaultIndex = res.findIndex(a => a.isDefault);
+        if (defaultIndex !== -1) {
+          this.selectedAddressIndex = defaultIndex;
+          this.onSelectAddress(res[defaultIndex]);
         }
       }
     });
@@ -150,7 +152,8 @@ export class CheckoutComponent implements OnInit {
 
   // --- LOGIC MỚI: Xử lý sự kiện khi chọn từ Dropdown ---
   onAddressChange(event: any) {
-    const index = event.target.value; // Lấy giá trị value (là index trong mảng)
+    const index = event.target.value;
+    this.selectedAddressIndex = index;
 
     if (index !== "" && index !== null && index !== "null") {
       // Nếu chọn 1 địa chỉ cụ thể
@@ -179,31 +182,31 @@ export class CheckoutComponent implements OnInit {
 
   closeModal() {
     if (this.isPaymentSuccess) return; // Nếu đã thành công thì ko cho hủy
-    
+
     // Nếu hết giờ hoặc người dùng bấm nút Quay lại -> Gọi API hủy đơn
     if (this.currentOrderId) {
-        this.stopPaymentProcess(); // Dừng check ngay
-        
-        this.checkoutService.cancelOrder(this.currentOrderId).subscribe({
-            next: () => {
-                this.toastr.info('Đã hủy đơn hàng. Giỏ hàng đã được khôi phục.');
-                this.showQrModal = false;
-                this.currentOrderId = null;
-                this.cartService.loadCart(); // Load lại giỏ hàng cũ
-            },
-            error: (err) => {
-                const msg = err.error?.message || '';
-                // CASE ĐẶC BIỆT: Backend phát hiện tiền đã vào rồi -> Không cho hủy
-                if (msg.includes('đã vào tài khoản') || msg.includes('thành công')) {
-                    this.handlePaymentSuccess();
-                    this.toastr.success('Phát hiện tiền vừa vào! Đơn hàng được xác nhận.');
-                } else {
-                    this.toastr.error('Lỗi khi hủy đơn: ' + msg);
-                }
-            }
-        });
+      this.stopPaymentProcess(); // Dừng check ngay
+
+      this.checkoutService.cancelOrder(this.currentOrderId).subscribe({
+        next: () => {
+          this.toastr.info('Đã hủy đơn hàng. Giỏ hàng đã được khôi phục.');
+          this.showQrModal = false;
+          this.currentOrderId = null;
+          this.cartService.loadCart(); // Load lại giỏ hàng cũ
+        },
+        error: (err) => {
+          const msg = err.error?.message || '';
+          // CASE ĐẶC BIỆT: Backend phát hiện tiền đã vào rồi -> Không cho hủy
+          if (msg.includes('đã vào tài khoản') || msg.includes('thành công')) {
+            this.handlePaymentSuccess();
+            this.toastr.success('Phát hiện tiền vừa vào! Đơn hàng được xác nhận.');
+          } else {
+            this.toastr.error('Lỗi khi hủy đơn: ' + msg);
+          }
+        }
+      });
     } else {
-        this.showQrModal = false;
+      this.showQrModal = false;
     }
   }
 
@@ -222,6 +225,17 @@ export class CheckoutComponent implements OnInit {
     this.checkoutForm.patchValue({ paymentMethod: 'COD' });
   }
 
+  shippingCost = 25000;
+  discount = 20.00;
+
+  get selectedItems() {
+    return this.cartService.cartItems().filter(item => item.selected);
+  }
+
+  get finalTotal() {
+    return this.cartService.subTotalSelected() + this.shippingCost - this.discount;
+  }
+
   onSubmit() {
     if (this.checkoutForm.invalid) {
       this.checkoutForm.markAllAsTouched();
@@ -231,13 +245,13 @@ export class CheckoutComponent implements OnInit {
 
     const formValue = this.checkoutForm.value;
 
-    const itemsPayload = this.cartService.cartItems().map(item => ({
+    const itemsPayload = this.selectedItems.map(item => ({
       productId: item.product.id,
       quantity: item.quantity
     }));
 
     if (itemsPayload.length === 0) {
-      this.toastr.error('Giỏ hàng trống!');
+      this.toastr.error('Vui lòng chọn sản phẩm để thanh toán!');
       return;
     }
 
@@ -251,14 +265,14 @@ export class CheckoutComponent implements OnInit {
       paymentMethod: formValue.paymentMethod
     };
 
-   this.checkoutService.checkout(requestData).subscribe({
+    this.checkoutService.checkout(requestData).subscribe({
       next: (response: any) => {
         let orderIds: number[] = [];
         if (Array.isArray(response)) orderIds = response;
         else if (response?.orderId) orderIds = response.orderId;
         else if (response?.id) orderIds = [response.id];
 
-        this.cartService.loadCart(); 
+        this.cartService.loadCart();
 
         if (formValue.paymentMethod === 'BANK_TRANSFER' && orderIds.length > 0) {
           this.onBankTransferCheckout(orderIds[0]);
