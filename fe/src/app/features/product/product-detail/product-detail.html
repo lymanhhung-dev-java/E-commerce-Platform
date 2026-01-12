@@ -77,7 +77,7 @@
           [disabled]="product.stockQuantity === 0">
           <i class="bi bi-cart3 me-2"></i> Thêm vào Giỏ hàng
         </button>
-        <button class="btn btn-orange text-white px-5 fw-bold flex-grow-1 shadow-sm"
+        <button class="btn btn-orange text-white px-5 fw-bold flex-grow-1 shadow-sm" (click)="buyNow()"
           [disabled]="product.stockQuantity === 0">
           Mua Ngay <i class="bi bi-arrow-right ms-2"></i>
         </button>

@@ -115,4 +115,10 @@ export class DetailProductComponent implements OnInit {
       this.cartService.addToCart(this.product!, this.quantity);
     }
   }
+
+  buyNow() {
+    if (this.product) {
+      this.cartService.buyNow(this.product!, this.quantity);
+    }
+  }
 }

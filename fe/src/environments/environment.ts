@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api'
+  apiUrl: 'https://xr9xx09n-4200.asse.devtunnels.ms/api'
 };
