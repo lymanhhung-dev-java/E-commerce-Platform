@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ShopService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}`; 
+  private apiUrl = `${environment.apiUrl}`;
   private uploadUrl = `${environment.apiUrl}/upload/avatar`;
 
   registerShop(data: any) {
@@ -26,7 +26,7 @@ export class ShopService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-      
+
     return this.http.get<any>(`${this.apiUrl}/admin/shops/requests`, { params });
   }
   getShopsForAdmin(keyword: string, status: string, page: number, size: number) {
@@ -42,11 +42,11 @@ export class ShopService {
 
   approveShop(shopId: number, isApproved: boolean) {
     const params = new HttpParams().set('isApproved', isApproved);
-    
+
     return this.http.put(
-      `${this.apiUrl}/admin/shops/${shopId}/approve`, 
+      `${this.apiUrl}/admin/shops/${shopId}/approve`,
       {},
-      { params, responseType: 'text' } 
+      { params, responseType: 'text' }
     );
   }
 
@@ -56,5 +56,9 @@ export class ShopService {
 
   resubmitShop(data: any) {
     return this.http.put(`${this.apiUrl}/merchant/shops/resubmit`, data);
+  }
+
+  updateShopInfo(data: any) {
+    return this.http.put(`${this.apiUrl}/merchant/shops/info`, data);
   }
 }

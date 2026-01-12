@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend_service.dto.request.business.RegisterShopRequest;
+import com.example.backend_service.dto.request.business.UpdateShopRequest;
 import com.example.backend_service.service.business.ShopService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +27,7 @@ public class MerchantShopController {
     @PostMapping("/register")
     public ResponseEntity<?> registerShop(@RequestBody RegisterShopRequest req) {
         return ResponseEntity.ok(shopService.registerShop(req));
-        
+
     }
 
     @Operation(summary = "Get Current Shop", description = "Lấy thông tin Shop của user đang đăng nhập")
@@ -40,4 +41,11 @@ public class MerchantShopController {
     public ResponseEntity<?> resubmitShop(@RequestBody RegisterShopRequest req) {
         return ResponseEntity.ok(shopService.updateShopRegistration(req));
     }
+
+    @Operation(summary = "Update Shop Info", description = "Cập nhật thông tin cửa hàng (Tên, địa chỉ, logo, mô tả)")
+    @PutMapping("/info")
+    public ResponseEntity<?> updateShopInfo(@RequestBody UpdateShopRequest req) {
+        return ResponseEntity.ok(shopService.updateShopInfo(req));
+    }
+
 }

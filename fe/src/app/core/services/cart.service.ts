@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { forkJoin, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { ProductService } from './product.service';
+import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 
 interface CartItemResponse {
@@ -27,6 +28,7 @@ export class CartService {
   private toastr = inject(ToastrService);
   private productService = inject(ProductService);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   // URL API: http://localhost:8080/api/cart
   private apiUrl = `${environment.apiUrl}/cart`;
@@ -46,11 +48,14 @@ export class CartService {
   totalAmount = computed(() => this.subTotal());
 
   constructor() {
-    this.loadCart();
+    // Left empty intentionally to let HeaderComponent control loading
   }
 
   // 1. Helper: Observable lấy giỏ hàng (tách ra để tái sử dụng)
   private fetchCart() {
+    if (!this.authService.isLoggedIn()) {
+      return of([]);
+    }
     return this.http.get<CartItemResponse[]>(this.apiUrl).pipe(
       switchMap(response => {
         if (!response || response.length === 0) {

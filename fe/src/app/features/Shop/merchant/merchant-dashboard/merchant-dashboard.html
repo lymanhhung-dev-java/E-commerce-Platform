@@ -1,3 +1,25 @@
+<div class="card border-0 shadow-sm rounded-4 mb-4" *ngIf="shop">
+  <div class="card-body p-4">
+    <div class="d-flex align-items-center gap-4">
+      <img [src]="shop.logoUrl || 'assets/images/default-shop.png'" alt="Shop Logo"
+        class="rounded-circle object-fit-cover border" width="100" height="100">
+      <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h4 class="fw-bold mb-1">{{ shop.shopName }}</h4>
+            <p class="text-muted mb-2"><i class="bi bi-geo-alt me-1"></i>{{ shop.address }}</p>
+            <p class="mb-0 text-secondary">{{ shop.description }}</p>
+          </div>
+          <button class="btn btn-outline-primary rounded-pill px-3" data-bs-toggle="modal"
+            data-bs-target="#editShopModal" (click)="openEditModal()">
+            <i class="bi bi-pencil me-1"></i> Chỉnh sửa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row g-3 mb-4">
   <div class="col-md-6 col-xl-3">
     <div class="card border-0 shadow-sm rounded-4 p-3 h-100 card-hover">
@@ -7,10 +29,10 @@
           <i class="bi bi-wallet2"></i>
         </div>
       </div>
-      <h3 class="fw-bold mb-2">{{ stats.revenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h3> 
-      </div>
+      <h3 class="fw-bold mb-2">{{ stats.revenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h3>
+    </div>
   </div>
-  </div>
+</div>
 
 <div class="card border-0 shadow-sm rounded-4 mb-4">
   <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -18,33 +40,78 @@
       <h5 class="fw-bold mb-0">Biểu đồ doanh thu</h5>
       <small class="text-muted">Theo dõi hiệu quả kinh doanh theo thời gian</small>
     </div>
-    
+
     <div class="btn-group" role="group">
-      <button type="button" class="btn btn-sm px-3" 
-              [class.btn-primary]="selectedType === 'WEEK'" 
-              [class.btn-outline-secondary]="selectedType !== 'WEEK'"
-              (click)="loadRevenueStatistics('WEEK')">Tuần</button>
-              
-      <button type="button" class="btn btn-sm px-3" 
-              [class.btn-primary]="selectedType === 'MONTH'" 
-              [class.btn-outline-secondary]="selectedType !== 'MONTH'"
-              (click)="loadRevenueStatistics('MONTH')">Tháng</button>
-              
-      <button type="button" class="btn btn-sm px-3" 
-              [class.btn-primary]="selectedType === 'YEAR'" 
-              [class.btn-outline-secondary]="selectedType !== 'YEAR'"
-              (click)="loadRevenueStatistics('YEAR')">Năm</button>
+      <button type="button" class="btn btn-sm px-3" [class.btn-primary]="selectedType === 'WEEK'"
+        [class.btn-outline-secondary]="selectedType !== 'WEEK'" (click)="loadRevenueStatistics('WEEK')">Tuần</button>
+
+      <button type="button" class="btn btn-sm px-3" [class.btn-primary]="selectedType === 'MONTH'"
+        [class.btn-outline-secondary]="selectedType !== 'MONTH'" (click)="loadRevenueStatistics('MONTH')">Tháng</button>
+
+      <button type="button" class="btn btn-sm px-3" [class.btn-primary]="selectedType === 'YEAR'"
+        [class.btn-outline-secondary]="selectedType !== 'YEAR'" (click)="loadRevenueStatistics('YEAR')">Năm</button>
     </div>
   </div>
 
   <div class="card-body p-4">
     <div style="height: 350px; position: relative;">
       <canvas #revenueChart></canvas>
-      
-      <div *ngIf="isLoadingChart" class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center">
+
+      <div *ngIf="isLoadingChart"
+        class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Shop Modal -->
+<div class="modal fade" id="editShopModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Chỉnh sửa thông tin Shop</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          id="closeEditModalBtn"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="saveShopInfo()">
+
+          <!-- Logo Upload -->
+          <div class="text-center mb-4">
+            <div class="position-relative d-inline-block">
+              <img [src]="editShopForm.logoUrl || 'assets/images/default-shop.png'"
+                class="rounded-circle object-fit-cover border" width="100" height="100">
+              <label class="btn btn-sm btn-light position-absolute bottom-0 end-0 rounded-circle shadow-sm p-1"
+                style="width: 32px; height: 32px; cursor: pointer;">
+                <i class="bi bi-camera"></i>
+                <input type="file" (change)="onLogoSelected($event)" accept="image/*" class="d-none">
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Tên Shop</label>
+            <input type="text" class="form-control" [(ngModel)]="editShopForm.shopName" name="shopName" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Địa chỉ</label>
+            <input type="text" class="form-control" [(ngModel)]="editShopForm.address" name="address" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Mô tả</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="editShopForm.description"
+              name="description"></textarea>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary rounded-pill py-2">Lưu thay đổi</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
