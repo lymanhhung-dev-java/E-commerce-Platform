@@ -20,7 +20,7 @@ export interface WithdrawRequest {
 @Injectable({ providedIn: 'root' })
 export class MerchantWalletService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/merchant/wallet`; 
+  private apiUrl = `${environment.apiUrl}/merchant/wallet`;
 
   // 1. Lấy thông tin tổng quan ví
   getWalletOverview(): Observable<WalletOverviewResponse> {
@@ -32,8 +32,8 @@ export class MerchantWalletService {
     return this.http.post(`${this.apiUrl}/withdraw`, data, { responseType: 'text' });
   }
 
-  // 3. Lấy lịch sử rút tiền (Nếu cần)
+  // 3. Lấy lịch sử rút tiền
   getWithdrawHistory(page: number = 0, size: number = 10): Observable<any> {
-     return this.http.get<any>(`${this.apiUrl}/history?page=${page}&size=${size}`);
+    return this.http.get<any>(`${environment.apiUrl}/merchant/withdrawals?page=${page}&size=${size}`);
   }
 }

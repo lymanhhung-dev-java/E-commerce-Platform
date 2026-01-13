@@ -1,8 +1,8 @@
 <div class="container-fluid p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="fw-bold mb-1">Quản lý Cửa hàng</h3>
-            <p class="text-muted small">Danh sách tất cả các shop trên hệ thống</p>
+            <h3 class="fw-bold mb-1">Quản lý cửa hàng</h3>
+            <p class="text-muted small">Danh sách tất cả các cửa hàng trên hệ thống</p>
         </div>
         <span class="badge bg-primary rounded-pill px-3 py-2">
             Tổng: {{ totalElements }} Shop
@@ -16,17 +16,17 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control border-start-0 ps-0"
-                            placeholder="Tìm theo tên shop hoặc username..." [(ngModel)]="keyword"
+                            placeholder="Tìm theo tên shop hoặc tên người dùng..." [(ngModel)]="keyword"
                             (keyup.enter)="onFilterChange()">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <select class="form-select" [(ngModel)]="selectedStatus" (change)="onFilterChange()">
                         <option value="">-- Tất cả trạng thái --</option>
-                        <option value="PENDING">Chờ duyệt (Pending)</option>
-                        <option value="ACTIVE">Đang hoạt động (Active)</option>
-                        <option value="REJECTED">Đã từ chối (Rejected)</option>
-                        <option value="BANNED">Đã khóa (Banned)</option>
+                        <option value="PENDING">Chờ duyệt</option>
+                        <option value="ACTIVE">Đang hoạt động</option>
+                        <option value="REJECTED">Đã từ chối</option>
+                        <option value="BANNED">Đã khóa</option>
                     </select>
                 </div>
                 <div class="col-md-3 text-end">
@@ -42,7 +42,7 @@
                 <thead class="bg-light">
                     <tr>
                         <th class="ps-4">ID</th>
-                        <th>Thông tin Shop</th>
+                        <th>Thông tin cửa hàng</th>
                         <th>Chủ sở hữu</th>
                         <th>Trạng thái</th>
                         <th>Đánh giá</th>
@@ -72,7 +72,10 @@
                   'bg-success': shop.status === 'ACTIVE',
                   'bg-danger': shop.status === 'REJECTED' || shop.status === 'BANNED'
                 }">
-                                {{ shop.status }}
+                                {{ shop.status === 'PENDING' ? 'Chờ duyệt' :
+                                shop.status === 'ACTIVE' ? 'Đang hoạt động' :
+                                shop.status === 'REJECTED' ? 'Đã từ chối' :
+                                shop.status === 'BANNED' ? 'Đã khóa' : '' }}
                             </span>
                         </td>
                         <td>

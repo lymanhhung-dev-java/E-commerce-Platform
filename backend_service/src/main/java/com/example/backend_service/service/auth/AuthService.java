@@ -2,6 +2,7 @@ package com.example.backend_service.service.auth;
 
 import com.example.backend_service.dto.request.auth.LoginRequest;
 import com.example.backend_service.dto.request.auth.RegisterRequest;
+import com.example.backend_service.dto.request.auth.SocialLoginRequest;
 import com.example.backend_service.dto.response.auth.TokenResponse;
 import com.example.backend_service.model.auth.User;
 
@@ -11,4 +12,6 @@ public interface AuthService {
    TokenResponse getAccessToken(LoginRequest loginRequest);
    
    TokenResponse getRefreshToken(String refreshToken);
+
+   TokenResponse googleLogin(SocialLoginRequest req);
 } 

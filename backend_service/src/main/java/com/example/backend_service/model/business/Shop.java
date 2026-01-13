@@ -32,6 +32,7 @@ public class Shop extends AbstractEntity<Long> implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "owner_id", unique = true, nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User owner;
 
     @Column(name = "shop_name", nullable = false)

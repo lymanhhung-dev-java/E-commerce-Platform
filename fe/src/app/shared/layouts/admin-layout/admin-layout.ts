@@ -24,7 +24,7 @@ export class AdminLayoutComponent {
   ];
   
   systemItems = [
-     { label: 'Settings', icon: 'bi-gear-fill', route: '/admin/settings' },
-     { label: 'Help Center', icon: 'bi-question-circle-fill', route: '/admin/help' },
+     { label: 'Cài đặt', icon: 'bi-gear-fill', route: '/admin/settings' },
+     { label: 'Trung tâm hỗ trợ', icon: 'bi-question-circle-fill', route: '/admin/help' },
   ];
 }

@@ -27,42 +27,48 @@
           <div *ngFor="let item of cartService.cartItems()" class="p-3 border-bottom cart-item-row">
             <div class="row align-items-center">
 
-              <div class="col-md-5 d-flex align-items-center gap-3 overflow-hidden">
-                <input type="checkbox" class="form-check-input mt-0" checked>
-                <img [src]="item.product.imageUrl || 'https://via.placeholder.com/80'" class="rounded bg-light"
-                  style="width: 80px; height: 80px; object-fit: cover;">
-                <div>
+              <div class="col-md-5 d-flex align-items-center gap-3">
+                <input type="checkbox" class="form-check-input mt-0" [(ngModel)]="item.selected" />
 
-                  <div class="product-info">
-                    <h6 class="mb-1 product-name" [title]="item.product.name">
-                      <a [routerLink]="['/product', item.product.id]" class="text-dark text-decoration-none">
-                        {{ item.product.name }}
-                      </a>
-                    </h6>
-                    <div class="small text-muted">
-                      {{ item.product.shopName || 'Shop' }}
-                    </div>
+                <div class="product-image">
+                  <img [src]="item.product.imageUrl || 'https://via.placeholder.com/80'" alt="product" />
+                </div>
+
+                <div class="product-info">
+                  <h6 class="mb-1 product-name" [title]="item.product.name">
+                    <a [routerLink]="['/product', item.product.id]" class="text-dark text-decoration-none">
+                      {{ item.product.name }}
+                    </a>
+                  </h6>
+                  <div class="small text-muted">
+                    {{ item.product.shopName || 'Shop' }}
                   </div>
                 </div>
               </div>
+
 
               <div class="col-md-2 text-center fw-bold text-secondary d-none d-md-block">
                 {{ item.product.price | currency:'VND':'symbol':'1.0-0' }}
               </div>
 
+
               <div class="col-md-2 d-flex justify-content-center">
                 <div class="input-group input-group-sm" style="width: 100px;">
-                  <button class="btn btn-outline-secondary"
-                    (click)="decreaseQty(item.product.id, item.quantity)">-</button>
+                  <button class="btn btn-outline-secondary" [disabled]="item.quantity <= 1"
+                    (click)="decreaseQty(item.product.id, item.quantity)">
+                    -
+                  </button>
                   <input type="text" class="form-control text-center bg-white" [value]="item.quantity" readonly>
                   <button class="btn btn-outline-secondary"
                     (click)="increaseQty(item.product.id, item.quantity)">+</button>
                 </div>
               </div>
 
+
               <div class="col-md-2 text-end fw-bold d-none d-md-block">
                 {{ item.product.price * item.quantity | currency:'VND':'symbol':'1.0-0' }}
               </div>
+
 
               <div class="col-md-1 text-end">
                 <button class="btn btn-link text-danger p-0" (click)="removeItem(item.product.id)">
@@ -73,6 +79,7 @@
             </div>
           </div>
 
+
         </div>
       </div>
 
@@ -80,21 +87,7 @@
         <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
       </a>
 
-      <div class="mt-5">
-        <h5 class="fw-bold mb-3">Có thể bạn cũng thích</h5>
-        <div class="row row-cols-2 row-cols-md-4 g-3">
-          <div class="col">
-            <div class="card h-100 border-0 shadow-sm">
-              <img src="https://via.placeholder.com/150" class="card-img-top p-3 rounded">
-              <div class="card-body pt-0">
-                <p class="card-text small fw-bold">Chuột không dây Pro</p>
-                <p class="text-muted small">$49.99</p>
-                <button class="btn btn-outline-primary btn-sm w-100">Thêm vàp giỏ</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
     </div>
 
@@ -104,18 +97,20 @@
           <h5 class="card-title fw-bold mb-4">Tóm tắt đơn hàng</h5>
 
           <div class="d-flex justify-content-between mb-2 text-muted">
-            <span>Tạm tính ({{ cartService.totalCount() }} sản phẩm)</span>
-            <span>{{ cartService.subTotal() | currency:'VND':'symbol':'1.0-0' }}</span>
+            <span>
+              Tạm tính (
+              {{ cartService.selectedCount() }} sản phẩm
+              )
+            </span>
+            <span>
+              {{ cartService.subTotalSelected() | currency:'VND':'symbol':'1.0-0' }}
+            </span>
+
           </div>
 
           <div class="d-flex justify-content-between mb-2 text-muted">
             <span>Phí vận chuyển</span>
-            <span class="text-success">Miễn phí</span>
-          </div>
-
-          <div class="d-flex justify-content-between mb-2 text-muted">
-            <span>Thuế ước tính</span>
-            <span>{{ taxEstimate | currency:'VND':'symbol':'1.0-0' }}</span>
+            <span>{{ shippingCost | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
 
           <div class="d-flex justify-content-between mb-4 text-danger">

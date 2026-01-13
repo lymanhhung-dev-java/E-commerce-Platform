@@ -1,5 +1,6 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
+
 import { routes } from './app.routes';
 
 // 1. Import các thư viện HTTP cần thiết
@@ -16,8 +17,15 @@ registerLocaleData(localeVi);
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+        provideRouter(
+      routes,
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'top',
+        anchorScrolling: 'enabled'
+      })
+    ),
     
+
     // 2. QUAN TRỌNG: Cung cấp HttpClient tại đây
     provideHttpClient(
       withFetch(), // Cần thiết cho SSR (Server Side Rendering)

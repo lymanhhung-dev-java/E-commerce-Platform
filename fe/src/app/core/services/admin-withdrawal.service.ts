@@ -28,7 +28,7 @@ export class AdminWithdrawalService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
-    
+
     if (status && status !== 'ALL') {
       params = params.set('status', status);
     }

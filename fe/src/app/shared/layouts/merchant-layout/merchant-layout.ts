@@ -47,8 +47,8 @@ export class MerchantLayoutComponent implements OnInit {
   ];
 
   settingsMenuItems: MenuItem[] = [
-    { label: 'General', icon: 'bi-gear', route: '/merchant/settings' },
-    { label: 'Support', icon: 'bi-headset', route: '/merchant/support' }
+    { label: 'Cài đặt chung', icon: 'bi-gear', route: '/merchant/settings' },
+    { label: 'Hỗ trợ', icon: 'bi-headset', route: '/merchant/support' }
   ];
 
   constructor() {

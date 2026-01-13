@@ -9,31 +9,37 @@ import { MerchantWalletService } from '../../../core/services/merchant-wallet.se
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './merchant-wallet.html',
-  styleUrls: ['./merchant-wallet.css'] 
+  styleUrls: ['./merchant-wallet.css']
 })
 export class MerchantWalletComponent implements OnInit {
-  walletData: any = null; 
-  periodRevenue: number = 0; 
-  
+  walletData: any = null;
+  periodRevenue: number = 0;
+
   showWithdrawModal = false;
   withdrawForm: FormGroup;
 
   constructor(
-    private walletService: MerchantWalletService, 
-    private statisticService: MerchantStatisticService, 
+    private walletService: MerchantWalletService,
+    private statisticService: MerchantStatisticService,
     private fb: FormBuilder
   ) {
     this.withdrawForm = this.fb.group({
-      amount: [0, [Validators.required, Validators.min(50000)]], 
-      bankName: ['MBBank', Validators.required], 
+      amount: [0, [Validators.required, Validators.min(50000)]],
+      bankName: ['MBBank', Validators.required],
       accountNumber: ['', Validators.required],
       accountName: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
 
+  withdrawalHistory: any[] = [];
+  historyPage = 0;
+  historySize = 10;
+  historyTotalPages = 0;
+
   ngOnInit() {
     this.loadWalletInfo();
-    this.loadPeriodRevenue('MONTH'); 
+    this.loadPeriodRevenue('MONTH');
+    this.loadHistory();
   }
 
   loadWalletInfo() {
@@ -42,8 +48,23 @@ export class MerchantWalletComponent implements OnInit {
     });
   }
 
+  loadHistory() {
+    this.walletService.getWithdrawHistory(this.historyPage, this.historySize).subscribe({
+      next: (res) => {
+        this.withdrawalHistory = res.content;
+        this.historyTotalPages = res.totalPages;
+      },
+      error: () => console.error('Lỗi nhận lịch sử rút tiền')
+    });
+  }
+
+  onPageChange(page: number) {
+    this.historyPage = page;
+    this.loadHistory();
+  }
+
   onChangePeriod(event: any) {
-    const type = event.target.value; 
+    const type = event.target.value;
     this.loadPeriodRevenue(type);
   }
 
@@ -64,7 +85,7 @@ export class MerchantWalletComponent implements OnInit {
       this.withdrawForm.markAllAsTouched();
       return;
     }
-    
+
     const requestAmount = this.withdrawForm.value.amount;
     const currentBalance = this.walletData?.currentBalance || 0;
 
@@ -77,19 +98,20 @@ export class MerchantWalletComponent implements OnInit {
       next: () => {
         alert('Yêu cầu rút tiền thành công!');
         this.showWithdrawModal = false;
-        this.loadWalletInfo(); 
+        this.loadWalletInfo();
+        this.loadHistory(); // Reload history
       },
       error: (err) => alert('Lỗi: ' + (err.error || err.message))
     });
   }
-  
+
   openWithdrawModal() {
-     this.showWithdrawModal = true;
-     this.withdrawForm.reset({ 
-       amount: 0, 
-       bankName: 'MBBank', 
-       accountNumber: '', 
-       accountName: '' 
-     });
+    this.showWithdrawModal = true;
+    this.withdrawForm.reset({
+      amount: 0,
+      bankName: 'MBBank',
+      accountNumber: '',
+      accountName: ''
+    });
   }
 }

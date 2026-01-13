@@ -9,7 +9,7 @@
     
     <hr class="border-secondary opacity-50">
 
-    <div class="mb-2 text-uppercase text-secondary small fw-bold px-3 mt-3">Main Menu</div>
+    <div class="mb-2 text-uppercase text-secondary small fw-bold px-3 mt-3">BẢNG ĐIỀU KHIỂN</div>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item mb-1" *ngFor="let item of menuItems">
         <a [routerLink]="item.route" 
@@ -22,7 +22,7 @@
       </li>
     </ul>
 
-    <div class="mb-2 text-uppercase text-secondary small fw-bold px-3 mt-4">System</div>
+    <div class="mb-2 text-uppercase text-secondary small fw-bold px-3 mt-4">HỆ THỐNG</div>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item mb-1" *ngFor="let item of systemItems">
         <a [routerLink]="item.route" 
@@ -37,7 +37,7 @@
     <div class="mt-auto pt-4 border-top border-secondary">
       <button class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2" 
               (click)="authService.logout()">
-         <i class="bi bi-box-arrow-left"></i> Logout
+         <i class="bi bi-box-arrow-left"></i> ĐĂNG XUẤT
       </button>
     </div>
   </aside>
@@ -45,12 +45,12 @@
   <div class="main-content flex-grow-1 d-flex flex-column">
     
     <header class="bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center shadow-sm sticky-top">
-       <h4 class="fw-bold mb-0 text-dark">Overview</h4>
+       <h4 class="fw-bold mb-0 text-dark">Trang chủ</h4>
        
        <div class="d-flex align-items-center gap-4">
           <div class="input-group bg-light rounded-pill px-3 py-1" style="width: 300px;">
              <i class="bi bi-search text-muted align-self-center"></i>
-             <input type="text" class="form-control bg-transparent border-0 shadow-none small" placeholder="Search...">
+             <input type="text" class="form-control bg-transparent border-0 shadow-none small" placeholder="Tìm kiếm...">
           </div>
 
           <div class="d-flex align-items-center gap-3">
@@ -63,8 +63,8 @@
              
              <div class="d-flex align-items-center gap-2 cursor-pointer">
                 <div class="text-end d-none d-md-block line-height-sm">
-                   <div class="fw-bold small text-dark">Alex Morgan</div>
-                   <div class="text-muted" style="font-size: 10px;">Administrator</div>
+                   <div class="fw-bold small text-dark">AdminShop</div>
+                   <div class="text-muted" style="font-size: 10px;">Quản trị viên</div>
                 </div>
                 <img src="https://via.placeholder.com/40" class="rounded-circle border" width="40" height="40">
              </div>

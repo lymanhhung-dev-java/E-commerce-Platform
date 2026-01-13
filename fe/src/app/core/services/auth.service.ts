@@ -9,7 +9,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private platformId = inject(PLATFORM_ID); // 1. Inject PLATFORM_ID
-  
+
   // 2. Khởi tạo mặc định là false để tránh lỗi trên Server
   isLoggedIn = signal<boolean>(false);
 
@@ -41,6 +41,18 @@ export class AuthService {
 
   register(userData: any) {
     return this.http.post(`${this.apiUrl}/register`, userData);
+  }
+
+  loginWithGoogle(code: string) {
+    return this.http.post<any>(`${this.apiUrl}/google`, { code }).pipe(
+      tap(response => {
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('access_token', response.accessToken);
+          localStorage.setItem('refresh_token', response.refreshToken);
+        }
+        this.isLoggedIn.set(true);
+      })
+    );
   }
 
   logout() {

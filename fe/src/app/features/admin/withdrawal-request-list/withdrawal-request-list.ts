@@ -22,7 +22,7 @@ export class WithdrawalRequestListComponent implements OnInit {
   private toastr = inject(ToastrService);
 
   withdrawals: Withdrawal[] = [];
-  
+
   // Pagination
   currentPage = 0;
   pageSize = 10;
@@ -53,7 +53,16 @@ export class WithdrawalRequestListComponent implements OnInit {
           this.isLoading = false;
         },
         error: (err) => {
-          this.toastr.error('Lỗi tải dữ liệu');
+
+          if (err.status === 200 && err.message.includes('Http failure during parsing')) {
+            this.toastr.error('Dữ liệu từ Server bị lỗi (JSON Invalid)');
+          } else if (err.status === 403) {
+            this.toastr.error('Bạn không có quyền truy cập (403)');
+          } else if (err.status === 404) {
+            this.toastr.error('API không tồn tại (404)');
+          } else {
+            this.toastr.error('Lỗi tải dữ liệu: ' + (err.error?.message || err.message));
+          }
           this.isLoading = false;
         }
       });

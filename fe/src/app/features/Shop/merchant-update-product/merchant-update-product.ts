@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ProductService } from '../../../core/services/product.service'; 
+import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { forkJoin, Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -11,26 +11,26 @@ import { CommonModule } from '@angular/common';
   selector: 'app-merchant-product-form',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
+    CommonModule,
+    ReactiveFormsModule,
     FormsModule,
-    RouterModule 
+    RouterModule
   ],
   templateUrl: './merchant-update-product.html',
-  styleUrls: ['./merchant-update-product.css'] 
+  styleUrls: ['./merchant-update-product.css']
 })
 export class MerchantProductFormComponent implements OnInit {
   productForm: FormGroup;
   isEditMode = false;
   productId: number | null = null;
   categories: any[] = [];
-  
+
   mainImageFile: File | null = null;
   mainImagePreview: string = '';
 
-  existingDetailImages: string[] = []; 
-  newDetailImageFiles: File[] = [];   
-  newDetailImagePreviews: string[] = []; 
+  existingDetailImages: string[] = [];
+  newDetailImageFiles: File[] = [];
+  newDetailImagePreviews: string[] = [];
 
   isLoading = false;
 
@@ -98,7 +98,7 @@ export class MerchantProductFormComponent implements OnInit {
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       this.mainImageFile = file;
-      
+
       // Tạo preview
       const reader = new FileReader();
       reader.onload = (e: any) => this.mainImagePreview = e.target.result;
@@ -110,15 +110,34 @@ export class MerchantProductFormComponent implements OnInit {
   onDetailImagesSelected(event: any) {
     if (event.target.files.length > 0) {
       const files = Array.from(event.target.files) as File[];
-      
-      files.forEach(file => {
+      const currentCount = this.existingDetailImages.length + this.newDetailImageFiles.length;
+      const maxImages = 5;
+
+      if (currentCount >= maxImages) {
+        alert(`Bạn chỉ được đăng tối đa ${maxImages} ảnh phụ.`);
+        event.target.value = '';
+        return;
+      }
+
+      const availableSlots = maxImages - currentCount;
+      let filesToAdd = files;
+
+      if (files.length > availableSlots) {
+        alert(`Bạn chỉ có thể thêm ${availableSlots} ảnh nữa.`);
+        filesToAdd = files.slice(0, availableSlots);
+      }
+
+      filesToAdd.forEach(file => {
         this.newDetailImageFiles.push(file);
-        
+
         // Tạo preview cho từng file
         const reader = new FileReader();
         reader.onload = (e: any) => this.newDetailImagePreviews.push(e.target.result);
         reader.readAsDataURL(file);
       });
+
+      // Reset value để user có thể chọn lại
+      event.target.value = '';
     }
   }
 
@@ -150,7 +169,7 @@ export class MerchantProductFormComponent implements OnInit {
     }
 
     // Task upload các ảnh chi tiết mới
-    const detailImageObsList = this.newDetailImageFiles.map(file => 
+    const detailImageObsList = this.newDetailImageFiles.map(file =>
       this.productService.uploadFile(file)
     );
 
@@ -162,13 +181,13 @@ export class MerchantProductFormComponent implements OnInit {
       next: (results) => {
         // 3. Chuẩn bị dữ liệu gửi BE
         const formValue = this.productForm.value;
-        
+
         // Xác định ảnh chính: Nếu có upload mới thì dùng url mới, không thì dùng url cũ (đang lưu ở preview)
         const finalMainImage = results.newMainUrl ? results.newMainUrl : this.mainImagePreview;
-        
+
         // Xác định ảnh chi tiết: Gộp ảnh cũ (chưa bị xóa) + ảnh mới vừa upload
         const finalDetailImages = [
-          ...this.existingDetailImages, 
+          ...this.existingDetailImages,
           ...(results.newDetailUrls as string[])
         ];
 
@@ -180,8 +199,8 @@ export class MerchantProductFormComponent implements OnInit {
 
         // Create cần map field mainImageUrl nếu BE yêu cầu khác
         if (!this.isEditMode) {
-           payload['mainImageUrl'] = finalMainImage;
-           payload['detailImageUrls'] = finalDetailImages; // Create dùng detailImageUrls, Update dùng detailImages (tùy BE)
+          payload['mainImageUrl'] = finalMainImage;
+          payload['detailImageUrls'] = finalDetailImages; // Create dùng detailImageUrls, Update dùng detailImages (tùy BE)
         }
 
         // 4. Gọi API Save

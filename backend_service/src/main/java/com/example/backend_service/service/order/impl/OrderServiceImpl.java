@@ -79,4 +79,17 @@ public class OrderServiceImpl implements OrderService {
 
         return orderPage.map(OrderResponse::fromEntity);
     }
+
+    @Override
+    public OrderResponse getMyOrderDetails(Long id) {
+        User currentUser = getCurrentUser();
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new AppException("Đơn hàng không tồn tại"));
+
+        if (!order.getUser().getId().equals(currentUser.getId())) {
+             throw new AppException("Bạn không có quyền xem đơn hàng này");
+        }
+
+        return OrderResponse.fromEntity(order);
+    }
 }

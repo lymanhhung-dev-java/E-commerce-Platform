@@ -1,8 +1,9 @@
-import { Component, inject, OnInit,PLATFORM_ID } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators,FormsModule } from '@angular/forms';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UserService } from '../../../core/services/user.service';
 import { ToastrService } from 'ngx-toastr';
-import { CommonModule,isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { User } from '../../../core/models/user';
 import { Address } from '../../../core/models/address';
 import { AddressService } from '../../../core/services/address.service';
@@ -14,7 +15,7 @@ import { Order } from '../../../core/models/order';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule,FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -25,6 +26,7 @@ export class ProfileComponent implements OnInit {
   addressService = inject(AddressService);
   platformId = inject(PLATFORM_ID);
   authService = inject(AuthService);
+  router = inject(Router);
   orderService = inject(OrderService);
 
 
@@ -34,8 +36,8 @@ export class ProfileComponent implements OnInit {
   pageSize: number = 5;
   totalElements: number = 0;
   totalPages: number = 0;
-  
-  keyword: string = '';      
+
+  keyword: string = '';
   selectedStatus: string = 'ALL';
 
   addresses: Address[] = [];
@@ -43,7 +45,7 @@ export class ProfileComponent implements OnInit {
   isEditingAddress = false;
   currentAddressId: number | null = null;
 
-  activeTab: 'info' | 'security' | 'address' | 'orders' = 'info' ;
+  activeTab: 'info' | 'security' | 'address' | 'orders' = 'info';
 
   addressForm = this.fb.group({
     receiverName: ['', Validators.required],
@@ -81,9 +83,13 @@ export class ProfileComponent implements OnInit {
 
   }
 
+  viewOrderDetail(orderId: number) {
+    this.router.navigate(['/profile/order', orderId]);
+  }
+
   switchTab(tab: 'info' | 'security' | 'address' | 'orders') {
     this.activeTab = tab;
-    this.showAddressForm = false; 
+    this.showAddressForm = false;
   }
 
   loadProfile() {
@@ -104,19 +110,27 @@ export class ProfileComponent implements OnInit {
 
   onChangePassword() {
     if (this.passwordForm.invalid) return;
-    
-    const { newPassword, confirmPassword } = this.passwordForm.value;
+
+    const { newPassword, confirmPassword, currentPassword } = this.passwordForm.value;
     if (newPassword !== confirmPassword) {
       this.toastr.error('Mật khẩu xác nhận không khớp');
       return;
     }
 
-    this.userService.changePassword(this.passwordForm.value).subscribe({
-      next: () => {
+    const payload = {
+      oldPassword: currentPassword,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword
+    };
+
+    this.userService.changePassword(payload).subscribe({
+      next: (res) => {
         this.toastr.success('Đổi mật khẩu thành công');
         this.passwordForm.reset();
       },
-      error: (err) => this.toastr.error(err.error?.message || 'Đổi mật khẩu thất bại')
+      error: (err) => {
+        this.toastr.error(err.error?.message || 'Đổi mật khẩu thất bại');
+      }
     });
   }
 
@@ -143,27 +157,27 @@ export class ProfileComponent implements OnInit {
         next: (res: any) => {
           // Kiểm tra kết quả trả về
           if (res.content) {
-             // Trường hợp 1: Backend trả về Page (Đã phân trang)
-             this.orders = res.content;
-             this.totalPages = res.totalPages;
-             this.totalElements = res.totalElements;
+            // Trường hợp 1: Backend trả về Page (Đã phân trang)
+            this.orders = res.content;
+            this.totalPages = res.totalPages;
+            this.totalElements = res.totalElements;
           } else if (Array.isArray(res)) {
-             // Trường hợp 2: Backend trả về List thường (Chưa phân trang)
-             this.orders = res;
-             this.totalPages = 1; 
+            // Trường hợp 2: Backend trả về List thường (Chưa phân trang)
+            this.orders = res;
+            this.totalPages = 1;
           } else {
-             this.orders = [];
+            this.orders = [];
           }
         },
         error: () => {
-           this.toastr.error('Lỗi tải danh sách đơn hàng');
-           this.orders = [];
+          this.toastr.error('Lỗi tải danh sách đơn hàng');
+          this.orders = [];
         }
       });
   }
 
   onSearch() {
-    this.currentPage = 0; 
+    this.currentPage = 0;
     this.loadOrders();
   }
 
@@ -172,14 +186,14 @@ export class ProfileComponent implements OnInit {
     this.loadOrders();
   }
 
- onPageChange(page: number) {
+  onPageChange(page: number) {
     if (page >= 0 && page < this.totalPages) {
       this.currentPage = page;
       this.loadOrders();
     }
   }
 
-  
+
 
   getStatusClass(status: string): string {
     switch (status) {
@@ -238,7 +252,7 @@ export class ProfileComponent implements OnInit {
   saveAddress() {
 
     if (this.addressForm.invalid) {
-      this.addressForm.markAllAsTouched(); 
+      this.addressForm.markAllAsTouched();
       this.toastr.warning('Vui lòng kiểm tra lại thông tin nhập!');
       return;
     }

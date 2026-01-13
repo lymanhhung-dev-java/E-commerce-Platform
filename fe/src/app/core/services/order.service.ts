@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Order } from '../models/order';
+import { Order, ReviewRequest } from '../models/order';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/orders`; 
-  private apiMerchantUrl = `${environment.apiUrl}/merchant/orders`; 
+  private apiUrl = `${environment.apiUrl}/orders`;
+  private apiMerchantUrl = `${environment.apiUrl}/merchant/orders`;
 
 
   getMyOrders(page: number, size: number, search?: string, status?: string) {
@@ -22,9 +22,13 @@ export class OrderService {
     return this.http.get<any>(`${this.apiUrl}/my-orders`, { params });
   }
 
+  getOrderById(orderId: number) {
+    return this.http.get<Order>(`${this.apiUrl}/my-orders/${orderId}`);
+  }
+
   //-------------------------------------Merchant--------------------------------------.
 
-  getShopOrders(page: number = 0, size: number = 10){
+  getShopOrders(page: number = 0, size: number = 10) {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -32,14 +36,19 @@ export class OrderService {
     return this.http.get<any>(this.apiMerchantUrl, { params });
   }
 
-  updateOderStatus(orderId: number, status: string) : Observable<String> {
+  updateOderStatus(orderId: number, status: string): Observable<String> {
     const params = new HttpParams().set('status', status);
-    return this.http.put(`${this.apiMerchantUrl}/${orderId}/status`, {}, { 
-      params, 
-      responseType: 'text' });
+    return this.http.put(`${this.apiMerchantUrl}/${orderId}/status`, {}, {
+      params,
+      responseType: 'text'
+    });
   }
 
-  
+  createReview(review: ReviewRequest): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/reviews`, review);
+  }
+
+
 
 
 }

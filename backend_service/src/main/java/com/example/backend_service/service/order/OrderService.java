@@ -12,4 +12,6 @@ public interface OrderService {
     void updateOrderStatus(Long orderId, OrderStatus status);
 
     Page<OrderResponse> getMyOrders(String search, OrderStatus status, Pageable pageable);
+
+    OrderResponse getMyOrderDetails(Long id);
 }

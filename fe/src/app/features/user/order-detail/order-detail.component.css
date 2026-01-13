@@ -1,0 +1,12 @@
+.hover-back:hover {
+  color: var(--bs-primary) !important;
+}
+
+.table > :not(caption) > * > * {
+  padding: 1rem 0.5rem;
+  border-bottom-color: #f0f0f0;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}

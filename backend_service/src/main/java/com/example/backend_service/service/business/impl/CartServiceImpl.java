@@ -36,7 +36,6 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private ProductRepository productRepository;
 
-    
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username);
@@ -46,10 +45,14 @@ public class CartServiceImpl implements CartService {
     public void addToCart(CartItemRequest request) {
         User user = getCurrentUser();
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new AppException("Product not found with id: " + request.getProductId()));
+                .orElseThrow(() -> new AppException("Sản phẩm không tồn tại"));
+
+        if (product.getStockQuantity() <= 0) {
+            throw new AppException("Sản phẩm đã bán hết");
+        }
 
         if (request.getQuantity() > product.getStockQuantity()) {
-            throw new AppException("so luong vuot qua so luong trong kho");
+            throw new AppException("Sản phẩm không đủ số lượng trong kho");
         }
 
         // Kiểm tra xem user đã có sản phẩm này trong giỏ chưa
@@ -60,7 +63,7 @@ public class CartServiceImpl implements CartService {
             CartItem item = existingItem.get();
             int newQuantity = item.getQuantity() + request.getQuantity();
             if (newQuantity > product.getStockQuantity()) {
-                throw new AppException("so luong vuot qua so luong trong kho");
+                throw new AppException("Sản phẩm không đủ số lượng trong kho");
             }
             item.setQuantity(newQuantity);
             cartItemRepository.save(item);
@@ -83,8 +86,6 @@ public class CartServiceImpl implements CartService {
                 .collect(Collectors.toList());
     }
 
-   
-
     @Override
     @Transactional
     public void removeFromCart(Long productId) {
@@ -104,8 +105,12 @@ public class CartServiceImpl implements CartService {
         CartItem item = cartItemRepository.findByUserAndProduct(user, product)
                 .orElseThrow(() -> new AppException("Sản phẩm chưa có trong giỏ hàng"));
 
+        if (product.getStockQuantity() <= 0) {
+            throw new AppException("Sản phẩm đã bán hết");
+        }
+
         if (request.getQuantity() > product.getStockQuantity()) {
-            throw new AppException("Số lượng yêu cầu vượt quá tồn kho");
+            throw new AppException("Sản phẩm không đủ số lượng trong kho");
         }
 
         item.setQuantity(request.getQuantity());

@@ -5,6 +5,8 @@ import { ShopService } from '../../../../core/services/shop.Service';
 import { MerchantStatisticService } from '../../../../core/services/merchant-statistic.service';
 import { StatisticResponse } from '../../../../core/models/StatisticResponse';
 import { Chart, registerables } from 'chart.js';
+import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 // Đăng ký các thành phần của Chart.js
 Chart.register(...registerables);
@@ -12,13 +14,15 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-merchant-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './merchant-dashboard.html',
   styleUrls: ['./merchant-dashboard.css']
 })
 export class MerchantDashboardComponent implements OnInit, OnDestroy {
   private shopService = inject(ShopService);
+
   private statisticService = inject(MerchantStatisticService);
+  private toastr = inject(ToastrService);
 
   shop: any = null;
   currentDate = new Date();
@@ -69,6 +73,73 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  // --- EDIT SHOP INFO ---
+  editShopForm: any = {
+    shopName: '',
+    address: '',
+    description: '',
+    logoUrl: ''
+  };
+  selectedLogoFile: File | null = null;
+
+  openEditModal() {
+    if (this.shop) {
+      this.editShopForm = {
+        shopName: this.shop.shopName,
+        address: this.shop.address,
+        description: this.shop.description,
+        logoUrl: this.shop.logoUrl
+      };
+      this.selectedLogoFile = null; // Reset file selection
+    }
+  }
+
+  onLogoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedLogoFile = file;
+
+      // Preview (Optional)
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.editShopForm.logoUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  saveShopInfo() {
+    if (this.selectedLogoFile) {
+      this.shopService.uploadLogo(this.selectedLogoFile).subscribe({
+        next: (res) => {
+          this.editShopForm.logoUrl = res.url;
+          this.submitUpdate();
+        },
+        error: () => this.toastr.error('Lỗi upload logo')
+      });
+    } else {
+      this.submitUpdate();
+    }
+  }
+
+  submitUpdate() {
+    this.shopService.updateShopInfo(this.editShopForm).subscribe({
+      next: (res) => {
+        this.toastr.success('Cập nhật thông tin shop thành công');
+        this.getShopInfo(); // Reload info
+
+        // Close modal manually if needed, or rely on data-bs-dismiss
+        // We can click the close button programmatically if needed
+        const closeBtn = document.getElementById('closeEditModalBtn');
+        if (closeBtn) closeBtn.click();
+      },
+      error: (err) => {
+        this.toastr.error('Lỗi cập nhật thông tin');
+        console.error(err);
+      }
+    });
+  }
+
   // --- LOGIC CHART ---
   loadRevenueStatistics(type: 'WEEK' | 'MONTH' | 'YEAR') {
     this.selectedType = type;
@@ -83,7 +154,7 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.isLoadingChart = false;
         this.renderChart(data);
-        
+
         // Tính tổng doanh thu từ biểu đồ để hiển thị lên thẻ "Total Revenue"
         this.stats.revenue = data.reduce((sum, item) => sum + item.value, 0);
       },
@@ -147,10 +218,10 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
             grid: { color: '#f0f0f0' },
             ticks: {
               callback: (value) => {
-                 // Rút gọn số hiển thị trục Y (vd: 1tr, 2tr)
-                 if (typeof value === 'number' && value >= 1000000) return (value / 1000000) + 'M';
-                 if (typeof value === 'number' && value >= 1000) return (value / 1000) + 'K';
-                 return value;
+                // Rút gọn số hiển thị trục Y (vd: 1tr, 2tr)
+                if (typeof value === 'number' && value >= 1000000) return (value / 1000000) + 'M';
+                if (typeof value === 'number' && value >= 1000) return (value / 1000) + 'K';
+                return value;
               }
             }
           },

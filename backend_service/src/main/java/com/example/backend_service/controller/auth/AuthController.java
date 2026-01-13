@@ -1,9 +1,11 @@
 package com.example.backend_service.controller.auth;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backend_service.dto.request.auth.LoginRequest;
 import com.example.backend_service.dto.request.auth.RegisterRequest;
+import com.example.backend_service.dto.request.auth.SocialLoginRequest;
 import com.example.backend_service.dto.response.auth.TokenResponse;
 import com.example.backend_service.model.auth.User;
 import com.example.backend_service.service.auth.AuthService;
@@ -16,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
 @RestController
 @RequestMapping("/api/auth")
 @Slf4j(topic = "AUTH-CONTROLLER")
@@ -28,7 +28,7 @@ public class AuthController {
 
     @Operation(summary = "Register", description = "API to register a new user")
     @PostMapping("/register")
-     public ResponseEntity<Long> register(@RequestBody @Valid RegisterRequest req)  {
+    public ResponseEntity<Long> register(@RequestBody @Valid RegisterRequest req) {
         User registeredUser = authService.register(req);
         return ResponseEntity.ok(registeredUser.getId());
     }
@@ -37,8 +37,8 @@ public class AuthController {
     @PostMapping("/acces-token")
     public TokenResponse getAccessToken(@RequestBody LoginRequest req) {
         log.info("Access token requested");
-         return authService.getAccessToken(req);
-                
+        return authService.getAccessToken(req);
+
     }
 
     @Operation(summary = "Refresh Token", description = "API to obtain a new access token using a refresh token")
@@ -46,6 +46,13 @@ public class AuthController {
     public TokenResponse getRefreshToken(@RequestBody String refreshToken) {
         log.info("refresh token requested");
         return authService.getRefreshToken(refreshToken);
-                
+    }
+
+    @Operation(summary = "Google Login", description = "API to login with Google")
+    @PostMapping("/google")
+    public ResponseEntity<TokenResponse> googleLogin(@RequestBody SocialLoginRequest req) {
+        log.info("Google login requested");
+        TokenResponse tokenResponse = authService.googleLogin(req);
+        return ResponseEntity.ok(tokenResponse);
     }
 }
