@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login.component';
+import { GoogleCallbackComponent } from './features/auth/google-callback/google-callback.component';
 import { RegisterComponent } from './features/auth/register/register';
 import { ProfileComponent } from './features/user/profile/profile';
 import { OrderDetailComponent } from './features/user/order-detail/order-detail.component';
@@ -36,6 +37,7 @@ export const routes: Routes = [
         children: [
             { path: '', component: HomeComponent },
             { path: 'login', component: LoginComponent },
+            { path: 'auth/google/callback', component: GoogleCallbackComponent },
             { path: 'register', component: RegisterComponent },
             { path: 'profile', component: ProfileComponent },
             { path: 'profile/order/:id', component: OrderDetailComponent },

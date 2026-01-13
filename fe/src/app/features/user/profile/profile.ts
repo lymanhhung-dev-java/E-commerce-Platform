@@ -111,18 +111,26 @@ export class ProfileComponent implements OnInit {
   onChangePassword() {
     if (this.passwordForm.invalid) return;
 
-    const { newPassword, confirmPassword } = this.passwordForm.value;
+    const { newPassword, confirmPassword, currentPassword } = this.passwordForm.value;
     if (newPassword !== confirmPassword) {
       this.toastr.error('Mật khẩu xác nhận không khớp');
       return;
     }
 
-    this.userService.changePassword(this.passwordForm.value).subscribe({
-      next: () => {
+    const payload = {
+      oldPassword: currentPassword,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword
+    };
+
+    this.userService.changePassword(payload).subscribe({
+      next: (res) => {
         this.toastr.success('Đổi mật khẩu thành công');
         this.passwordForm.reset();
       },
-      error: (err) => this.toastr.error(err.error?.message || 'Đổi mật khẩu thất bại')
+      error: (err) => {
+        this.toastr.error(err.error?.message || 'Đổi mật khẩu thất bại');
+      }
     });
   }
 

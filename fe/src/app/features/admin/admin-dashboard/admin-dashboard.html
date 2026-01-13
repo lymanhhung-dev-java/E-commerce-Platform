@@ -2,7 +2,7 @@
   <h3 class="fw-bold mb-4">Tổng quan hệ thống</h3>
 
   <div class="row g-4 mb-4">
-    
+
     <div class="col-md-3">
       <div class="card border-0 shadow-sm h-100 bg-primary text-white rounded-4">
         <div class="card-body p-4">
@@ -20,24 +20,25 @@
       <div class="card border-0 shadow-sm h-100 bg-info text-white rounded-4">
         <div class="card-body p-4">
           <div class="d-flex align-items-center mb-2">
-             <i class="bi bi-people-fill fs-4 me-2"></i>
-             <h6 class="card-title mb-0 text-uppercase opacity-75">Người dùng</h6>
+            <i class="bi bi-people-fill fs-4 me-2"></i>
+            <h6 class="card-title mb-0 text-uppercase opacity-75">Người dùng</h6>
           </div>
           <h3 class="fw-bold">{{ stats?.totalUsers }} <span class="fs-6 fw-normal">Người dùng</span></h3>
           <div class="mt-1 border-top border-white border-opacity-25 pt-2">
-             <strong>{{ stats?.totalShops }}</strong> Cửa hàng hoạt động
+            <strong>{{ stats?.totalShops }}</strong> Cửa hàng hoạt động
           </div>
         </div>
       </div>
     </div>
 
     <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100 bg-danger text-white rounded-4 cursor-pointer" 
-           routerLink="/admin/withdrawals"> <div class="card-body p-4">
+      <div class="card border-0 shadow-sm h-100 bg-danger text-white rounded-4 cursor-pointer"
+        routerLink="/admin/wallets">
+        <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <div class="d-flex align-items-center">
-                <i class="bi bi-cash-coin fs-4 me-2"></i>
-                <h6 class="card-title mb-0 text-uppercase opacity-75">Rút tiền</h6>
+              <i class="bi bi-cash-coin fs-4 me-2"></i>
+              <h6 class="card-title mb-0 text-uppercase opacity-75">Rút tiền</h6>
             </div>
             <span class="badge bg-white text-danger fw-bold" *ngIf="stats?.pendingWithdrawals > 0">Mới</span>
           </div>
@@ -49,11 +50,11 @@
 
     <div class="col-md-3">
       <div class="card border-0 shadow-sm h-100 bg-warning text-dark rounded-4 cursor-pointer"
-           routerLink="/admin/shopsApprovals">
+        routerLink="/admin/shopsApprovals">
         <div class="card-body p-4">
           <div class="d-flex align-items-center mb-2">
-             <i class="bi bi-shop-window fs-4 me-2"></i>
-             <h6 class="card-title mb-0 text-uppercase opacity-75">Đăng ký Cửa hàng</h6>
+            <i class="bi bi-shop-window fs-4 me-2"></i>
+            <h6 class="card-title mb-0 text-uppercase opacity-75">Đăng ký Cửa hàng</h6>
           </div>
           <h3 class="fw-bold">{{ stats?.pendingShopRequests }}</h3>
           <small class="opacity-75">Đơn đăng ký chờ duyệt</small>
@@ -69,7 +70,7 @@
           <h5 class="fw-bold mb-0">Biểu đồ tăng trưởng</h5>
         </div>
         <div class="card-body d-flex align-items-center justify-content-center bg-light rounded-bottom-4">
-           <p class="text-muted">Khu vực hiển thị biểu đồ doanh thu theo tháng...</p>
+          <p class="text-muted">Khu vực hiển thị biểu đồ doanh thu theo tháng...</p>
         </div>
       </div>
     </div>
@@ -87,7 +88,8 @@
               <small class="text-muted">Xem, khóa hoặc mở khóa tài khoản</small>
             </div>
           </a>
-          <a routerLink="/admin/categories" class="list-group-item list-group-item-action py-3 d-flex align-items-center">
+          <a routerLink="/admin/categories"
+            class="list-group-item list-group-item-action py-3 d-flex align-items-center">
             <div class="icon-box bg-light rounded-circle me-3 p-2"><i class="bi bi-tags text-success"></i></div>
             <div>
               <div class="fw-bold">Danh mục sản phẩm</div>
