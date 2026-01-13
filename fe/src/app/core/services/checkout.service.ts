@@ -20,8 +20,8 @@ export class CheckoutService {
   checkPaymentStatus(orderId: number): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/${orderId}/payment-status`);
   }
-  
+
   cancelOrder(orderId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${orderId}/cancel`, {});
+    return this.http.post(`${this.apiUrl}/${orderId}/cancel`, {}, { responseType: 'text' });
   }
 }

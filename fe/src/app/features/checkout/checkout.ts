@@ -189,14 +189,33 @@ export class CheckoutComponent implements OnInit {
 
       this.checkoutService.cancelOrder(this.currentOrderId).subscribe({
         next: () => {
-          this.toastr.info('Đã hủy đơn hàng. Giỏ hàng đã được khôi phục.');
+          this.toastr.info('Đã hủy đơn hàng');
           this.showQrModal = false;
           this.currentOrderId = null;
-          this.cartService.loadCart(); // Load lại giỏ hàng cũ
+          this.cartService.loadCart();
+          this.router.navigate(['/cart']); // Chuyển hướng về giỏ hàng
         },
         error: (err) => {
-          const msg = err.error?.message || '';
-          // CASE ĐẶC BIỆT: Backend phát hiện tiền đã vào rồi -> Không cho hủy
+          console.error('Cancel Order Error:', err);
+          let msg = '';
+          if (typeof err.error === 'string') {
+            msg = err.error;
+          } else if (err.error?.message) {
+            msg = err.error.message;
+          } else {
+            msg = err.message || 'Lỗi không xác định';
+          }
+
+          // CASE 1: 401 Unauthorized (Guest hoặc Hết phiên)
+          if (err.status === 401) {
+            this.toastr.warning('Phiên làm việc hết hạn. Giao dịch sẽ tự động xử lý sau.');
+            this.showQrModal = false;
+            this.currentOrderId = null;
+            this.cartService.loadCart(); // Vẫn load lại cart để đảm bảo sync
+            return;
+          }
+
+          // CASE 2: Backend phát hiện tiền đã vào rồi -> Không cho hủy
           if (msg.includes('đã vào tài khoản') || msg.includes('thành công')) {
             this.handlePaymentSuccess();
             this.toastr.success('Phát hiện tiền vừa vào! Đơn hàng được xác nhận.');
