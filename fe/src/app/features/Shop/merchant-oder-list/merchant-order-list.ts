@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order';
-import { FormsModule,} from '@angular/forms';
+import { FormsModule, } from '@angular/forms';
 declare var bootstrap: any;
 
 @Component({
@@ -24,15 +24,15 @@ export class MerchantOrderListComponent implements OnInit {
 
   // Danh sách trạng thái khớp với Enum trong Java (OrderStatus.java)
   orderStatuses = [
-    { value: 'PENDING', label: 'Chờ xác nhận', color: 'bg-warning' },
-    { value: 'PROCESSING', label: 'Đang xử lý', color: 'bg-info' },
-    { value: 'SHIPPED', label: 'Đang giao', color: 'bg-primary' },
-    { value: 'DELIVERED', label: 'Đã giao', color: 'bg-success' },
-    { value: 'CANCELED', label: 'Huỷ đơn', color: 'bg-danger' },
-    { value: 'RETURNED', label: 'Trả hàng', color: 'bg-secondary' }
+    { value: 'PENDING', label: 'Chờ xác nhận', color: 'bg-warning-subtle text-warning' },
+    { value: 'PROCESSING', label: 'Đang xử lý', color: 'bg-info-subtle text-info' },
+    { value: 'SHIPPED', label: 'Đang giao', color: 'bg-primary-subtle text-primary' },
+    { value: 'DELIVERED', label: 'Đã giao', color: 'bg-success-subtle text-success' },
+    { value: 'CANCELED', label: 'Huỷ đơn', color: 'bg-danger-subtle text-danger' },
+    { value: 'RETURNED', label: 'Trả hàng', color: 'bg-secondary-subtle text-secondary' }
   ];
 
-  constructor(private orderService: OrderService) {}
+  constructor(private orderService: OrderService) { }
 
   ngOnInit(): void {
     this.loadOrders();
@@ -83,7 +83,7 @@ export class MerchantOrderListComponent implements OnInit {
     const found = this.orderStatuses.find(s => s.value === status);
     return found ? found.color : 'bg-secondary';
   }
-  
+
   openOrderDetails(order: Order) {
     this.selectedOrder = order;
     const modalElement = document.getElementById('orderDetailModal');
@@ -91,7 +91,7 @@ export class MerchantOrderListComponent implements OnInit {
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
     }
-  
+
   }
   // Helper lấy label tiếng Việt
   getStatusLabel(status: string): string {

@@ -1,58 +1,61 @@
-<div class="container mt-4">
-  <div class="card shadow-sm">
-    <div class="card-header bg-white py-3">
-      <h5 class="mb-0 fw-bold">Quản lý Đơn hàng</h5>
-    </div>
+<div class="container-fluid p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">Quản lý Đơn hàng</h3>
+  </div>
 
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
           <thead class="bg-light">
             <tr>
-              <th scope="col" class="ps-4">Mã ĐH</th>
-              <th scope="col">Khách hàng</th>
-              <th scope="col">Ngày đặt</th>
-              <th scope="col">Tổng tiền</th>
-              <th scope="col">Trạng thái hiện tại</th>
-              <th scope="col">Hành động</th>
+              <th scope="col" class="ps-4 text-secondary text-uppercase small fw-bold" style="letter-spacing: 0.5px;">Mã
+                ĐH</th>
+              <th scope="col" class="text-secondary text-uppercase small fw-bold">Khách hàng</th>
+              <th scope="col" class="text-secondary text-uppercase small fw-bold">Ngày đặt</th>
+              <th scope="col" class="text-secondary text-uppercase small fw-bold">Tổng tiền</th>
+              <th scope="col" class="text-secondary text-uppercase small fw-bold">Trạng thái</th>
+              <th scope="col" class="text-end pe-4 text-secondary text-uppercase small fw-bold">Hành động</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let order of orders">
               <td class="ps-4">
-                <span class="fw-bold text-primary">#{{ order.id }}</span>
-                <div class="small text-muted mt-1" *ngIf="order.items.length > 0">
+                <span class="fw-bold text-dark">#{{ order.id }}</span>
+                <div class="small text-muted mt-1 text-truncate" style="max-width: 200px;"
+                  *ngIf="order.items.length > 0">
                   {{ order.items[0].productName }}
-                  <span *ngIf="order.items.length > 1">và {{ order.items.length - 1 }} sản phẩm khác</span>
+                  <span *ngIf="order.items.length > 1">+{{ order.items.length - 1 }} khác</span>
                 </div>
               </td>
 
               <td>
-                <div class="fw-semibold">{{ order.customerName }}</div>
+                <div class="fw-bold text-dark">{{ order.customerName }}</div>
                 <div class="small text-muted">{{ order.shippingPhone }}</div>
               </td>
 
-              <td>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="text-muted">{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
 
-              <td class="fw-bold text-danger">
+              <td class="fw-bold text-dark">
                 {{ order.totalAmount | number }} đ
               </td>
 
               <td>
-                <span class="badge rounded-pill" [ngClass]="getStatusColor(order.status)">
+                <span class="badge rounded-pill px-3 py-2" [ngClass]="getStatusColor(order.status)">
                   {{ getStatusLabel(order.status) }}
                 </span>
               </td>
 
-              <td>
-                <div class="d-flex gap-2">
-                  <button class="btn btn-sm btn-outline-primary" (click)="openOrderDetails(order)">
-                    <i class="bi bi-eye"></i> Xem
+              <td class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-2">
+                  <button class="btn btn-light border btn-sm" (click)="openOrderDetails(order)" title="Xem chi tiết">
+                    <i class="bi bi-eye"></i>
                   </button>
-                  <select class="form-select form-select-sm status-select" [value]="order.status"
-                    (change)="onStatusChange(order, $event)"
+                  <select
+                    class="form-select form-select-sm status-select w-auto d-inline-block border-0 bg-light fw-bold text-secondary"
+                    [value]="order.status" (change)="onStatusChange(order, $event)"
                     [disabled]="order.status === 'CANCELED' || order.status === 'RETURNED' || order.status === 'DELIVERED'">
-                    <option *ngFor="let st of orderStatuses" [value]="st.value">
+                    <option *ngFor="let st of orderStatuses" [value]="st.value" [disabled]="st.value === order.status">
                       {{ st.label }}
                     </option>
                   </select>
@@ -62,6 +65,7 @@
 
             <tr *ngIf="orders.length === 0 && !isLoading">
               <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
                 Chưa có đơn hàng nào.
               </td>
             </tr>
@@ -70,27 +74,25 @@
       </div>
     </div>
 
-    <div class="card-footer bg-white d-flex justify-content-end py-3" *ngIf="totalPages > 1">
-      <nav>
-        <ul class="pagination mb-0">
-          <li class="page-item" [class.disabled]="currentPage === 0">
-            <button class="page-link" (click)="onPageChange(currentPage - 1)">Trước</button>
-          </li>
-          <li class="page-item active">
-            <span class="page-link">{{ currentPage + 1 }} / {{ totalPages }}</span>
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-            <button class="page-link" (click)="onPageChange(currentPage + 1)">Sau</button>
-          </li>
-        </ul>
-      </nav>
+    <!-- Pagination -->
+    <div class="card-footer bg-white border-top-0 d-flex justify-content-end py-3 px-4" *ngIf="totalPages > 1">
+      <div class="btn-group">
+        <button class="btn btn-white border" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="btn btn-white border disabled fw-bold text-dark px-3">{{ currentPage + 1 }}</span>
+        <button class="btn btn-white border" (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages - 1">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content" *ngIf="selectedOrder">
-      
+
       <div class="modal-header bg-light">
         <h5 class="modal-title">Chi tiết đơn hàng #{{ selectedOrder.id }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -108,7 +110,8 @@
             <h6 class="fw-bold text-primary">Thông tin đơn</h6>
             <p class="mb-1"><strong>Ngày đặt:</strong> {{ selectedOrder.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
             <p class="mb-1"><strong>Thanh toán:</strong> {{ selectedOrder.paymentMethod }}</p>
-            <p class="mb-1"><strong>Ghi chú:</strong> <span class="text-muted">{{ selectedOrder.note || 'Không có' }}</span></p>
+            <p class="mb-1"><strong>Ghi chú:</strong> <span class="text-muted">{{ selectedOrder.note || 'Không có'
+                }}</span></p>
           </div>
         </div>
 
@@ -129,8 +132,8 @@
                 <td class="text-center">{{ i + 1 }}</td>
                 <td>
                   <div class="d-flex align-items-center">
-                    <img [src]="item.productImageUrl" class="rounded me-2 border" 
-                         style="width: 40px; height: 40px; object-fit: cover;">
+                    <img [src]="item.productImageUrl" class="rounded me-2 border"
+                      style="width: 40px; height: 40px; object-fit: cover;">
                     <span>{{ item.productName }}</span>
                   </div>
                 </td>
