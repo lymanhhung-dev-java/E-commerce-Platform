@@ -1,0 +1,9 @@
+﻿com.example.backend_service.api.MerchantProductApiTest -> testDeleteProduct_SuccessOrNotFound() -> java.lang.AssertionError: 1 expectation failed.
+Expected status code (is <200> or is <404> or is <403>) but was <500>.
+
+com.example.backend_service.api.MerchantProductApiTest -> testGetMyProductById_SuccessOrNotFound() -> java.lang.AssertionError: 1 expectation failed.
+Expected status code (is <200> or is <404> or is <403>) but was <500>.
+
+com.example.backend_service.api.MerchantStatisticApiTest -> testGetDashboardOverview_Success() -> java.lang.AssertionError: 1 expectation failed.
+Expected status code <200> but was <500>.
+
