@@ -90,7 +90,6 @@ public class AddressServiceImpl implements AddressService {
         address.setReceiverName(req.getReceiverName());
         address.setStreet(req.getStreet());
         address.setCity(req.getCity());
-        address.setDistrict(req.getDistrict());
         address.setWard(req.getWard());
         address.setPhoneNumber(req.getPhoneNumber());
         if (req.getIsDefault() != null) {

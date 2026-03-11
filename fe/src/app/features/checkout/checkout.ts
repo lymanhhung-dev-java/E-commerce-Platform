@@ -8,6 +8,7 @@ import { CartService } from '../../core/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
 import { AddressService } from '../../core/services/address.service';
 import { Address } from '../../core/models/address';
+import { LocationService, Province, Ward } from '../../core/services/location.service';
 import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
 
 @Component({
@@ -25,6 +26,7 @@ export class CheckoutComponent implements OnInit {
   cartService = inject(CartService);
   checkoutService = inject(CheckoutService);
   addressService = inject(AddressService);
+  locationService = inject(LocationService);
 
   showQrModal: boolean = false;
   qrCodeUrl: string = '';
@@ -41,11 +43,15 @@ export class CheckoutComponent implements OnInit {
   savedAddresses: Address[] = [];
   selectedAddressIndex: any = 'null';
 
+  provinces: Province[] = [];
+  wards: Ward[] = [];
+
   // Form giữ nguyên
   checkoutForm = this.fb.group({
     receiverName: ['', Validators.required],
     phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-    address: ['', Validators.required],
+    street: ['', Validators.required],
+    ward: ['', Validators.required],
     city: ['', Validators.required],
     note: [''],
     paymentMethod: ['COD', Validators.required]
@@ -69,6 +75,29 @@ export class CheckoutComponent implements OnInit {
 
   ngOnInit() {
     this.loadSavedAddresses();
+    this.loadProvinces();
+
+    this.checkoutForm.get('city')?.valueChanges.subscribe(cityName => {
+      if (cityName) {
+        this.locationService.getWardsByProvinceName(cityName).subscribe(wards => {
+          this.wards = wards;
+          const currentWard = this.checkoutForm.get('ward')?.value;
+          if (currentWard && !this.wards.find(w => w.name === currentWard)) {
+            this.checkoutForm.get('ward')?.setValue('', { emitEvent: false });
+          }
+        });
+      } else {
+        this.wards = [];
+        this.checkoutForm.get('ward')?.setValue('', { emitEvent: false });
+      }
+    });
+  }
+
+  loadProvinces() {
+    this.locationService.getProvinces().subscribe({
+      next: (res) => this.provinces = res,
+      error: () => this.toastr.error('Lỗi tải danh sách tỉnh/thành')
+    });
   }
 
   onBankTransferCheckout(orderId: number) {
@@ -170,14 +199,26 @@ export class CheckoutComponent implements OnInit {
 
   // Hàm điền dữ liệu vào form
   onSelectAddress(addr: Address) {
-    this.checkoutForm.patchValue({
-      receiverName: addr.receiverName,
-      phone: addr.phoneNumber,
-      // Tách hoặc gộp địa chỉ tùy logic của bạn. 
-      // Ở giao diện mới ta có 1 ô "Địa chỉ", nên gộp lại cho gọn:
-      address: `${addr.street}, ${addr.ward}, ${addr.district}`,
-      city: addr.city
-    });
+    if (addr.city) {
+      this.locationService.getWardsByProvinceName(addr.city).subscribe(wards => {
+        this.wards = wards;
+        this.checkoutForm.patchValue({
+          receiverName: addr.receiverName,
+          phone: addr.phoneNumber,
+          street: addr.street,
+          ward: addr.ward,
+          city: addr.city
+        });
+      });
+    } else {
+      this.checkoutForm.patchValue({
+        receiverName: addr.receiverName,
+        phone: addr.phoneNumber,
+        street: addr.street,
+        ward: addr.ward,
+        city: addr.city
+      });
+    }
   }
 
   closeModal() {
@@ -274,7 +315,7 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    const finalAddress = `${formValue.address}, ${formValue.city} (Người nhận: ${formValue.receiverName})`;
+    const finalAddress = `${formValue.street}, ${formValue.ward}, ${formValue.city} (Người nhận: ${formValue.receiverName})`;
 
     const requestData = {
       items: itemsPayload,

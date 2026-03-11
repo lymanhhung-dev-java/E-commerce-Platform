@@ -34,7 +34,6 @@ public class Address {
     private String receiverName;
     private String street;
     private String city;
-    private String district;
     private String ward;
     @Column(name = "phone_number")
     private String phoneNumber;

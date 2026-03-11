@@ -160,7 +160,7 @@
                       class="badge bg-primary-subtle text-primary border border-primary-subtle">Mặc định</span>
                   </div>
                   <p class="card-text text-secondary small mb-3">
-                    {{ addr.street }}, {{ addr.ward }}, {{ addr.district }}, {{ addr.city }}
+                    {{ addr.street }}, {{ addr.ward }}, {{ addr.city }}
                   </p>
                   <div class="d-flex gap-2">
                     <button class="btn btn-outline-secondary btn-sm" (click)="openEditAddress(addr)">Sửa</button>
@@ -209,21 +209,21 @@
 
                   <div class="mb-3">
                     <label class="form-label small fw-bold">Tỉnh / Thành phố <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="city"
+                    <select class="form-select" formControlName="city"
                       [class.is-invalid]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
+                      <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                      <option *ngFor="let province of provinces" [value]="province.name">{{ province.name }}</option>
+                    </select>
                   </div>
 
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <label class="form-label small fw-bold">Quận / Huyện <span class="text-danger">*</span></label>
-                      <input type="text" class="form-control" formControlName="district"
-                        [class.is-invalid]="addressForm.get('district')?.invalid && addressForm.get('district')?.touched">
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label small fw-bold">Phường / Xã <span class="text-danger">*</span></label>
-                      <input type="text" class="form-control" formControlName="ward"
-                        [class.is-invalid]="addressForm.get('ward')?.invalid && addressForm.get('ward')?.touched">
-                    </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Quận/Huyện/Phường/Xã <span
+                        class="text-danger">*</span></label>
+                    <select class="form-select" formControlName="ward"
+                      [class.is-invalid]="addressForm.get('ward')?.invalid && addressForm.get('ward')?.touched">
+                      <option value="">-- Chọn Quận/Huyện/Phường/Xã --</option>
+                      <option *ngFor="let w of wards" [value]="w.name">{{ w.fullName }}</option>
+                    </select>
                   </div>
 
                   <div class="mb-3">

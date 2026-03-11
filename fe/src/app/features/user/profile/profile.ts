@@ -7,6 +7,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { User } from '../../../core/models/user';
 import { Address } from '../../../core/models/address';
 import { AddressService } from '../../../core/services/address.service';
+import { LocationService, Province, Ward } from '../../../core/services/location.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order';
@@ -24,6 +25,7 @@ export class ProfileComponent implements OnInit {
   userService = inject(UserService);
   toastr = inject(ToastrService);
   addressService = inject(AddressService);
+  locationService = inject(LocationService);
   platformId = inject(PLATFORM_ID);
   authService = inject(AuthService);
   router = inject(Router);
@@ -44,6 +46,8 @@ export class ProfileComponent implements OnInit {
   showAddressForm = false;
   isEditingAddress = false;
   currentAddressId: number | null = null;
+  provinces: Province[] = [];
+  wards: Ward[] = [];
 
   activeTab: 'info' | 'security' | 'address' | 'orders' = 'info';
 
@@ -51,7 +55,6 @@ export class ProfileComponent implements OnInit {
     receiverName: ['', Validators.required],
     street: ['', Validators.required],
     ward: ['', Validators.required],
-    district: ['', Validators.required],
     city: ['', Validators.required],
     phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
     isDefault: [false]
@@ -79,8 +82,31 @@ export class ProfileComponent implements OnInit {
       this.loadProfile();
       this.loadAddresses();
       this.loadOrders();
+      this.loadProvinces();
+
+      this.addressForm.get('city')?.valueChanges.subscribe(cityName => {
+        if (cityName) {
+          this.locationService.getWardsByProvinceName(cityName).subscribe(wards => {
+            this.wards = wards;
+            const currentWard = this.addressForm.get('ward')?.value;
+            if (currentWard && !this.wards.find(w => w.name === currentWard)) {
+              this.addressForm.get('ward')?.setValue('', { emitEvent: false });
+            }
+          });
+        } else {
+          this.wards = [];
+          this.addressForm.get('ward')?.setValue('', { emitEvent: false });
+        }
+      });
     }
 
+  }
+
+  loadProvinces() {
+    this.locationService.getProvinces().subscribe({
+      next: (res) => this.provinces = res,
+      error: () => this.toastr.error('Lỗi tải danh sách tỉnh/thành')
+    });
   }
 
   viewOrderDetail(orderId: number) {
@@ -246,7 +272,15 @@ export class ProfileComponent implements OnInit {
     this.showAddressForm = true;
     this.isEditingAddress = true;
     this.currentAddressId = addr.id || null;
-    this.addressForm.patchValue(addr);
+
+    if (addr.city) {
+      this.locationService.getWardsByProvinceName(addr.city).subscribe(wards => {
+        this.wards = wards;
+        this.addressForm.patchValue(addr);
+      });
+    } else {
+      this.addressForm.patchValue(addr);
+    }
   }
 
   saveAddress() {

@@ -35,7 +35,6 @@ public class AddressApiTest extends BaseApiTest {
         payload.put("receiverName", "Test Receiver");
         payload.put("phone", "0987654321");
         payload.put("city", "Hanoi");
-        payload.put("district", "Cau Giay");
         payload.put("ward", "Dich Vong");
         payload.put("street", "Xuan Thuy");
         payload.put("isDefault", true);
@@ -57,7 +56,6 @@ public class AddressApiTest extends BaseApiTest {
         payload.put("receiverName", "Updated Receiver");
         payload.put("phone", "0123456789");
         payload.put("city", "HCM");
-        payload.put("district", "Q1");
         payload.put("ward", "Ben Nghe");
         payload.put("street", "Nguyen Hue");
         payload.put("isDefault", false);
