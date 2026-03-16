@@ -1,0 +1,91 @@
+<div class="chat-container">
+  <!-- Sidebar -->
+  <div class="chat-sidebar">
+    <div class="sidebar-header">
+      <h5>Khách hàng</h5>
+    </div>
+    
+    <div class="room-list">
+      @if (chatRooms.length === 0) {
+        <div class="empty-rooms">
+          <i class="bi bi-people"></i>
+          <p>Chưa có cuộc hội thoại nào</p>
+        </div>
+      }
+      
+      @for (room of chatRooms; track room.id) {
+        <div class="room-item" 
+             [class.active]="selectedRoom?.id === room.id"
+             (click)="selectRoom(room)">
+          <div class="room-avatar">
+            <img [src]="room.userAvatar || 'https://ui-avatars.com/api/?name=' + room.userName" alt="User">
+            @if (room.unreadCount > 0) {
+              <span class="unread-badge">{{ room.unreadCount }}</span>
+            }
+          </div>
+          <div class="room-info">
+            <div class="room-name">{{ room.userName }}</div>
+            <div class="room-preview">{{ room.lastMessage || 'Bấm để xem tin nhắn' }}</div>
+          </div>
+          <div class="room-meta">
+            @if (room.lastMessageTime) {
+              <span class="room-time">{{ getTimeString(room.lastMessageTime) }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Main Chat Area -->
+  <div class="chat-main">
+    @if (selectedRoom) {
+      <div class="chat-header">
+        <div class="header-user">
+          <img [src]="selectedRoom.userAvatar || 'https://ui-avatars.com/api/?name=' + selectedRoom.userName" alt="User">
+          <div class="header-info">
+            <div class="header-name">{{ selectedRoom.userName }}</div>
+            <div class="header-status">Đang hoạt động</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="message-container" #messageContainer>
+        @if (loading) {
+          <div class="chat-loading">
+            <div class="spinner-border text-success" role="status"></div>
+          </div>
+        }
+
+        @for (msg of messages; track msg.id) {
+          <div class="message-wrapper" [class.own]="msg.senderType === 'SHOP'">
+            <div class="message-bubble">
+              <div class="message-content">{{ msg.content }}</div>
+              <div class="message-time">{{ getTimeString(msg.createdAt) }}</div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="chat-input-area">
+        <div class="input-wrapper">
+          <textarea 
+            [(ngModel)]="newMessage" 
+            (keypress)="onKeyPress($event)"
+            placeholder="Nhập tin nhắn..." 
+            rows="1"></textarea>
+          <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+            <i class="bi bi-send-fill"></i>
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="no-room-selected">
+        <div class="no-room-content">
+          <i class="bi bi-chat-left-text"></i>
+          <p>Hãy chọn một khách hàng để bắt đầu tư vấn</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

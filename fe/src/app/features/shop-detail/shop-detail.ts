@@ -1,8 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ShopService } from '../../core/services/shop.Service';
 import { ProductService } from '../../core/services/product.service';
+import { ChatService } from '../../core/services/chat.service';
 import { ProductResponse } from '../../core/models/product';
 
 @Component({
@@ -14,8 +15,10 @@ import { ProductResponse } from '../../core/models/product';
 })
 export class ShopDetailComponent implements OnInit {
     private route = inject(ActivatedRoute);
+    private router = inject(Router);
     private shopService = inject(ShopService);
     private productService = inject(ProductService);
+    private chatService = inject(ChatService);
 
     shopId: number = 0;
     shop: any = null;
@@ -64,5 +67,17 @@ export class ShopDetailComponent implements OnInit {
             this.page = newPage;
             this.loadShopProducts();
         }
+    }
+
+    chatWithShop() {
+        if (!this.shopId) return;
+        this.chatService.createOrGetRoom(this.shopId).subscribe({
+            next: () => {
+                this.router.navigate(['/chat']);
+            },
+            error: (err) => {
+                console.error('Error creating chat room:', err);
+            }
+        });
     }
 }

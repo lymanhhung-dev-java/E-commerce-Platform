@@ -5,7 +5,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ShopService } from '../../../core/services/shop.Service'; 
-
+import { AuthService } from '../../../core/services/auth.service';
 interface MenuItem {
   label: string;
   icon: string;
@@ -27,6 +27,7 @@ export class MerchantLayoutComponent implements OnInit {
   private toastr = inject(ToastrService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
  
   shop: any = null;
@@ -43,6 +44,7 @@ export class MerchantLayoutComponent implements OnInit {
     { label: 'Trang chủ', icon: 'bi-grid-fill', route: '/merchant/dashboard' },
     { label: 'Danh sách đơn hàng', icon: 'bi-bag', route: '/merchant/orders', }, 
     { label: 'Quản lý sản phẩm', icon: 'bi-box-seam', route: '/merchant/products' },
+    { label: 'Tin nhắn', icon: 'bi-chat-dots', route: '/merchant/chat' },
     { label: 'Doanh thu', icon: 'bi-people', route: '/merchant/wallets' },
   ];
 
@@ -86,11 +88,8 @@ export class MerchantLayoutComponent implements OnInit {
   }
 
   logout() {
-    localStorage.removeItem('token');
-; 
-    
+    this.authService.logout();
     this.toastr.info('Đã đăng xuất thành công');
-    this.router.navigate(['/auth/login']);
   }
 
   startEdit() {

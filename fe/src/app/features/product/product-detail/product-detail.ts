@@ -1,10 +1,11 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product';
 import { ToastrService } from 'ngx-toastr';
 import { CartService } from '../../../core/services/cart.service';
+import { ChatService } from '../../../core/services/chat.service';
 import { StarRatingComponent } from '../../../shared/components/star-rating/star-rating.component';
 
 @Component({
@@ -16,9 +17,11 @@ import { StarRatingComponent } from '../../../shared/components/star-rating/star
 })
 export class DetailProductComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private productService = inject(ProductService);
   private toastr = inject(ToastrService);
   private cartService = inject(CartService);
+  private chatService = inject(ChatService);
   private cdr = inject(ChangeDetectorRef);
 
   product: Product | null = null;
@@ -120,5 +123,18 @@ export class DetailProductComponent implements OnInit {
     if (this.product) {
       this.cartService.buyNow(this.product!, this.quantity);
     }
+  }
+
+  chatWithShop() {
+    if (!this.product?.shopId) return;
+    this.chatService.createOrGetRoom(this.product.shopId).subscribe({
+      next: () => {
+        this.router.navigate(['/chat']);
+      },
+      error: (err) => {
+        console.error('Error creating chat room:', err);
+        this.toastr.error('Vui lòng đăng nhập để nhắn tin');
+      }
+    });
   }
 }

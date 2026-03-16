@@ -46,6 +46,7 @@ export const routes: Routes = [
             { path: 'checkout', component: CheckoutComponent },
             { path: 'register-shop', component: RegisterShopComponent },
             { path: 'shop/:id', loadComponent: () => import('./features/shop-detail/shop-detail').then(m => m.ShopDetailComponent) },
+            { path: 'chat', loadComponent: () => import('./features/chat/chat').then(m => m.ChatComponent) },
 
 
         ]
@@ -61,6 +62,7 @@ export const routes: Routes = [
             { path: 'products/edit/:id', component: MerchantProductFormComponent },
             { path: 'orders', component: MerchantOrderListComponent },
             { path: 'wallets', component: MerchantWalletComponent },
+            { path: 'chat', loadComponent: () => import('./features/chat/merchant-chat').then(m => m.MerchantChatComponent) },
 
 
         ]
