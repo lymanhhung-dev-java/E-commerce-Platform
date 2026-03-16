@@ -14,7 +14,9 @@ public class OrderItemResponse {
     private String productName;
     private String productImageUrl;
     private Integer quantity;
-    private BigDecimal price; 
+    private BigDecimal price;
+    private Long shopId;
+    private String shopName;
 
     public static OrderItemResponse fromEntity(OrderItem item) {
         return OrderItemResponse.builder()
@@ -23,6 +25,8 @@ public class OrderItemResponse {
                 .productImageUrl(item.getProduct().getImageUrl())
                 .quantity(item.getQuantity())
                 .price(item.getPrice())
+                .shopId(item.getProduct().getShop() != null ? item.getProduct().getShop().getId() : null)
+                .shopName(item.getProduct().getShop() != null ? item.getProduct().getShop().getShopName() : null)
                 .build();
     }
 }

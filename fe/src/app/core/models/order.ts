@@ -6,6 +6,8 @@ export interface OrderItem {
   quantity: number;
   price: number;
   isReviewed?: boolean; // Added for review tracking
+  shopId?: number;
+  shopName?: string;
 }
 
 export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELED' | 'RETURNED';

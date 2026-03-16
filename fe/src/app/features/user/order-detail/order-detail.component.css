@@ -1,12 +1,118 @@
+.order-detail-wrapper {
+    background-color: #f3f4f6;
+    min-height: 100vh;
+}
+
+/* Back link hover */
 .hover-back:hover {
-  color: var(--bs-primary) !important;
+    color: var(--bs-primary) !important;
+    transform: translateX(-2px);
+    transition: all 0.2s;
 }
 
+/* Header gradient band */
+.card-header-gradient {
+    background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Status badge */
+.status-badge {
+    font-size: 13px;
+    letter-spacing: 0.3px;
+}
+
+/* Info rows inside info cards */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+}
+.info-row:last-of-type {
+    border-bottom: none;
+}
+.info-label {
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+    min-width: 110px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-top: 2px;
+}
+
+/* Icon circle (heading icon) */
+.icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+}
+
+/* Shop header */
+.shop-header {
+    padding: 8px 12px;
+    background: #f8faff;
+    border-left: 3px solid #2563eb;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 12px;
+}
+
+/* Product item row */
+.product-item {
+    transition: background 0.15s;
+    border-radius: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+.product-item:hover {
+    background: #f9fafb;
+}
+.product-img-wrap {
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+}
+
+/* Summary card */
 .table > :not(caption) > * > * {
-  padding: 1rem 0.5rem;
-  border-bottom-color: #f0f0f0;
+    padding: 1rem 0.5rem;
+    border-bottom-color: #f0f0f0;
+}
+.table tbody tr:last-child td {
+    border-bottom: 0;
 }
 
-.table tbody tr:last-child td {
-  border-bottom: 0;
+/* Badge colors override */
+.bg-success-subtle { background-color: #d1fae5 !important; }
+.text-success { color: #059669 !important; }
+.border-success-subtle { border-color: #a7f3d0 !important; }
+
+.bg-primary-subtle { background-color: #dbeafe !important; }
+.text-primary { color: #2563eb !important; }
+.border-primary-subtle { border-color: #bfdbfe !important; }
+
+.bg-warning-subtle { background-color: #fef3c7 !important; }
+.text-warning { color: #d97706 !important; }
+.border-warning-subtle { border-color: #fde68a !important; }
+
+.bg-danger-subtle { background-color: #fee2e2 !important; }
+.text-danger { color: #dc2626 !important; }
+.border-danger-subtle { border-color: #fecaca !important; }
+
+.bg-info-subtle { background-color: #e0f2fe !important; }
+.text-info { color: #0284c7 !important; }
+
+.object-fit-contain {
+    object-fit: contain;
 }
+
+.opacity-10 { opacity: 0.1; }

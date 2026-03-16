@@ -79,4 +79,21 @@ export class OrderDetailComponent implements OnInit {
             this.loadOrder(this.order.id);
         }
     }
+
+    /** Nhóm các items theo shopName để hiển thị theo từng shop */
+    getShopGroups(): { shopName: string; items: OrderItem[] }[] {
+        if (!this.order?.items) return [];
+        const map = new Map<string, OrderItem[]>();
+        for (const item of this.order.items) {
+            const key = item.shopName || 'Cửa hàng';
+            if (!map.has(key)) map.set(key, []);
+            map.get(key)!.push(item);
+        }
+        return Array.from(map.entries()).map(([shopName, items]) => ({ shopName, items }));
+    }
+
+    isLastShop(group: { shopName: string }): boolean {
+        const groups = this.getShopGroups();
+        return groups[groups.length - 1]?.shopName === group.shopName;
+    }
 }
