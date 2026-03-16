@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,5 +39,12 @@ public class OrderController {
     @GetMapping("/my-orders/{id}")
     public ResponseEntity<OrderResponse> getMyOrderDetails(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getMyOrderDetails(id));
+    }
+
+    @Operation(summary = "Cancel My Order", description = "Hủy đơn hàng của user (chỉ khi trạng thái PENDING)")
+    @PatchMapping("/my-orders/{id}/cancel")
+    public ResponseEntity<Void> cancelMyOrder(@PathVariable Long id) {
+        orderService.cancelOrder(id);
+        return ResponseEntity.ok().build();
     }
 }

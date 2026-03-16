@@ -92,4 +92,24 @@ public class OrderServiceImpl implements OrderService {
 
         return OrderResponse.fromEntity(order);
     }
+
+    @Override
+    @Transactional
+    public void cancelOrder(Long orderId) {
+        User currentUser = getCurrentUser();
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException("Đơn hàng không tồn tại"));
+
+        if (!order.getUser().getId().equals(currentUser.getId())) {
+            throw new AppException("Bạn không có quyền hủy đơn hàng này");
+        }
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new AppException("Chỉ có thể hủy đơn hàng khi đang ở trạng thái Chờ xử lý");
+        }
+
+        order.setStatus(OrderStatus.CANCELED);
+        orderRepository.save(order);
+        log.info("Order {} canceled by user {}", orderId, currentUser.getUsername());
+    }
 }

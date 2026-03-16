@@ -343,10 +343,26 @@
                   <div class="d-flex flex-column flex-md-row gap-2">
                     <button class="btn btn-primary btn-sm px-3 fw-bold" (click)="viewOrderDetail(order.id)">Chi
                       tiết</button>
-                    <button class="btn btn-outline-secondary btn-sm px-3 fw-bold" *ngIf="order.status === 'DELIVERED'">
-                      Mua lại
+                    <button class="btn btn-outline-secondary btn-sm px-3 fw-bold"
+                      *ngIf="order.status === 'DELIVERED'"
+                      (click)="reorder(order)"
+                      [disabled]="reorderingId === order.id">
+                      <span *ngIf="reorderingId === order.id" class="spinner-border spinner-border-sm me-1" role="status"></span>
+                      <i *ngIf="reorderingId !== order.id" class="bi bi-arrow-repeat me-1"></i>
+                      {{ reorderingId === order.id ? 'Đang thêm...' : 'Mua lại' }}
+                    </button>
+
+                    <button class="btn btn-outline-danger btn-sm px-3 fw-semibold"
+                      *ngIf="order.status === 'PENDING'"
+                      (click)="cancelOrder(order.id)"
+                      [disabled]="cancelingOrderId === order.id">
+                      <span *ngIf="cancelingOrderId === order.id"
+                        class="spinner-border spinner-border-sm me-1" role="status"></span>
+                      <i *ngIf="cancelingOrderId !== order.id" class="bi bi-x-circle me-1"></i>
+                      {{ cancelingOrderId === order.id ? 'Đang hủy...' : 'Hủy đơn' }}
                     </button>
                   </div>
+
 
                 </div>
               </div>

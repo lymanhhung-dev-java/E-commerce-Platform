@@ -49,6 +49,27 @@ export class OrderDetailComponent implements OnInit {
         });
     }
 
+    isCanceling = false;
+
+    cancelOrder() {
+        if (!this.order) return;
+        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng #' + this.order.id + ' không?')) return;
+
+        this.isCanceling = true;
+        this.orderService.cancelOrder(this.order.id).subscribe({
+            next: () => {
+                this.toastr.success('Đã hủy đơn hàng thành công');
+                this.loadOrder(this.order!.id);
+                this.isCanceling = false;
+            },
+            error: (err) => {
+                this.toastr.error(err.error?.message || 'Không thể hủy đơn hàng');
+                this.isCanceling = false;
+            }
+        });
+    }
+
+
     getStatusClass(status: string): string {
         switch (status) {
             case 'DELIVERED': return 'bg-success-subtle text-success border-success-subtle';

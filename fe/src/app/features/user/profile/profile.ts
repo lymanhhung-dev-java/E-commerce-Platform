@@ -11,6 +11,10 @@ import { LocationService, Province, Ward } from '../../../core/services/location
 import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order';
+import { CartService } from '../../../core/services/cart.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -30,6 +34,9 @@ export class ProfileComponent implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
   orderService = inject(OrderService);
+  cartService = inject(CartService);
+  private http = inject(HttpClient);
+  private cartApiUrl = `${environment.apiUrl}/cart`;
 
 
 
@@ -41,6 +48,7 @@ export class ProfileComponent implements OnInit {
 
   keyword: string = '';
   selectedStatus: string = 'ALL';
+  cancelingOrderId: number | null = null;
 
   addresses: Address[] = [];
   showAddressForm = false;
@@ -216,6 +224,71 @@ export class ProfileComponent implements OnInit {
     this.selectedStatus = status;
     this.currentPage = 0;
     this.loadOrders();
+  }
+
+  cancelOrder(orderId: number) {
+    if (!confirm('Bạn có chắc muốn hủy đơn hàng #' + orderId + '?')) return;
+    this.cancelingOrderId = orderId;
+    this.orderService.cancelOrder(orderId).subscribe({
+      next: () => {
+        this.toastr.success('Đã hủy đơn hàng #' + orderId);
+        this.cancelingOrderId = null;
+        this.loadOrders();
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message || 'Không thể hủy đơn hàng');
+        this.cancelingOrderId = null;
+      }
+    });
+  }
+
+  reorderingId: number | null = null;
+
+  reorder(order: Order) {
+    if (this.reorderingId === order.id) return;
+    this.reorderingId = order.id;
+
+    const reorderProductIds = new Set(order.items.map(i => i.productId));
+
+    const requests = order.items.map(item =>
+      this.http.post(`${this.cartApiUrl}/add`, { productId: item.productId, quantity: item.quantity }, { responseType: 'text' })
+    );
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        // Reload cart, rồi chỉ select các sản phẩm của đơn này
+        this.http.get<any[]>(this.cartApiUrl).subscribe({
+          next: (cartData) => {
+            // Map sang CartItem và chỉ select items thuộc đơn hàng này
+            const cartItems = cartData.map((item: any) => ({
+              product: {
+                id: item.productId,
+                name: item.productName,
+                price: item.price,
+                imageUrl: item.productImageUrl,
+                stockQuantity: item.stockQuantity,
+                shopName: item.shopName
+              },
+              quantity: item.quantity,
+              selected: reorderProductIds.has(item.productId)
+            }));
+            this.cartService.cartItems.set(cartItems);
+            this.reorderingId = null;
+            this.toastr.success('Đang chuyển sang thanh toán...');
+            this.router.navigate(['/checkout']);
+          },
+          error: () => {
+            this.cartService.loadCart();
+            this.reorderingId = null;
+            this.router.navigate(['/checkout']);
+          }
+        });
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message || 'Có lỗi khi thêm vào giỏ hàng');
+        this.reorderingId = null;
+      }
+    });
   }
 
   onPageChange(page: number) {

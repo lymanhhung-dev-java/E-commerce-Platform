@@ -14,4 +14,6 @@ public interface OrderService {
     Page<OrderResponse> getMyOrders(String search, OrderStatus status, Pageable pageable);
 
     OrderResponse getMyOrderDetails(Long id);
+
+    void cancelOrder(Long orderId);
 }
