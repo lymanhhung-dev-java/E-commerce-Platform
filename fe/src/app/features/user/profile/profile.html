@@ -254,28 +254,39 @@
             <h4 class="fw-bold mb-0">Lịch sử đơn hàng</h4>
           </div>
 
+          <!-- Tab trạng thái đơn hàng -->
+          <div class="order-status-tabs mb-3">
+            <button class="order-tab-btn" [class.active]="selectedStatus === 'ALL'"
+              (click)="selectOrderStatus('ALL')">
+              Tất cả
+            </button>
+            <button class="order-tab-btn tab-pending" [class.active]="selectedStatus === 'PENDING'"
+              (click)="selectOrderStatus('PENDING')">
+              <i class="bi bi-clock me-1"></i>Chờ xử lý
+            </button>
+            <button class="order-tab-btn tab-shipped" [class.active]="selectedStatus === 'SHIPPED'"
+              (click)="selectOrderStatus('SHIPPED')">
+              <i class="bi bi-truck me-1"></i>Đang giao
+            </button>
+            <button class="order-tab-btn tab-delivered" [class.active]="selectedStatus === 'DELIVERED'"
+              (click)="selectOrderStatus('DELIVERED')">
+              <i class="bi bi-check-circle me-1"></i>Đã giao
+            </button>
+            <button class="order-tab-btn tab-canceled" [class.active]="selectedStatus === 'CANCELED'"
+              (click)="selectOrderStatus('CANCELED')">
+              <i class="bi bi-x-circle me-1"></i>Đã hủy
+            </button>
+          </div>
+
+          <!-- Thanh tìm kiếm -->
           <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-3">
-              <div class="row g-2">
-                <div class="col-lg-8">
-                  <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" class="form-control border-start-0 ps-0"
-                      placeholder="Tìm theo Mã đơn hoặc Tên sản phẩm..." [(ngModel)]="keyword"
-                      (keyup.enter)="onSearch()">
-                    <button class="btn btn-primary" (click)="onSearch()">Tìm</button>
-                  </div>
-                </div>
-
-                <div class="col-lg-4">
-                  <select class="form-select" [(ngModel)]="selectedStatus" (change)="onFilterStatus()">
-                    <option value="ALL">Tất cả trạng thái</option>
-                    <option value="PENDING">Chờ xử lý</option>
-                    <option value="SHIPPED">Đang giao</option>
-                    <option value="DELIVERED">Đã giao</option>
-                    <option value="CANCELED">Đã hủy</option>
-                  </select>
-                </div>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0"
+                  placeholder="Tìm theo Mã đơn hoặc Tên sản phẩm..." [(ngModel)]="keyword"
+                  (keyup.enter)="onSearch()">
+                <button class="btn btn-primary" (click)="onSearch()">Tìm</button>
               </div>
             </div>
           </div>

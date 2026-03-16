@@ -212,6 +212,12 @@ export class ProfileComponent implements OnInit {
     this.loadOrders();
   }
 
+  selectOrderStatus(status: string) {
+    this.selectedStatus = status;
+    this.currentPage = 0;
+    this.loadOrders();
+  }
+
   onPageChange(page: number) {
     if (page >= 0 && page < this.totalPages) {
       this.currentPage = page;
