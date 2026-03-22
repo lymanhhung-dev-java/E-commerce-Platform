@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { UserService } from "../../../core/services/user.service";
 import { ToastrService } from "ngx-toastr";
+import Swal from 'sweetalert2';
 
 @Component({
     selector: "app-user-list",
@@ -56,24 +57,32 @@ export class UserListComponent implements OnInit {
     }
 
     toggleStatus(user: any) {
-
         const newStatus = user.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-
         const actionName = user.status === 'ACTIVE' ? 'KHÓA' : 'MỞ KHÓA';
 
-        if (confirm(`Bạn có chắc chắn muốn ${actionName} tài khoản "${user.username}"?`)) {
-
-            this.userService.updateUserStatus(user.id, newStatus).subscribe({
-                next: (msg) => {
-                    this.toastr.success(msg || 'Cập nhật thành công');
-
-                    user.status = newStatus;
-                },
-                error: (err) => {
-                    console.error(err);
-                    this.toastr.error('Không thể cập nhật trạng thái');
-                }
-            });
-        }
+        Swal.fire({
+            title: 'Xác nhận thao tác',
+            text: `Bạn có chắc chắn muốn ${actionName.toLowerCase()} tài khoản "${user.username}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: user.status === 'ACTIVE' ? '#dc3545' : '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xác nhận ' + actionName,
+            cancelButtonText: 'Thoát'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.userService.updateUserStatus(user.id, newStatus).subscribe({
+                    next: (msg) => {
+                        this.toastr.success(msg || 'Cập nhật thành công');
+                        user.status = newStatus;
+                    },
+                    error: (err) => {
+                        console.error(err);
+                        this.toastr.error('Không thể cập nhật trạng thái');
+                    }
+                });
+            }
+        });
     }
 }

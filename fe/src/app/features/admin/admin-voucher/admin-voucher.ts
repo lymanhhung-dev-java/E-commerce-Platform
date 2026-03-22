@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { VoucherService, PageableResponse } from '../../../core/services/voucher.service';
 import { Voucher, VoucherRequest } from '../../../core/models/voucher';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admin-voucher',
@@ -161,29 +162,54 @@ export class AdminVoucherComponent implements OnInit {
   }
 
   onDelete(id: number) {
-    if (confirm('Bạn có chắc chắn muốn xóa Voucher hệ thống này?')) {
-      this.voucherService.deleteAdminVoucher(id).subscribe({
-        next: () => {
-          this.toastr.success('Xóa Voucher định thành công!');
-          this.loadVouchers();
-        },
-        error: () => this.toastr.error('Lỗi khi xóa Voucher')
-      });
-    }
+    Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc chắn muốn xóa Voucher hệ thống này?',
+      icon: 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận xóa',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.voucherService.deleteAdminVoucher(id).subscribe({
+          next: () => {
+            this.toastr.success('Xóa Voucher định thành công!');
+            this.loadVouchers();
+          },
+          error: () => this.toastr.error('Lỗi khi xóa Voucher')
+        });
+      }
+    });
   }
 
   toggleStatus(voucher: Voucher) {
     if (voucher.ownerType !== 'SYSTEM') return;
-    if (confirm(`Bạn có chắc muốn ${voucher.isActive ? 'tắt' : 'bật'} voucher này không?`)) {
-      this.voucherService.toggleAdminVoucherStatus(voucher.id).subscribe({
-        next: () => {
-          this.toastr.success('Thay đổi trạng thái thành công!');
-          this.loadVouchers();
-        },
-        error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
-      });
-    } else {
-      this.loadVouchers();
-    }
+    const action = voucher.isActive ? 'tắt' : 'bật';
+    Swal.fire({
+      title: 'Xác nhận thao tác',
+      text: `Bạn có chắc muốn ${action} voucher này không?`,
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#0d6efd',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.voucherService.toggleAdminVoucherStatus(voucher.id).subscribe({
+          next: () => {
+            this.toastr.success('Thay đổi trạng thái thành công!');
+            this.loadVouchers();
+          },
+          error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
+        });
+      } else {
+        this.loadVouchers();
+      }
+    });
   }
 }

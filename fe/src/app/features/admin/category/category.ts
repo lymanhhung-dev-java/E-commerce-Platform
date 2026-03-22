@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryService } from '../../../core/services/category.service';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
 
@@ -98,15 +99,27 @@ currentCategoryId: number | null = null;
   }
 
   onDelete(id: number) {
-    if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-      this.categoryService.deleteCategory(id).subscribe({
-        next: () => {
-          this.toastr.success('Xóa thành công');
-          this.loadData();
-        },
-        error: (err) => this.toastr.error(err.error || 'Không thể xóa danh mục này (có thể do đang chứa danh mục con)')
-      });
-    }
+    Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc chắn muốn xóa danh mục này?',
+      icon: 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận xóa',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.categoryService.deleteCategory(id).subscribe({
+          next: () => {
+            this.toastr.success('Xóa thành công');
+            this.loadData();
+          },
+          error: (err) => this.toastr.error(err.error || 'Không thể xóa danh mục này (có thể do đang chứa danh mục con)')
+        });
+      }
+    });
   }
 
   showModal() {

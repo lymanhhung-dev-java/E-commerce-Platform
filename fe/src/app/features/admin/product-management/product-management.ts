@@ -6,6 +6,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { ShopService } from '../../../core/services/shop.Service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-management', 
@@ -101,19 +102,29 @@ export class ProductManagementComponent implements OnInit {
     this.loadProducts();
   }
 
-  // Xử lý Khóa/Mở khóa
   toggleStatus(product: AdminProductResponse) {
-    const action = product.isActive ? 'KHÓA' : 'MỞ KHÓA';
-    if (!confirm(`Bạn có chắc muốn ${action} sản phẩm "${product.name}"?`)) return;
-
-    this.adminProductService.toggleProductStatus(product.id).subscribe({
-      next: (msg) => {
-        this.toastr.success(msg || `Đã ${action} thành công!`);
-        // Cập nhật lại trạng thái ngay trên giao diện (không cần load lại API)
-        product.isActive = !product.isActive;
-      },
-      error: (err) => {
-        this.toastr.error('Lỗi: ' + (err.error || err.message));
+    const action = product.isActive ? 'Khóa' : 'Mở khóa';
+    Swal.fire({
+      title: 'Xác nhận thao tác',
+      text: `Bạn có chắc muốn ${action.toLowerCase()} sản phẩm "${product.name}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: product.isActive ? '#dc3545' : '#198754',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận ' + action,
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminProductService.toggleProductStatus(product.id).subscribe({
+          next: (msg) => {
+            this.toastr.success(msg || `Đã ${action.toLowerCase()} thành công!`);
+            product.isActive = !product.isActive;
+          },
+          error: (err) => {
+            this.toastr.error('Lỗi: ' + (err.error || err.message));
+          }
+        });
       }
     });
   }

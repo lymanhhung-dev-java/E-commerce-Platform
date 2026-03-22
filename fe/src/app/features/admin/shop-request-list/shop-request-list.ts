@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShopService } from '../../../core/services/shop.Service';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-shop-request-list',
@@ -41,18 +42,30 @@ export class ShopRequestListComponent implements OnInit {
     const actionName = isApproved ? 'DUYỆT' : 'TỪ CHỐI';
     const confirmMsg = `Bạn có chắc chắn muốn ${actionName} yêu cầu mở shop "${shop.shopName}"?`;
 
-    if (confirm(confirmMsg)) {
-      this.shopService.approveShop(shop.id, isApproved).subscribe({
-        next: (msg) => {
-          this.toastr.success(msg || `Đã ${actionName.toLowerCase()} thành công`);
-          this.loadRequests();
-        },
-        error: (err) => {
-          this.toastr.error('Có lỗi xảy ra khi xử lý yêu cầu');
-          console.error(err);
-        }
-      });
-    }
+    Swal.fire({
+      title: 'Xác nhận thao tác',
+      text: confirmMsg,
+      icon: isApproved ? 'question' : 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: isApproved ? '#198754' : '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận ' + actionName,
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.shopService.approveShop(shop.id, isApproved).subscribe({
+          next: (msg) => {
+            this.toastr.success(msg || `Đã ${actionName.toLowerCase()} thành công`);
+            this.loadRequests();
+          },
+          error: (err) => {
+            this.toastr.error('Có lỗi xảy ra khi xử lý yêu cầu');
+            console.error(err);
+          }
+        });
+      }
+    });
   }
 
   onPageChange(page: number) {

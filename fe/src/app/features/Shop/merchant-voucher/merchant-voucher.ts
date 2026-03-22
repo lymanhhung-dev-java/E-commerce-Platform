@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { VoucherService, PageableResponse } from '../../../core/services/voucher.service';
 import { Voucher, VoucherRequest } from '../../../core/models/voucher';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-merchant-voucher',
@@ -161,33 +162,58 @@ export class MerchantVoucherComponent implements OnInit {
   }
 
   onDelete(id: number) {
-    if (confirm('Bạn có chắc chắn muốn xóa Voucher này? Hành động này không thể hoàn tác.')) {
-      this.voucherService.deleteMerchantVoucher(id).subscribe({
-        next: () => {
-          this.toastr.success('Xóa Voucher thành công!');
-          this.loadVouchers();
-        },
-        error: () => this.toastr.error('Lỗi khi xóa Voucher')
-      });
-    }
+    Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc chắn muốn xóa Voucher này? Hành động này không thể hoàn tác.',
+      icon: 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận xóa',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.voucherService.deleteMerchantVoucher(id).subscribe({
+          next: () => {
+            this.toastr.success('Xóa Voucher thành công!');
+            this.loadVouchers();
+          },
+          error: () => this.toastr.error('Lỗi khi xóa Voucher')
+        });
+      }
+    });
   }
 
   toggleStatus(voucher: Voucher) {
-    if (confirm(`Bạn có chắc muốn ${voucher.isActive ? 'tắt' : 'bật'} voucher này không?`)) {
-      this.voucherService.toggleMerchantVoucherStatus(voucher.id).subscribe({
-        next: () => {
-          this.toastr.success('Thay đổi trạng thái thành công!');
-          this.loadVouchers();
-        },
-        error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
-      });
-    } else {
-      // Revert the toggle visually if user cancels
-      const checkbox = document.querySelector(`input[type="checkbox"][checked="${voucher.isActive}"]`);
-      if (checkbox) {
-         (checkbox as HTMLInputElement).checked = voucher.isActive;
+    const action = voucher.isActive ? 'tắt' : 'bật';
+    Swal.fire({
+      title: 'Xác nhận thao tác',
+      text: `Bạn có chắc muốn ${action} voucher này không?`,
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#0d6efd',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.voucherService.toggleMerchantVoucherStatus(voucher.id).subscribe({
+          next: () => {
+            this.toastr.success('Thay đổi trạng thái thành công!');
+            this.loadVouchers();
+          },
+          error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
+        });
+      } else {
+        // Revert the toggle visually if user cancels
+        const checkbox = document.querySelector(`input[type="checkbox"][checked="${voucher.isActive}"]`);
+        if (checkbox) {
+           (checkbox as HTMLInputElement).checked = voucher.isActive;
+        }
+        this.loadVouchers(); // Refresh to ensure correct state is reflected
       }
-      this.loadVouchers(); // Refresh to ensure correct state is reflected
-    }
+    });
   }
 }

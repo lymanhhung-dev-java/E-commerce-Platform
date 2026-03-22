@@ -6,6 +6,7 @@ import { CategoryService } from '../../../core/services/category.service';
 import { MerchantProductResponse } from '../../../core/models/merchant-product';
 import { ToastrService } from 'ngx-toastr';
 import { RouterModule } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-merchant-product-list',
@@ -86,15 +87,27 @@ export class MerchantProductListComponent implements OnInit {
     }
 
     onToggleStatus(id: number) {
-        if (confirm('Bạn có chắc muốn thay đổi trạng thái không?')) {
-            this.productService.onToggleStatus(id).subscribe({
-                next: () => {
-                    this.toastr.success('Thay đổi trạng thái thành công');
-                    this.loadProducts();
-                },
-                error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
-            });
-        }
+        Swal.fire({
+            title: 'Xác nhận thao tác',
+            text: 'Bạn có chắc muốn thay đổi trạng thái không?',
+            icon: 'question',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xác nhận',
+            cancelButtonText: 'Thoát'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.productService.onToggleStatus(id).subscribe({
+                    next: () => {
+                        this.toastr.success('Thay đổi trạng thái thành công');
+                        this.loadProducts();
+                    },
+                    error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
+                });
+            }
+        });
     }
 
 
@@ -111,14 +124,26 @@ export class MerchantProductListComponent implements OnInit {
     }
 
     onDelete(id: number) {
-        if (confirm('Bạn có chắc muốn xóa sản phẩm này không?')) {
-            this.productService.deleteProduct(id).subscribe({
-                next: () => {
-                    this.toastr.success('Xóa thành công');
-                    this.loadProducts();
-                },
-                error: () => this.toastr.error('Lỗi khi xóa sản phẩm')
-            });
-        }
+        Swal.fire({
+            title: 'Xác nhận xóa',
+            text: 'Bạn có chắc muốn xóa sản phẩm này không?',
+            icon: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xác nhận xóa',
+            cancelButtonText: 'Thoát'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.productService.deleteProduct(id).subscribe({
+                    next: () => {
+                        this.toastr.success('Xóa thành công');
+                        this.loadProducts();
+                    },
+                    error: () => this.toastr.error('Lỗi khi xóa sản phẩm')
+                });
+            }
+        });
     }
 }

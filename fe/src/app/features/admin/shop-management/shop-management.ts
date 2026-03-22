@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ShopService } from '../../../core/services/shop.Service';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-shop-management',
@@ -58,27 +59,51 @@ export class ShopManagementComponent implements OnInit {
   // Xử lý Duyệt / Khóa Shop
   updateStatus(shop: any, isApproved: boolean) {
     const action = isApproved ? 'DUYỆT' : 'TỪ CHỐI/KHÓA';
-    if(confirm(`Bạn có chắc muốn ${action} shop "${shop.shopName}"?`)) {
-       this.shopService.approveShop(shop.id, isApproved).subscribe({
-         next: () => {
-           this.toastr.success('Cập nhật thành công');
-           this.loadShops();
-         },
-         error: () => this.toastr.error('Lỗi cập nhật')
-       });
-    }
+    Swal.fire({
+      title: 'Xác nhận thao tác',
+      text: `Bạn có chắc muốn ${action} shop "${shop.shopName}"?`,
+      icon: isApproved ? 'question' : 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: isApproved ? '#198754' : '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận ' + action,
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if(result.isConfirmed) {
+         this.shopService.approveShop(shop.id, isApproved).subscribe({
+           next: () => {
+             this.toastr.success('Cập nhật thành công');
+             this.loadShops();
+           },
+           error: () => this.toastr.error('Lỗi cập nhật')
+         });
+      }
+    });
   }
 
   onBan(shop: any) {
-    if (confirm(`CẢNH BÁO: Bạn có chắc muốn KHÓA VĨNH VIỄN shop "${shop.shopName}"? Hành động này sẽ chặn chủ shop đăng nhập vào trang quản lý.`)) {
-      this.shopService.banShop(shop.id).subscribe({
-        next: () => {
-          this.toastr.success('Đã khóa shop thành công');
-          this.loadShops(); // Tải lại danh sách
-        },
-        error: () => this.toastr.error('Lỗi khi khóa shop')
-      });
-    }
+    Swal.fire({
+      title: 'CẢNH BÁO MỨC ĐỘ CAO',
+      text: `Bạn có chắc muốn KHÓA VĨNH VIỄN shop "${shop.shopName}"? Hành động này sẽ chặn chủ shop đăng nhập vào trang quản lý.`,
+      icon: 'error',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận Khóa',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.shopService.banShop(shop.id).subscribe({
+          next: () => {
+            this.toastr.success('Đã khóa shop thành công');
+            this.loadShops(); // Tải lại danh sách
+          },
+          error: () => this.toastr.error('Lỗi khi khóa shop')
+        });
+      }
+    });
   }
 
   viewShopProducts(shopId: number) {

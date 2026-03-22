@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminWithdrawalService, Withdrawal } from '../../../core/services/admin-withdrawal.service';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-withdrawal-request-list',
@@ -80,16 +81,27 @@ export class WithdrawalRequestListComponent implements OnInit {
 
   // --- ACTIONS ---
 
-  // 1. Duyệt đơn
   approve(id: number) {
-    if (!confirm('Bạn có chắc muốn DUYỆT yêu cầu rút tiền này?')) return;
-
-    this.withdrawalService.updateStatus(id, 'APPROVED').subscribe({
-      next: () => {
-        this.toastr.success('Đã duyệt yêu cầu thành công');
-        this.loadData();
-      },
-      error: (err) => this.toastr.error('Lỗi: ' + (err.error || err.message))
+    Swal.fire({
+      title: 'Xác nhận duyệt',
+      text: 'Bạn có chắc muốn DUYỆT yêu cầu rút tiền này?',
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.withdrawalService.updateStatus(id, 'APPROVED').subscribe({
+          next: () => {
+            this.toastr.success('Đã duyệt yêu cầu thành công');
+            this.loadData();
+          },
+          error: (err) => this.toastr.error('Lỗi: ' + (err.error || err.message))
+        });
+      }
     });
   }
 

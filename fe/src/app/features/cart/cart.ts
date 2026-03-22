@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-cart',
@@ -44,8 +45,20 @@ export class CartComponent {
   }
 
   removeItem(itemId: number) {
-    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-      this.cartService.removeFromCart(itemId);
-    }
+    Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc muốn xóa sản phẩm này?',
+      icon: 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận xóa',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cartService.removeFromCart(itemId);
+      }
+    });
   }
 }

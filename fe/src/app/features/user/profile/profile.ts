@@ -15,6 +15,7 @@ import { CartService } from '../../../core/services/cart.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { forkJoin } from 'rxjs';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -227,17 +228,30 @@ export class ProfileComponent implements OnInit {
   }
 
   cancelOrder(orderId: number) {
-    if (!confirm('Bạn có chắc muốn hủy đơn hàng #' + orderId + '?')) return;
-    this.cancelingOrderId = orderId;
-    this.orderService.cancelOrder(orderId).subscribe({
-      next: () => {
-        this.toastr.success('Đã hủy đơn hàng #' + orderId);
-        this.cancelingOrderId = null;
-        this.loadOrders();
-      },
-      error: (err) => {
-        this.toastr.error(err.error?.message || 'Không thể hủy đơn hàng');
-        this.cancelingOrderId = null;
+    Swal.fire({
+      title: 'Xác nhận hủy',
+      text: 'Bạn có chắc muốn hủy đơn hàng #' + orderId + '?',
+      icon: 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận hủy',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cancelingOrderId = orderId;
+        this.orderService.cancelOrder(orderId).subscribe({
+          next: () => {
+            this.toastr.success('Đã hủy đơn hàng #' + orderId);
+            this.cancelingOrderId = null;
+            this.loadOrders();
+          },
+          error: (err) => {
+            this.toastr.error(err.error?.message || 'Không thể hủy đơn hàng');
+            this.cancelingOrderId = null;
+          }
+        });
       }
     });
   }
@@ -394,15 +408,27 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteAddress(id: number) {
-    if (confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
-      this.addressService.deleteAddress(id).subscribe({
-        next: () => {
-          this.toastr.success('Đã xóa địa chỉ');
-          this.loadAddresses();
-        },
-        error: () => this.toastr.error('Lỗi khi xóa')
-      });
-    }
+    Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc muốn xóa địa chỉ này?',
+      icon: 'warning',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận xóa',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.addressService.deleteAddress(id).subscribe({
+          next: () => {
+            this.toastr.success('Đã xóa địa chỉ');
+            this.loadAddresses();
+          },
+          error: () => this.toastr.error('Lỗi khi xóa')
+        });
+      }
+    });
   }
 
 }

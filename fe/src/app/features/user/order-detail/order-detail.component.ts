@@ -6,6 +6,7 @@ import { Order } from '../../../core/models/order';
 import { ToastrService } from 'ngx-toastr';
 import { ReviewModalComponent } from '../review-modal/review-modal.component';
 import { OrderItem } from '../../../core/models/order';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-order-detail',
@@ -53,18 +54,31 @@ export class OrderDetailComponent implements OnInit {
 
     cancelOrder() {
         if (!this.order) return;
-        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng #' + this.order.id + ' không?')) return;
-
-        this.isCanceling = true;
-        this.orderService.cancelOrder(this.order.id).subscribe({
-            next: () => {
-                this.toastr.success('Đã hủy đơn hàng thành công');
-                this.loadOrder(this.order!.id);
-                this.isCanceling = false;
-            },
-            error: (err) => {
-                this.toastr.error(err.error?.message || 'Không thể hủy đơn hàng');
-                this.isCanceling = false;
+        
+        Swal.fire({
+            title: 'Xác nhận hủy',
+            text: 'Bạn có chắc chắn muốn hủy đơn hàng #' + this.order.id + ' không?',
+            icon: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xác nhận hủy',
+            cancelButtonText: 'Thoát'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.isCanceling = true;
+                this.orderService.cancelOrder(this.order!.id).subscribe({
+                    next: () => {
+                        this.toastr.success('Đã hủy đơn hàng thành công');
+                        this.loadOrder(this.order!.id);
+                        this.isCanceling = false;
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error?.message || 'Không thể hủy đơn hàng');
+                        this.isCanceling = false;
+                    }
+                });
             }
         });
     }

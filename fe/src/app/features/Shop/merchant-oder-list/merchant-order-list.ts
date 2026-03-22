@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order';
 import { FormsModule, } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 declare var bootstrap: any;
 
 @Component({
@@ -15,6 +17,7 @@ declare var bootstrap: any;
 
 
 export class MerchantOrderListComponent implements OnInit {
+  toastr = inject(ToastrService);
   orders: Order[] = [];
   selectedOrder: Order | null = null;
   currentPage = 0;
@@ -55,26 +58,37 @@ export class MerchantOrderListComponent implements OnInit {
     });
   }
 
-  // Hàm xử lý khi người dùng đổi trạng thái trên Dropdown
   onStatusChange(order: Order, event: any) {
     const newStatus = event.target.value;
     const oldStatus = order.status;
 
-    if (!confirm(`Bạn có chắc muốn đổi trạng thái đơn hàng #${order.id} sang ${newStatus}?`)) {
-      event.target.value = oldStatus;
-      return;
-    }
-
-    this.orderService.updateOderStatus(order.id, newStatus).subscribe({
-      next: (res) => {
-        alert('Cập nhật trạng thái thành công!');
-        order.status = newStatus; // Cập nhật UI
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Lỗi cập nhật trạng thái');
-        event.target.value = oldStatus; // Revert nếu lỗi
+    Swal.fire({
+      title: 'Xác nhận cập nhật',
+      text: `Bạn có chắc muốn đổi trạng thái đơn hàng #${order.id} sang ${newStatus}?`,
+      icon: 'question',
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonColor: '#0d6efd',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận',
+      cancelButtonText: 'Thoát'
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        event.target.value = oldStatus;
+        return;
       }
+
+      this.orderService.updateOderStatus(order.id, newStatus).subscribe({
+        next: (res) => {
+          this.toastr.success('Cập nhật trạng thái thành công!');
+          order.status = newStatus; // Cập nhật UI
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastr.error('Lỗi cập nhật trạng thái');
+          event.target.value = oldStatus; // Revert nếu lỗi
+        }
+      });
     });
   }
 
