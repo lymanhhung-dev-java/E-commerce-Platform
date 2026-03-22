@@ -34,13 +34,17 @@
           <input type="number" class="form-control bg-light border-0" [(ngModel)]="formData.discountValue" placeholder="VD: 15">
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label class="form-label fw-bold small text-muted">Đơn tối thiểu (VNĐ)</label>
           <input type="number" class="form-control bg-light border-0" [(ngModel)]="formData.minOrderValue" placeholder="0">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label class="form-label fw-bold small text-muted">Mức giảm tối đa (VNĐ)</label>
           <input type="number" class="form-control bg-light border-0" [(ngModel)]="formData.maxDiscount" placeholder="0 (Nếu giảm %)">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-muted">Số lượt sử dụng</label>
+          <input type="number" class="form-control bg-light border-0" [(ngModel)]="formData.limitUsage" placeholder="0 (Không giới hạn)">
         </div>
 
         <div class="col-md-6">
@@ -90,6 +94,7 @@
                       <th>Thuộc quyền</th>
                       <th>Mức giảm</th>
                       <th>Đơn tối thiểu</th>
+                      <th>Lượt dùng</th>
                       <th>Thời gian áp dụng</th>
                       <th>Trạng thái</th>
                       <th class="text-end pe-4">Hành động</th>
@@ -125,11 +130,22 @@
                       </td>
 
                       <td>
+                        <span class="badge bg-light text-dark border"><i class="bi bi-people-fill text-primary"></i> {{ v.usedCount }} / {{ v.limitUsage === 0 ? 'K.Hạn' : v.limitUsage }}</span>
+                      </td>
+
+                      <td>
                         <small class="d-block text-muted"><i class="bi bi-clock me-1"></i> {{ v.startDate | date:'dd/MM/yyyy HH:mm' }}</small>
                         <small class="d-block text-danger"><i class="bi bi-clock-history me-1"></i> {{ v.endDate | date:'dd/MM/yyyy HH:mm' }}</small>
                       </td>
 
                       <td>
+                        <div class="form-check form-switch mb-1">
+                            <input class="form-check-input" type="checkbox" [checked]="v.isActive"
+                                [disabled]="v.ownerType !== 'SYSTEM'" (change)="toggleStatus(v)">
+                            <label class="form-check-label small" [class.text-success]="v.isActive" [class.text-muted]="!v.isActive">
+                                {{ v.isActive ? 'Đang bật' : 'Đã tắt' }}
+                            </label>
+                        </div>
                         <span class="badge rounded-pill" [ngClass]="{
                           'bg-success text-white': (v.endDate | date:'yyyy-MM-ddTHH:mm:ss')! > (today | date:'yyyy-MM-ddTHH:mm:ss')!,
                           'bg-secondary text-white': (v.endDate | date:'yyyy-MM-ddTHH:mm:ss')! <= (today | date:'yyyy-MM-ddTHH:mm:ss')!

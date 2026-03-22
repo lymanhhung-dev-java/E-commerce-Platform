@@ -63,4 +63,12 @@ public class AdminVoucherController {
         voucherService.deleteSystemVoucher(id);
         return ResponseEntity.ok("Xóa voucher hệ thống thành công");
     }
+
+    @Operation(summary = "Bật/Tắt hoạt động của voucher hệ thống")
+    @PatchMapping("/{id}/toggle-status")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> toggleVoucherStatus(@PathVariable Long id) {
+        voucherService.toggleSystemVoucherStatus(id);
+        return ResponseEntity.ok("Thay đổi trạng thái thành công");
+    }
 }

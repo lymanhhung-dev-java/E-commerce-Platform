@@ -64,4 +64,12 @@ public class MerchantVoucherController {
         voucherService.deleteShopVoucher(id);
         return ResponseEntity.ok("Xóa voucher thành công");
     }
+
+    @Operation(summary = "Bật/Tắt hoạt động của voucher")
+    @PatchMapping("/{id}/toggle-status")
+    @PreAuthorize("hasRole('ROLE_SELLER')")
+    public ResponseEntity<String> toggleShopVoucherStatus(@PathVariable Long id) {
+        voucherService.toggleShopVoucherStatus(id);
+        return ResponseEntity.ok("Thay đổi trạng thái thành công");
+    }
 }

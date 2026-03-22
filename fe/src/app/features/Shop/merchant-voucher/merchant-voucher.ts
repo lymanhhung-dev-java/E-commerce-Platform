@@ -41,7 +41,8 @@ export class MerchantVoucherComponent implements OnInit {
     minOrderValue: 0,
     maxDiscount: 0,
     startDate: '',
-    endDate: ''
+    endDate: '',
+    limitUsage: 0
   };
 
   ngOnInit() {
@@ -93,6 +94,7 @@ export class MerchantVoucherComponent implements OnInit {
       discountType: voucher.discountType,
       minOrderValue: voucher.minOrderValue,
       maxDiscount: voucher.maxDiscount,
+      limitUsage: voucher.limitUsage || 0,
       // Format 'yyyy-MM-ddTHH:mm' for datetime-local input
       startDate: this.formatDateForInput(voucher.startDate),
       endDate: this.formatDateForInput(voucher.endDate)
@@ -112,7 +114,8 @@ export class MerchantVoucherComponent implements OnInit {
       minOrderValue: 0,
       maxDiscount: 0,
       startDate: '',
-      endDate: ''
+      endDate: '',
+      limitUsage: 0
     };
   }
 
@@ -166,6 +169,25 @@ export class MerchantVoucherComponent implements OnInit {
         },
         error: () => this.toastr.error('Lỗi khi xóa Voucher')
       });
+    }
+  }
+
+  toggleStatus(voucher: Voucher) {
+    if (confirm(`Bạn có chắc muốn ${voucher.isActive ? 'tắt' : 'bật'} voucher này không?`)) {
+      this.voucherService.toggleMerchantVoucherStatus(voucher.id).subscribe({
+        next: () => {
+          this.toastr.success('Thay đổi trạng thái thành công!');
+          this.loadVouchers();
+        },
+        error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
+      });
+    } else {
+      // Revert the toggle visually if user cancels
+      const checkbox = document.querySelector(`input[type="checkbox"][checked="${voucher.isActive}"]`);
+      if (checkbox) {
+         (checkbox as HTMLInputElement).checked = voucher.isActive;
+      }
+      this.loadVouchers(); // Refresh to ensure correct state is reflected
     }
   }
 }

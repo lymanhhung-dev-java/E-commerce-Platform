@@ -9,6 +9,9 @@ export interface Voucher {
   maxDiscount: number;
   startDate: string;
   endDate: string;
+  isActive: boolean;
+  limitUsage: number;
+  usedCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,4 +24,5 @@ export interface VoucherRequest {
   maxDiscount: number;
   startDate: string;
   endDate: string;
+  limitUsage?: number;
 }

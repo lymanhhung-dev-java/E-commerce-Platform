@@ -25,6 +25,9 @@ public class VoucherResponse {
     private BigDecimal maxDiscount;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private Boolean isActive;
+    private Integer limitUsage;
+    private Integer usedCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

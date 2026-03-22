@@ -39,4 +39,7 @@ public class VoucherRequest {
 
     @NotNull(message = "Ngày kết thúc không được để trống")
     private LocalDateTime endDate;
+
+    @Min(value = 0, message = "Số lượt sử dụng tối đa phải lớn hơn hoặc bằng 0 (0 là không giới hạn)")
+    private Integer limitUsage;
 }

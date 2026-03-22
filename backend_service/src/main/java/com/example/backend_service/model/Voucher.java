@@ -53,4 +53,15 @@ public class Voucher extends AbstractEntity<Long> {
 
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
+
+    @Column(name = "is_active", nullable = false)
+    @Builder.Default
+    private Boolean isActive = true;
+
+    @Column(name = "limit_usage")
+    private Integer limitUsage;
+
+    @Column(name = "used_count", nullable = false)
+    @Builder.Default
+    private Integer usedCount = 0;
 }

@@ -48,6 +48,10 @@ export class VoucherService {
     return this.http.delete(`${this.adminApiUrl}/${id}`, { responseType: 'text' });
   }
 
+  toggleAdminVoucherStatus(id: number): Observable<string> {
+    return this.http.patch(`${this.adminApiUrl}/${id}/toggle-status`, {}, { responseType: 'text' });
+  }
+
   // ================= MERCHANT APIs =================
   getMerchantVouchers(page: number = 0, size: number = 10, keyword?: string): Observable<PageableResponse<Voucher>> {
     let params = new HttpParams()
@@ -73,5 +77,9 @@ export class VoucherService {
 
   deleteMerchantVoucher(id: number): Observable<string> {
     return this.http.delete(`${this.merchantApiUrl}/${id}`, { responseType: 'text' });
+  }
+
+  toggleMerchantVoucherStatus(id: number): Observable<string> {
+    return this.http.patch(`${this.merchantApiUrl}/${id}/toggle-status`, {}, { responseType: 'text' });
   }
 }

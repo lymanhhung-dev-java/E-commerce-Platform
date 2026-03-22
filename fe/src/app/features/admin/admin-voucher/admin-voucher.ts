@@ -41,7 +41,8 @@ export class AdminVoucherComponent implements OnInit {
     minOrderValue: 0,
     maxDiscount: 0,
     startDate: '',
-    endDate: ''
+    endDate: '',
+    limitUsage: 0
   };
 
   ngOnInit() {
@@ -93,6 +94,7 @@ export class AdminVoucherComponent implements OnInit {
       discountType: voucher.discountType,
       minOrderValue: voucher.minOrderValue,
       maxDiscount: voucher.maxDiscount,
+      limitUsage: voucher.limitUsage || 0,
       // Format 'yyyy-MM-ddTHH:mm' for datetime-local input
       startDate: this.formatDateForInput(voucher.startDate),
       endDate: this.formatDateForInput(voucher.endDate)
@@ -112,7 +114,8 @@ export class AdminVoucherComponent implements OnInit {
       minOrderValue: 0,
       maxDiscount: 0,
       startDate: '',
-      endDate: ''
+      endDate: '',
+      limitUsage: 0
     };
   }
 
@@ -166,6 +169,21 @@ export class AdminVoucherComponent implements OnInit {
         },
         error: () => this.toastr.error('Lỗi khi xóa Voucher')
       });
+    }
+  }
+
+  toggleStatus(voucher: Voucher) {
+    if (voucher.ownerType !== 'SYSTEM') return;
+    if (confirm(`Bạn có chắc muốn ${voucher.isActive ? 'tắt' : 'bật'} voucher này không?`)) {
+      this.voucherService.toggleAdminVoucherStatus(voucher.id).subscribe({
+        next: () => {
+          this.toastr.success('Thay đổi trạng thái thành công!');
+          this.loadVouchers();
+        },
+        error: () => this.toastr.error('Lỗi khi thay đổi trạng thái')
+      });
+    } else {
+      this.loadVouchers();
     }
   }
 }

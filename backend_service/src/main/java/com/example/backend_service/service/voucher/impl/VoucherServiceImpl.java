@@ -64,6 +64,9 @@ public class VoucherServiceImpl implements VoucherService {
                 .maxDiscount(request.getMaxDiscount())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
+                .limitUsage(request.getLimitUsage() != null ? request.getLimitUsage() : 0)
+                .isActive(true)
+                .usedCount(0)
                 .build();
 
         return mapToResponse(voucherRepository.save(voucher));
@@ -91,6 +94,17 @@ public class VoucherServiceImpl implements VoucherService {
             throw new RuntimeException("Chỉ được phép xóa voucher của hệ thống");
         }
         voucherRepository.delete(voucher);
+    }
+
+    @Override
+    public void toggleSystemVoucherStatus(Long id) {
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy voucher"));
+        if (!voucher.getOwnerType().equals(OwnerType.SYSTEM)) {
+            throw new RuntimeException("Chỉ được phép thay đổi trạng thái voucher của hệ thống");
+        }
+        voucher.setIsActive(!voucher.getIsActive());
+        voucherRepository.save(voucher);
     }
 
     @Override
@@ -123,6 +137,9 @@ public class VoucherServiceImpl implements VoucherService {
                 .maxDiscount(request.getMaxDiscount())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
+                .limitUsage(request.getLimitUsage() != null ? request.getLimitUsage() : 0)
+                .isActive(true)
+                .usedCount(0)
                 .build();
 
         return mapToResponse(voucherRepository.save(voucher));
@@ -156,6 +173,19 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public void toggleShopVoucherStatus(Long id) {
+        Long shopId = getCurrentShop().getId();
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy voucher"));
+        
+        if (!voucher.getOwnerType().equals(OwnerType.SHOP) || !Objects.equals(voucher.getShopId(), shopId)) {
+            throw new RuntimeException("Chỉ được phép thay đổi trạng thái voucher của Shop bạn");
+        }
+        voucher.setIsActive(!voucher.getIsActive());
+        voucherRepository.save(voucher);
+    }
+
+    @Override
     public VoucherResponse getVoucherById(Long id, boolean isMerchant) {
         Voucher voucher = voucherRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy voucher"));
@@ -184,6 +214,7 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setMaxDiscount(request.getMaxDiscount());
         voucher.setStartDate(request.getStartDate());
         voucher.setEndDate(request.getEndDate());
+        voucher.setLimitUsage(request.getLimitUsage() != null ? request.getLimitUsage() : 0);
     }
 
     private void validateDates(VoucherRequest request) {
@@ -204,6 +235,9 @@ public class VoucherServiceImpl implements VoucherService {
                 .maxDiscount(voucher.getMaxDiscount())
                 .startDate(voucher.getStartDate())
                 .endDate(voucher.getEndDate())
+                .isActive(voucher.getIsActive())
+                .limitUsage(voucher.getLimitUsage())
+                .usedCount(voucher.getUsedCount())
                 .createdAt(voucher.getCreatedAt())
                 .updatedAt(voucher.getUpdatedAt())
                 .build();
