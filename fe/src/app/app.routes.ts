@@ -62,7 +62,8 @@ export const routes: Routes = [
             { path: 'products/edit/:id', component: MerchantProductFormComponent },
             { path: 'orders', component: MerchantOrderListComponent },
             { path: 'wallets', component: MerchantWalletComponent },
-            { path: 'chat', loadComponent: () => import('./features/chat/merchant-chat').then(m => m.MerchantChatComponent) },
+            { path: 'vouchers', loadComponent: () => import('./features/Shop/merchant-voucher/merchant-voucher').then(m => m.MerchantVoucherComponent) },
+            { path: 'chat', loadComponent: () => import('./features/chat/merchant-chat').then(m => m.MerchantChatComponent) }
 
 
         ]
@@ -79,6 +80,7 @@ export const routes: Routes = [
             { path: 'shops', component: ShopManagementComponent },
             { path: 'wallets', component: WithdrawalRequestListComponent },
             { path: 'products', component: ProductManagementComponent },
+            { path: 'vouchers', loadComponent: () => import('./features/admin/admin-voucher/admin-voucher').then(m => m.AdminVoucherComponent) },
 
         ]
     },

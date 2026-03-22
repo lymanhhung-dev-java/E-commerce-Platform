@@ -9,4 +9,14 @@ import java.util.Optional;
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     Optional<Voucher> findByCode(String code);
+
+    // Admin: Find all with optional keyword
+    org.springframework.data.domain.Page<Voucher> findByCodeContainingIgnoreCase(String code, org.springframework.data.domain.Pageable pageable);
+
+    // Merchant: Find by ownerType and shopId, with optional keyword
+    org.springframework.data.domain.Page<Voucher> findByOwnerTypeAndShopIdAndCodeContainingIgnoreCase(
+            com.example.backend_service.common.OwnerType ownerType, Long shopId, String code, org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<Voucher> findByOwnerTypeAndShopId(
+            com.example.backend_service.common.OwnerType ownerType, Long shopId, org.springframework.data.domain.Pageable pageable);
 }

@@ -44,6 +44,7 @@ export class MerchantLayoutComponent implements OnInit {
     { label: 'Trang chủ', icon: 'bi-grid-fill', route: '/merchant/dashboard' },
     { label: 'Danh sách đơn hàng', icon: 'bi-bag', route: '/merchant/orders', }, 
     { label: 'Quản lý sản phẩm', icon: 'bi-box-seam', route: '/merchant/products' },
+    { label: 'Quản lý Voucher', icon: 'bi-ticket-perforated', route: '/merchant/vouchers' },
     { label: 'Tin nhắn', icon: 'bi-chat-dots', route: '/merchant/chat' },
     { label: 'Doanh thu', icon: 'bi-people', route: '/merchant/wallets' },
   ];

@@ -20,6 +20,7 @@ export class AdminLayoutComponent {
     { label: 'Quản lý cửa hàng', icon: 'bi-shop', route: '/admin/shops' },
     { label: 'Quản lý danh mục', icon: 'bi-tags-fill', route: '/admin/categories' },
     { label: 'Quản lý sản phẩm', icon: 'bi-box-seam-fill', route: '/admin/products' },
+    { label: 'Quản lý Voucher Hệ Thống', icon: 'bi-ticket-perforated-fill', route: '/admin/vouchers' },
     { label: 'Yêu cầu rút tiền', icon: 'bi-bag-fill', route: '/admin/wallets' },
   ];
   
