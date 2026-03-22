@@ -17,7 +17,7 @@ public class ProductSpecification {
         return (root, query, criteriaBuilder) -> {
             if (name == null || name.trim().isEmpty())
                 return null;
-            return criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%");
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.trim().replaceAll("\\s+", "%").toLowerCase() + "%");
         };
     }
 

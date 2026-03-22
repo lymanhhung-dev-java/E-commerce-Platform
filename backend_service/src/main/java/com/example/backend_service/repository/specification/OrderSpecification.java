@@ -29,7 +29,7 @@ public class OrderSpecification {
         return (root, query, cb) -> {
             if (keyword == null || keyword.trim().isEmpty()) return null;
             
-            String likePattern = "%" + keyword.toLowerCase() + "%";
+            String likePattern = "%" + keyword.trim().replaceAll("\\s+", "%").toLowerCase() + "%";
 
             // Tìm theo ID đơn hàng (ép kiểu ID sang String để so sánh like)
             var idPredicate = cb.like(root.get("id").as(String.class), likePattern);

@@ -92,7 +92,8 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Page<ShopResponse> getShopsForAdmin(String keyword, ShopStatus status, Pageable pageable) {
-        return shopRepository.findAllByKeywordAndStatus(keyword, status, pageable)
+        String processedKeyword = keyword == null ? null : keyword.trim().replaceAll("\\s+", "%");
+        return shopRepository.findAllByKeywordAndStatus(processedKeyword, status, pageable)
                 .map(ShopResponse::fromEntity);
     }
 

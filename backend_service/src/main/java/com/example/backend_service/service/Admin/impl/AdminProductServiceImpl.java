@@ -32,7 +32,7 @@ public class AdminProductServiceImpl implements AdminProductService {
             List<Predicate> predicates = new ArrayList<>();
 
             if (keyword != null && !keyword.trim().isEmpty()) {
-                String likeKey = "%" + keyword.trim().toLowerCase() + "%";
+                String likeKey = "%" + keyword.trim().replaceAll("\\s+", "%").toLowerCase() + "%";
                 Predicate namePred = cb.like(cb.lower(root.get("name")), likeKey);
                 
                 Predicate shopPred = cb.like(cb.lower(root.get("shop").get("shopName")), likeKey);

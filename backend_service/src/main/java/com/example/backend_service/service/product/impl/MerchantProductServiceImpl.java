@@ -150,9 +150,10 @@ public class MerchantProductServiceImpl implements MerchantProductService {
             Pageable pageable) {
         User currentUsername = getCurrentUser();
         
+        String processedKeyword = keyword == null ? null : keyword.trim().replaceAll("\\s+", "%");
         Page<Product> products = productRepository.findProductsForMerchant(
                 currentUsername.getUsername(),
-                keyword,
+                processedKeyword,
                 categoryId,
                 status,
                 pageable

@@ -11,7 +11,7 @@ public class UserSpecification {
     public static Specification<User> hasKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.trim().isEmpty()) return null;
-            String likePattern = "%" + keyword.toLowerCase() + "%";
+            String likePattern = "%" + keyword.trim().replaceAll("\\s+", "%").toLowerCase() + "%";
             
             Predicate hasUsername = cb.like(cb.lower(root.get("username")), likePattern);
             Predicate hasEmail = cb.like(cb.lower(root.get("email")), likePattern);
