@@ -69,7 +69,13 @@ public interface OrderRepository extends JpaRepository<Order, Long>,JpaSpecifica
     @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = 'DELIVERED'")
     BigDecimal sumTotalPlatformRevenue();
 
-    
-    
-
+    @Query("SELECT " +
+           "COALESCE(SUM(o.finalAmountToShop + o.shopVoucherDiscount + o.commissionFee), 0), " +
+           "COALESCE(SUM(o.shopVoucherDiscount), 0), " +
+           "COALESCE(SUM(o.commissionFee), 0), " +
+           "COALESCE(SUM(o.finalAmountToShop), 0) " +
+           "FROM Order o " +
+           "WHERE o.shop.id = :shopId " +
+           "AND o.status = 'DELIVERED'")
+    List<Object[]> getFinancialReportByShop(@Param("shopId") Long shopId);
 }

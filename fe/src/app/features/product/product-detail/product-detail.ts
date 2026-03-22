@@ -128,8 +128,8 @@ export class DetailProductComponent implements OnInit {
   chatWithShop() {
     if (!this.product?.shopId) return;
     this.chatService.createOrGetRoom(this.product.shopId).subscribe({
-      next: () => {
-        this.router.navigate(['/chat']);
+      next: (room) => {
+        this.router.navigate(['/chat'], { queryParams: { roomId: room.id, productId: this.product?.id } });
       },
       error: (err) => {
         console.error('Error creating chat room:', err);

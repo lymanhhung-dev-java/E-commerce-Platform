@@ -59,8 +59,31 @@
 
         @for (msg of messages; track msg.id) {
           <div class="message-wrapper" [class.own]="msg.senderType === 'SHOP'">
-            <div class="message-bubble">
-              <div class="message-content">{{ msg.content }}</div>
+            <div class="message-bubble" [class.order-bubble]="msg.messageType === 'ORDER_INFO' || msg.messageType === 'PRODUCT_INFO'">
+              @if (msg.messageType === 'ORDER_INFO' && msg.parsedOrderInfo) {
+                <div class="order-info-card text-start">
+                  <div class="card-header border-bottom pb-2 mb-2">
+                    <i class="bi bi-box-seam me-2"></i><strong>Đơn hàng #{{ msg.parsedOrderInfo.orderId }}</strong>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="mb-1"><small class="text-muted">Trạng thái:</small> <span class="badge bg-info text-dark">{{ msg.parsedOrderInfo.status }}</span></div>
+                    <div><small class="text-muted">Tổng tiền:</small> <strong class="text-danger">{{ msg.parsedOrderInfo.totalAmount | number }} đ</strong></div>
+                  </div>
+                </div>
+              } @else if (msg.messageType === 'PRODUCT_INFO' && msg.parsedProductInfo) {
+                <div class="order-info-card product-info-card text-start">
+                  <div class="d-flex align-items-center mb-2 cursor-pointer" [routerLink]="['/product', msg.parsedProductInfo.productId]">
+                    <img *ngIf="msg.parsedProductInfo.imageUrl" [src]="msg.parsedProductInfo.imageUrl" [alt]="msg.parsedProductInfo.name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" class="me-3">
+                    <div>
+                      <div class="fw-bold text-truncate" style="max-width: 200px;" [title]="msg.parsedProductInfo.name">{{ msg.parsedProductInfo.name }}</div>
+                      <div class="text-danger fw-bold mt-1">{{ msg.parsedProductInfo.price | number }} đ</div>
+                    </div>
+                  </div>
+                  <a [routerLink]="['/product', msg.parsedProductInfo.productId]" class="btn btn-sm btn-outline-primary w-100 mt-2">Xem chi tiết</a>
+                </div>
+              } @else {
+                <div class="message-content">{{ msg.content }}</div>
+              }
               <div class="message-time">{{ getTimeString(msg.createdAt) }}</div>
             </div>
           </div>

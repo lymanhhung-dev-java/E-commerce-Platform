@@ -50,7 +50,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ChatMessageResponse sendMessage(Long chatRoomId, Long senderId, String content) {
+    public ChatMessageResponse sendMessage(Long chatRoomId, Long senderId, String content, com.example.backend_service.common.MessageType messageType) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
 
@@ -77,6 +77,7 @@ public class ChatServiceImpl implements ChatService {
         message.setSenderId(senderId);
         message.setContent(content);
         message.setIsRead(false);
+        message.setMessageType(messageType != null ? messageType : com.example.backend_service.common.MessageType.TEXT);
 
         ChatMessage saved = chatMessageRepository.save(message);
 
@@ -90,6 +91,7 @@ public class ChatServiceImpl implements ChatService {
                 .content(content)
                 .createdAt(saved.getCreatedAt())
                 .isRead(false)
+                .messageType(saved.getMessageType())
                 .build();
     }
 
@@ -140,6 +142,7 @@ public class ChatServiceImpl implements ChatService {
                     .content(msg.getContent())
                     .createdAt(msg.getCreatedAt())
                     .isRead(msg.getIsRead())
+                    .messageType(msg.getMessageType())
                     .build();
         }).collect(Collectors.toList());
     }

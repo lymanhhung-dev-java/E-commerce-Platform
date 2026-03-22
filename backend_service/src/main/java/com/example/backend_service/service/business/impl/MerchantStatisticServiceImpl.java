@@ -1,6 +1,7 @@
 package com.example.backend_service.service.business.impl;
 
 import com.example.backend_service.dto.response.statistic.StatisticResponse;
+import com.example.backend_service.dto.response.statistic.FinancialReportResponse;
 import com.example.backend_service.model.auth.User;
 import com.example.backend_service.repository.OrderRepository;
 import com.example.backend_service.repository.UserRepository;
@@ -108,5 +109,43 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
             fullList.add(new StatisticResponse(label, value));
         }
         return fullList;
+    }
+
+    @Override
+    public FinancialReportResponse getFinancialReport() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User merchant = userRepository.findByUsername(username);
+        if (merchant.getShop() == null) {
+            throw new RuntimeException("Tài khoản này chưa đăng ký Shop");
+        }
+        Long shopId = merchant.getShop().getId();
+
+        List<Object[]> rawData = orderRepository.getFinancialReportByShop(shopId);
+        if (rawData == null || rawData.isEmpty() || rawData.get(0).length == 0 || rawData.get(0)[0] == null) {
+            return FinancialReportResponse.builder()
+                    .totalOriginalRevenue(BigDecimal.ZERO)
+                    .totalShopVoucherDiscount(BigDecimal.ZERO)
+                    .totalCommissionFee(BigDecimal.ZERO)
+                    .actualBalanceAdded(BigDecimal.ZERO)
+                    .build();
+        }
+
+        Object[] row = rawData.get(0);
+        return FinancialReportResponse.builder()
+                .totalOriginalRevenue(getBigDecimalValue(row[0]))
+                .totalShopVoucherDiscount(getBigDecimalValue(row[1]))
+                .totalCommissionFee(getBigDecimalValue(row[2]))
+                .actualBalanceAdded(getBigDecimalValue(row[3]))
+                .build();
+    }
+
+    private BigDecimal getBigDecimalValue(Object val) {
+        if (val == null) return BigDecimal.ZERO;
+        if (val instanceof BigDecimal) return (BigDecimal) val;
+        try {
+            return new BigDecimal(val.toString());
+        } catch(Exception e) {
+            return BigDecimal.ZERO;
+        }
     }
 }

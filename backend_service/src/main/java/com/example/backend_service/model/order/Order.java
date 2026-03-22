@@ -52,6 +52,21 @@ public class Order {
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
+    @Column(name = "shop_voucher_discount")
+    private BigDecimal shopVoucherDiscount;
+
+    @Column(name = "system_voucher_discount")
+    private BigDecimal systemVoucherDiscount;
+
+    @Column(name = "commission_rate")
+    private BigDecimal commissionRate;
+
+    @Column(name = "commission_fee")
+    private BigDecimal commissionFee;
+
+    @Column(name = "final_amount_to_shop")
+    private BigDecimal finalAmountToShop;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PENDING;
 

@@ -33,4 +33,8 @@ public class ChatMessage extends AbstractEntity<Long> {
 
     @Column(name = "is_read")
     private Boolean isRead = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", length = 50)
+    private com.example.backend_service.common.MessageType messageType = com.example.backend_service.common.MessageType.TEXT;
 }

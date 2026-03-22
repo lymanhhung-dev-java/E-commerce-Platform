@@ -15,6 +15,9 @@ export interface ChatMessage {
   createdAt: string;
   isRead: boolean;
   senderType: 'USER' | 'SHOP';
+  messageType?: 'TEXT' | 'ORDER_INFO' | 'PRODUCT_INFO';
+  parsedOrderInfo?: any;
+  parsedProductInfo?: any;
 }
 
 export interface ChatRoom {
@@ -121,20 +124,24 @@ export class ChatService {
   subscribeToChatRoom(roomId: number): Observable<ChatMessage> {
     const subject = new Subject<ChatMessage>();
     
-    // Use an interval or subscription to wait for connection
-    const checkConnect = setInterval(() => {
+    const trySub = () => {
       if (this.stompClient && this.stompClient.connected) {
-        clearInterval(checkConnect);
         this.stompClient.subscribe(`/topic/chat/${roomId}`, (message: Message) => {
           const chatMsg: ChatMessage = JSON.parse(message.body);
           subject.next(chatMsg);
           this.messageSubject.next(chatMsg);
         });
+        return true;
       }
-    }, 500);
+      return false;
+    };
 
-    // Timeout after 10 seconds
-    setTimeout(() => clearInterval(checkConnect), 10000);
+    if (!trySub()) {
+      const checkConnect = setInterval(() => {
+        if (trySub()) clearInterval(checkConnect);
+      }, 100);
+      setTimeout(() => clearInterval(checkConnect), 10000);
+    }
 
     return subject.asObservable();
   }
@@ -142,29 +149,99 @@ export class ChatService {
   subscribeToUserNotifications(userId: number): Observable<ChatMessage> {
     const subject = new Subject<ChatMessage>();
     
-    const checkConnect = setInterval(() => {
+    const trySub = () => {
       if (this.stompClient && this.stompClient.connected) {
-        clearInterval(checkConnect);
         this.stompClient.subscribe(`/topic/user/${userId}`, (message: Message) => {
           const chatMsg: ChatMessage = JSON.parse(message.body);
           subject.next(chatMsg);
         });
+        return true;
       }
-    }, 500);
+      return false;
+    };
 
-    setTimeout(() => clearInterval(checkConnect), 10000);
+    if (!trySub()) {
+      const checkConnect = setInterval(() => {
+        if (trySub()) clearInterval(checkConnect);
+      }, 100);
+      setTimeout(() => clearInterval(checkConnect), 10000);
+    }
 
     return subject.asObservable();
   }
 
   sendMessage(chatRoomId: number, content: string): void {
-    if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.publish({
-        destination: '/app/chat.send',
-        body: JSON.stringify({ chatRoomId, content })
-      });
-    } else {
-      console.warn('STOMP client not connected, message not sent');
+    const trySend = () => {
+      if (this.stompClient && this.stompClient.connected) {
+        this.stompClient.publish({
+          destination: '/app/chat.send',
+          body: JSON.stringify({ chatRoomId, content, messageType: 'TEXT' })
+        });
+        return true;
+      }
+      return false;
+    };
+
+    if (!trySend()) {
+      const checkConnect = setInterval(() => {
+        if (trySend()) clearInterval(checkConnect);
+      }, 100);
+      setTimeout(() => {
+        clearInterval(checkConnect);
+        if (!this.stompClient || !this.stompClient.connected) {
+          console.warn('STOMP client not connected, message not sent');
+        }
+      }, 5000);
+    }
+  }
+
+  sendOrderInfo(chatRoomId: number, orderId: number): void {
+    const trySend = () => {
+      if (this.stompClient && this.stompClient.connected) {
+        this.stompClient.publish({
+          destination: '/app/chat.sendOrder',
+          body: JSON.stringify({ chatRoomId, orderId })
+        });
+        return true;
+      }
+      return false;
+    };
+
+    if (!trySend()) {
+      const checkConnect = setInterval(() => {
+        if (trySend()) clearInterval(checkConnect);
+      }, 100);
+      setTimeout(() => {
+        clearInterval(checkConnect);
+        if (!this.stompClient || !this.stompClient.connected) {
+          console.warn('STOMP client not connected, order info not sent');
+        }
+      }, 5000);
+    }
+  }
+
+  sendProductInfo(chatRoomId: number, productId: number): void {
+    const trySend = () => {
+      if (this.stompClient && this.stompClient.connected) {
+        this.stompClient.publish({
+          destination: '/app/chat.sendProduct',
+          body: JSON.stringify({ chatRoomId, productId })
+        });
+        return true;
+      }
+      return false;
+    };
+
+    if (!trySend()) {
+      const checkConnect = setInterval(() => {
+        if (trySend()) clearInterval(checkConnect);
+      }, 100);
+      setTimeout(() => {
+        clearInterval(checkConnect);
+        if (!this.stompClient || !this.stompClient.connected) {
+          console.warn('STOMP client not connected, product info not sent');
+        }
+      }, 5000);
     }
   }
 

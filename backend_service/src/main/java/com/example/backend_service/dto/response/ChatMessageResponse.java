@@ -20,4 +20,5 @@ public class ChatMessageResponse {
     private String content;
     private LocalDateTime createdAt;
     private Boolean isRead;
+    private com.example.backend_service.common.MessageType messageType;
 }

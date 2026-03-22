@@ -23,6 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.backend_service.model.Voucher;
+import com.example.backend_service.common.DiscountType;
+import com.example.backend_service.common.OwnerType;
+import java.time.LocalDateTime;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -37,6 +42,7 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final OrderItemRepository orderItemRepository;
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+    private final VoucherRepository voucherRepository;
 
     @Value("${sepay.api.token}")
     private String sepayApiToken;
@@ -123,7 +129,85 @@ public class CheckoutServiceImpl implements CheckoutService {
             }
 
             orderItemRepository.saveAll(orderItems);
-            order.setTotalAmount(totalAmount);
+
+            BigDecimal shopVoucherDiscount = BigDecimal.ZERO;
+            if (request.getShopVoucherId() != null) {
+                Voucher shopVoucher = voucherRepository.findById(request.getShopVoucherId())
+                        .orElseThrow(() -> new AppException("Shop Voucher không tồn tại"));
+                if (shopVoucher.getOwnerType() != OwnerType.SHOP || !shopId.equals(shopVoucher.getShopId())) {
+                    throw new AppException("Shop Voucher không hợp lệ cho shop này");
+                }
+                LocalDateTime now = LocalDateTime.now();
+                if (now.isBefore(shopVoucher.getStartDate()) || now.isAfter(shopVoucher.getEndDate())) {
+                    throw new AppException("Shop Voucher đã hết hạn hoặc chưa bắt đầu");
+                }
+                if (shopVoucher.getMinOrderValue() != null && totalAmount.compareTo(shopVoucher.getMinOrderValue()) < 0) {
+                    throw new AppException("Chưa đạt giá trị đơn hàng tối thiểu để dùng Shop Voucher");
+                }
+
+                if (shopVoucher.getDiscountType() == DiscountType.FIXED) {
+                    shopVoucherDiscount = shopVoucher.getDiscountValue();
+                } else if (shopVoucher.getDiscountType() == DiscountType.PERCENT) {
+                    shopVoucherDiscount = totalAmount.multiply(shopVoucher.getDiscountValue()).divide(BigDecimal.valueOf(100));
+                    if (shopVoucher.getMaxDiscount() != null && shopVoucherDiscount.compareTo(shopVoucher.getMaxDiscount()) > 0) {
+                        shopVoucherDiscount = shopVoucher.getMaxDiscount();
+                    }
+                }
+                if (shopVoucherDiscount.compareTo(totalAmount) > 0) {
+                    shopVoucherDiscount = totalAmount;
+                }
+            }
+
+            BigDecimal amountAfterShopDiscount = totalAmount.subtract(shopVoucherDiscount);
+            if (amountAfterShopDiscount.compareTo(BigDecimal.ZERO) < 0) {
+                amountAfterShopDiscount = BigDecimal.ZERO;
+            }
+
+            BigDecimal commissionRate = BigDecimal.valueOf(0.1);
+            BigDecimal commissionFee = amountAfterShopDiscount.multiply(commissionRate);
+
+            BigDecimal systemVoucherDiscount = BigDecimal.ZERO;
+            if (request.getSystemVoucherId() != null) {
+                Voucher systemVoucher = voucherRepository.findById(request.getSystemVoucherId())
+                        .orElseThrow(() -> new AppException("System Voucher không tồn tại"));
+                if (systemVoucher.getOwnerType() != OwnerType.SYSTEM) {
+                    throw new AppException("System Voucher không hợp lệ");
+                }
+                LocalDateTime now = LocalDateTime.now();
+                if (now.isBefore(systemVoucher.getStartDate()) || now.isAfter(systemVoucher.getEndDate())) {
+                    throw new AppException("System Voucher đã hết hạn hoặc chưa bắt đầu");
+                }
+                if (systemVoucher.getMinOrderValue() != null && totalAmount.compareTo(systemVoucher.getMinOrderValue()) < 0) {
+                    throw new AppException("Chưa đạt giá trị đơn hàng tối thiểu để dùng System Voucher");
+                }
+
+                if (systemVoucher.getDiscountType() == DiscountType.FIXED) {
+                    systemVoucherDiscount = systemVoucher.getDiscountValue();
+                } else if (systemVoucher.getDiscountType() == DiscountType.PERCENT) {
+                    systemVoucherDiscount = totalAmount.multiply(systemVoucher.getDiscountValue()).divide(BigDecimal.valueOf(100));
+                    if (systemVoucher.getMaxDiscount() != null && systemVoucherDiscount.compareTo(systemVoucher.getMaxDiscount()) > 0) {
+                        systemVoucherDiscount = systemVoucher.getMaxDiscount();
+                    }
+                }
+                if (systemVoucherDiscount.compareTo(amountAfterShopDiscount) > 0) {
+                    systemVoucherDiscount = amountAfterShopDiscount;
+                }
+            }
+
+            BigDecimal finalUserPay = totalAmount.subtract(shopVoucherDiscount).subtract(systemVoucherDiscount);
+            if (finalUserPay.compareTo(BigDecimal.ZERO) < 0) {
+                finalUserPay = BigDecimal.ZERO;
+            }
+
+            BigDecimal finalAmountToShop = totalAmount.subtract(shopVoucherDiscount).subtract(commissionFee);
+
+            order.setShopVoucherDiscount(shopVoucherDiscount);
+            order.setSystemVoucherDiscount(systemVoucherDiscount);
+            order.setCommissionRate(commissionRate);
+            order.setCommissionFee(commissionFee);
+            order.setFinalAmountToShop(finalAmountToShop);
+            order.setTotalAmount(finalUserPay);
+            
             orderRepository.save(order);
             createdOrderIds.add(order.getId());
         }

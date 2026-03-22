@@ -10,7 +10,7 @@ public interface ChatService {
 
     ChatRoom getOrCreateChatRoom(Long userId, Long shopId);
 
-    ChatMessageResponse sendMessage(Long chatRoomId, Long senderId, String content);
+    ChatMessageResponse sendMessage(Long chatRoomId, Long senderId, String content, com.example.backend_service.common.MessageType messageType);
 
     List<ChatRoomResponse> getUserChatRooms(Long userId);
 

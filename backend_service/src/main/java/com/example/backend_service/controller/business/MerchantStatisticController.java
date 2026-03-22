@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend_service.dto.response.statistic.StatisticResponse;
+import com.example.backend_service.dto.response.statistic.FinancialReportResponse;
 import com.example.backend_service.service.business.MerchantStatisticService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,5 +34,13 @@ public class MerchantStatisticController {
             @RequestParam(required = false) Integer year
     ) {
         return ResponseEntity.ok(statisticService.getRevenueStatistics(type, month, year));
+    }
+
+    @Operation(summary = "Báo cáo tài chính chi tiết", 
+               description = "Trả về tổng doanh thu gốc, tổng tiền giảm Voucher Shop, tổng phí sàn, và số tiền thực tế cộng vào ví. (Thực nhận = Giá gốc - Voucher Shop - Phí sàn)")
+    @GetMapping("/financial-report")
+    @PreAuthorize("hasRole('ROLE_SELLER')")
+    public ResponseEntity<FinancialReportResponse> getFinancialReport() {
+        return ResponseEntity.ok(statisticService.getFinancialReport());
     }
 }

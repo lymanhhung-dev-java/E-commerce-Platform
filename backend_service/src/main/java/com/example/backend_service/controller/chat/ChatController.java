@@ -5,7 +5,14 @@ import com.example.backend_service.dto.response.ChatMessageResponse;
 import com.example.backend_service.dto.response.ChatRoomResponse;
 import com.example.backend_service.model.auth.User;
 import com.example.backend_service.model.chat.ChatRoom;
+import com.example.backend_service.model.order.Order;
+import com.example.backend_service.model.product.Product;
+import com.example.backend_service.repository.OrderRepository;
+import com.example.backend_service.repository.ProductRepository;
 import com.example.backend_service.service.chat.ChatService;
+import com.example.backend_service.common.MessageType;
+import com.example.backend_service.dto.request.SendOrderMessageRequest;
+import com.example.backend_service.dto.request.SendProductMessageRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +36,8 @@ public class ChatController {
 
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     // ==================== WebSocket STOMP ====================
 
@@ -38,12 +47,59 @@ public class ChatController {
         log.info("WebSocket message from user {} to room {}", user.getUsername(), request.getChatRoomId());
 
         ChatMessageResponse response = chatService.sendMessage(
-                request.getChatRoomId(), user.getId(), request.getContent());
+                request.getChatRoomId(), user.getId(), request.getContent(), request.getMessageType());
 
         // Broadcast to topic so both participants receive the message
         messagingTemplate.convertAndSend("/topic/chat/" + request.getChatRoomId(), response);
 
         // Global notifications for sidebar updates
+        List<Long> participantIds = chatService.getParticipantIds(request.getChatRoomId());
+        participantIds.forEach(id -> messagingTemplate.convertAndSend("/topic/user/" + id, response));
+    }
+
+    @MessageMapping("/chat.sendOrder")
+    public void sendOrderMessage(@Payload SendOrderMessageRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        log.info("WebSocket sendOrder message from user {} to room {}", user.getUsername(), request.getChatRoomId());
+
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getUser().getId().equals(user.getId()) && !order.getShop().getOwner().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized to send this order");
+        }
+
+        String jsonContent = String.format("{\"orderId\": %d, \"status\": \"%s\", \"totalAmount\": %s}", 
+                order.getId(), order.getStatus().name(), order.getTotalAmount().toPlainString());
+
+        ChatMessageResponse response = chatService.sendMessage(
+                request.getChatRoomId(), user.getId(), jsonContent, MessageType.ORDER_INFO);
+
+        messagingTemplate.convertAndSend("/topic/chat/" + request.getChatRoomId(), response);
+
+        List<Long> participantIds = chatService.getParticipantIds(request.getChatRoomId());
+        participantIds.forEach(id -> messagingTemplate.convertAndSend("/topic/user/" + id, response));
+    }
+
+    @MessageMapping("/chat.sendProduct")
+    public void sendProductMessage(@Payload SendProductMessageRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        log.info("WebSocket sendProduct message from user {} to room {}", user.getUsername(), request.getChatRoomId());
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        String jsonContent = String.format("{\"productId\": %d, \"name\": \"%s\", \"price\": %s, \"imageUrl\": \"%s\"}", 
+                product.getId(), 
+                product.getName().replace("\"", "\\\""), 
+                product.getPrice().toPlainString(), 
+                product.getImageUrl() != null ? product.getImageUrl().replace("\"", "\\\"") : "");
+
+        ChatMessageResponse response = chatService.sendMessage(
+                request.getChatRoomId(), user.getId(), jsonContent, MessageType.PRODUCT_INFO);
+
+        messagingTemplate.convertAndSend("/topic/chat/" + request.getChatRoomId(), response);
+
         List<Long> participantIds = chatService.getParticipantIds(request.getChatRoomId());
         participantIds.forEach(id -> messagingTemplate.convertAndSend("/topic/user/" + id, response));
     }

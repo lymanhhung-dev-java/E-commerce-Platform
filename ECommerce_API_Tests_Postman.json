@@ -1,0 +1,321 @@
+{
+  "info": {
+    "name": "E-Commerce Platform API Tests",
+    "description": "Comprehensive tests for E-Commerce platform APIs covering positive and negative test cases.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auth (Authentication & Registration)",
+      "item": [
+        {
+          "name": "Register - Valid Input",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser1\",\n  \"email\": \"testuser1@example.com\",\n  \"phone\": \"0123456789\",\n  \"fullName\": \"Test User\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Register - Passwords do not match",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser3\",\n  \"email\": \"testuser3@example.com\",\n  \"phone\": \"0123456789\",\n  \"fullName\": \"Test User\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login - Valid Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.accessToken) {",
+                  "    pm.environment.set(\"jwt_token\", jsonData.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"testuser1\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/acces-token", "host": ["{{baseUrl}}"], "path": ["api", "auth", "acces-token"] }
+          }
+        },
+        {
+          "name": "Login - Invalid Password",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"testuser1\",\n  \"password\": \"wrongpassword\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/acces-token", "host": ["{{baseUrl}}"], "path": ["api", "auth", "acces-token"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Products (Public)",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/products?search=Laptop&minPrice=100&maxPrice=5000&size=5", "host": ["{{baseUrl}}"], "path": ["api", "products"], "query": [ { "key": "search", "value": "Laptop" }, { "key": "minPrice", "value": "100" }, { "key": "maxPrice", "value": "5000" }, { "key": "size", "value": "5" } ] }
+          }
+        },
+        {
+          "name": "Get Product Details - Valid ID",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/products/1", "host": ["{{baseUrl}}"], "path": ["api", "products", "1"] } }
+        },
+        {
+          "name": "Get Product Details - ID Not Found",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/products/99999", "host": ["{{baseUrl}}"], "path": ["api", "products", "99999"] } }
+        }
+      ]
+    },
+    {
+      "name": "3. Cart",
+      "item": [
+        {
+          "name": "View My Cart",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api", "cart"] }
+          }
+        },
+        {
+          "name": "Add To Cart",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 1,\n  \"quantity\": 2\n}" },
+            "url": { "raw": "{{baseUrl}}/api/cart/add", "host": ["{{baseUrl}}"], "path": ["api", "cart", "add"] }
+          }
+        },
+        {
+          "name": "Add To Cart - Invalid Product",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 9999,\n  \"quantity\": 2\n}" },
+            "url": { "raw": "{{baseUrl}}/api/cart/add", "host": ["{{baseUrl}}"], "path": ["api", "cart", "add"] }
+          }
+        },
+        {
+          "name": "Update Cart Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 1,\n  \"quantity\": 5\n}" },
+            "url": { "raw": "{{baseUrl}}/api/cart/update", "host": ["{{baseUrl}}"], "path": ["api", "cart", "update"] }
+          }
+        },
+        {
+          "name": "Remove From Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/cart/remove?productId=1", "host": ["{{baseUrl}}"], "path": ["api", "cart", "remove"], "query": [ { "key": "productId", "value": "1" } ] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Checkout & Orders",
+      "item": [
+        {
+          "name": "Checkout (Create Order)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [{\n    \"productId\": 1,\n    \"quantity\": 2\n  }],\n  \"deliveryAddress\": \"123 Duong ABC, Quan 1, HCM\",\n  \"paymentMethod\": \"COD\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/checkout", "host": ["{{baseUrl}}"], "path": ["api", "checkout"] }
+          }
+        },
+        {
+          "name": "Checkout - Empty Items (Error)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [],\n  \"deliveryAddress\": \"123 Duong ABC, Quan 1, HCM\",\n  \"paymentMethod\": \"COD\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/checkout", "host": ["{{baseUrl}}"], "path": ["api", "checkout"] }
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/orders/my-orders", "host": ["{{baseUrl}}"], "path": ["api", "orders", "my-orders"] }
+          }
+        },
+        {
+          "name": "Cancel My Order",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/orders/my-orders/1/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "my-orders", "1", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Categories & Shops",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api", "categories"] } }
+        },
+        {
+          "name": "Get Flat Categories",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/categories/flat", "host": ["{{baseUrl}}"], "path": ["api", "categories", "flat"] } }
+        },
+        {
+          "name": "Get Shop Details",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/shops/1", "host": ["{{baseUrl}}"], "path": ["api", "shops", "1"] } }
+        }
+      ]
+    },
+    {
+      "name": "6. Reviews",
+      "item": [
+        {
+          "name": "Get Product Reviews",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/reviews/product/1", "host": ["{{baseUrl}}"], "path": ["api", "reviews", "product", "1"] } }
+        },
+        {
+          "name": "Add Review",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 1,\n  \"rating\": 5,\n  \"comment\": \"San pham rat dep va tot!\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reviews", "host": ["{{baseUrl}}"], "path": ["api", "reviews"] }
+          }
+        },
+        {
+          "name": "Add Review - Invalid Rating",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 1,\n  \"rating\": 6,\n  \"comment\": \"Rating over limit\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reviews", "host": ["{{baseUrl}}"], "path": ["api", "reviews"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Profile & Address",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/profile/me", "host": ["{{baseUrl}}"], "path": ["api", "profile", "me"] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Updated Name\",\n  \"phone\": \"0987654321\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/profile/update", "host": ["{{baseUrl}}"], "path": ["api", "profile", "update"] }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"oldPassword\": \"password123\",\n  \"newPassword\": \"newpass123\",\n  \"confirmPassword\": \"newpass123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/profile/change-password", "host": ["{{baseUrl}}"], "path": ["api", "profile", "change-password"] }
+          }
+        },
+        {
+          "name": "Get Address Book",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api", "addresses"] }
+          }
+        },
+        {
+          "name": "Create Address",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Nguoi Nhan\",\n  \"phone\": \"0123456789\",\n  \"province\": \"TP. HCM\",\n  \"district\": \"Q1\",\n  \"ward\": \"Ben Nghe\",\n  \"streetAddress\": \"1 Lê Duẩn\",\n  \"isDefault\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/addresses", "host": ["{{baseUrl}}"], "path": ["api", "addresses"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Chat & Communication",
+      "item": [
+        {
+          "name": "Get My Chat Rooms",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/chat/rooms", "host": ["{{baseUrl}}"], "path": ["api", "chat", "rooms"] }
+          }
+        },
+        {
+          "name": "Create Or Get Chat Room (With Shop)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"shopId\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/chat/rooms", "host": ["{{baseUrl}}"], "path": ["api", "chat", "rooms"] }
+          }
+        },
+        {
+          "name": "Get Chat History",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/chat/rooms/1/messages", "host": ["{{baseUrl}}"], "path": ["api", "chat", "rooms", "1", "messages"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. File Upload",
+      "item": [
+        {
+          "name": "Upload Avatar",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt_token}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [ { "key": "file", "type": "file", "src": [] } ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/upload/avatar", "host": ["{{baseUrl}}"], "path": ["api", "upload", "avatar"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "jwt_token", "value": "", "type": "string" }
+  ]
+}

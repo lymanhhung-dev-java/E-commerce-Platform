@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService, ChatRoom, ChatMessage } from '../../core/services/chat.service';
 import { UserService } from '../../core/services/user.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-merchant-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './merchant-chat.html',
   styleUrls: ['./merchant-chat.css']
 })
@@ -26,6 +27,7 @@ export class MerchantChatComponent implements OnInit, OnDestroy {
   constructor(
     private chatService: ChatService,
     private userService: UserService,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -89,22 +91,43 @@ export class MerchantChatComponent implements OnInit, OnDestroy {
     this.messages = [];
     this.loading = true;
 
-    this.chatService.getChatHistory(room.id).subscribe(messages => {
-      this.messages = messages;
-      this.loading = false;
-      this.scrollToBottom();
+    this.chatService.getChatHistory(room.id).subscribe({
+      next: (messages) => {
+        this.messages = messages.map(m => {
+          if (m.messageType === 'ORDER_INFO') {
+            try { m.parsedOrderInfo = JSON.parse(m.content); } catch (e) {}
+          } else if (m.messageType === 'PRODUCT_INFO') {
+            try { m.parsedProductInfo = JSON.parse(m.content); } catch (e) {}
+          }
+          return m;
+        });
+        this.loading = false;
+        this.scrollToBottom();
 
-      // Mark as read
-      this.chatService.markAsRead(room.id).subscribe();
-      room.unreadCount = 0;
+        // Mark as read
+        this.chatService.markAsRead(room.id).subscribe();
+        room.unreadCount = 0;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading chat history:', err);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
 
     // Subscribe to real-time messages
     this.roomSubscription = this.chatService.subscribeToChatRoom(room.id).subscribe(msg => {
       if (msg && msg.chatRoomId === room.id) {
         if (!this.messages.find(m => m.id === msg.id)) {
+          if (msg.messageType === 'ORDER_INFO') {
+            try { msg.parsedOrderInfo = JSON.parse(msg.content); } catch (e) {}
+          } else if (msg.messageType === 'PRODUCT_INFO') {
+            try { msg.parsedProductInfo = JSON.parse(msg.content); } catch (e) {}
+          }
           this.messages.push(msg);
           this.scrollToBottom();
+          this.cdr.detectChanges();
         }
       }
     });

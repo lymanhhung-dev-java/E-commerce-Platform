@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService, ChatRoom, ChatMessage } from '../../core/services/chat.service';
 import { UserService } from '../../core/services/user.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './chat.html',
   styleUrls: ['./chat.css']
 })
@@ -22,10 +23,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   loading = false;
   private roomSubscription: any = null;
   private globalSubscription: any = null;
+  private pendingAction: { roomId: number, productId: number } | null = null;
 
   constructor(
     private chatService: ChatService,
     private userService: UserService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -34,6 +39,14 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.userService.getMyProfile().subscribe((profile: any) => {
         this.currentUserId = profile.id;
         this.subscribeToGlobalNotifications();
+      });
+
+      this.route.queryParams.subscribe(params => {
+        const roomId = params['roomId'];
+        const productId = params['productId'];
+        if (roomId && productId) {
+          this.pendingAction = { roomId: Number(roomId), productId: Number(productId) };
+        }
       });
 
       this.chatService.connect();
@@ -54,6 +67,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   loadChatRooms(): void {
     this.chatService.getChatRooms().subscribe(rooms => {
       this.chatRooms = rooms;
+
+      if (this.pendingAction) {
+        const pendingRoomId = this.pendingAction.roomId;
+        const room = this.chatRooms.find(r => r.id === pendingRoomId);
+        if (room) {
+          this.selectRoom(room);
+        }
+      }
     });
   }
 
@@ -88,14 +109,39 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messages = [];
     this.loading = true;
 
-    this.chatService.getChatHistory(room.id).subscribe(messages => {
-      this.messages = messages;
-      this.loading = false;
-      this.scrollToBottom();
+    this.chatService.getChatHistory(room.id).subscribe({
+      next: (messages) => {
+        this.messages = messages.map(m => {
+          if (m.messageType === 'ORDER_INFO') {
+            try { m.parsedOrderInfo = JSON.parse(m.content); } catch (e) {}
+          } else if (m.messageType === 'PRODUCT_INFO') {
+            try { m.parsedProductInfo = JSON.parse(m.content); } catch (e) {}
+          }
+          return m;
+        });
+        this.loading = false;
+        this.scrollToBottom();
 
-      // Mark as read
-      this.chatService.markAsRead(room.id).subscribe();
-      room.unreadCount = 0;
+        // Mark as read
+        this.chatService.markAsRead(room.id).subscribe();
+        room.unreadCount = 0;
+        this.cdr.detectChanges();
+
+        // Send pending message if navigating from product detail
+        if (this.pendingAction && this.pendingAction.roomId === room.id) {
+          const productId = this.pendingAction.productId;
+          this.pendingAction = null;
+          this.router.navigate([], { queryParams: {} });
+          setTimeout(() => {
+            this.chatService.sendProductInfo(room.id, productId);
+          }, 300); // Small buffer to ensure STOMP is subscribed
+        }
+      },
+      error: (err) => {
+        console.error('Error loading chat history:', err);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
 
     // Subscribe to real-time messages
@@ -103,8 +149,14 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (msg && msg.chatRoomId === room.id) {
         // Double check for duplicates
         if (!this.messages.find(m => m.id === msg.id)) {
+          if (msg.messageType === 'ORDER_INFO') {
+            try { msg.parsedOrderInfo = JSON.parse(msg.content); } catch (e) {}
+          } else if (msg.messageType === 'PRODUCT_INFO') {
+            try { msg.parsedProductInfo = JSON.parse(msg.content); } catch (e) {}
+          }
           this.messages.push(msg);
           this.scrollToBottom();
+          this.cdr.detectChanges();
         }
       }
     });
@@ -115,6 +167,19 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.chatService.sendMessage(this.selectedRoom.id, this.newMessage.trim());
     this.newMessage = '';
+  }
+
+  sendOrderInfo(): void {
+    if (!this.selectedRoom) return;
+    const orderIdValue = prompt('Nhập mã đơn hàng (ID) bạn muốn gửi:');
+    if (orderIdValue) {
+      const orderId = parseInt(orderIdValue, 10);
+      if (!isNaN(orderId)) {
+        this.chatService.sendOrderInfo(this.selectedRoom.id, orderId);
+      } else {
+        alert('Mã đơn hàng không hợp lệ!');
+      }
+    }
   }
 
   onKeyPress(event: KeyboardEvent): void {

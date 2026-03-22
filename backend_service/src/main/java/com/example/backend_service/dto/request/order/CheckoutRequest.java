@@ -11,7 +11,8 @@ public class CheckoutRequest {
     private String shippingPhone;
     private String  PaymentMethod = "COD";
     private String note;
-
+    private Long shopVoucherId;
+    private Long systemVoucherId;
     @Data
     public static class Item {
         private Long productId;
