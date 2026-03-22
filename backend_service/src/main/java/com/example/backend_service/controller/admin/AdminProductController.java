@@ -34,9 +34,12 @@ public class AdminProductController {
     public ResponseEntity<Page<ProductListResponse>> getProducts(
             @RequestParam(required = false) String keyword, 
             @RequestParam(required = false) Boolean status, 
+            @RequestParam(required = false) Long shopId,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(adminProductService.getAllProducts(keyword, status, pageable));
+        return ResponseEntity.ok(adminProductService.getAllProducts(keyword, status, shopId, minPrice, maxPrice, pageable));
     }
 
     @Operation(summary = "Khóa / Mở khóa sản phẩm", description = "Thay đổi trạng thái Active/Locked của sản phẩm")

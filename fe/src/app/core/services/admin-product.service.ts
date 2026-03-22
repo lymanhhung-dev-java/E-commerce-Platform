@@ -22,7 +22,10 @@ export class AdminProductService {
     page: number = 0,
     size: number = 10,
     keyword?: string,
-    status?: boolean 
+    status?: boolean,
+    shopId?: number,
+    minPrice?: number,
+    maxPrice?: number
   ): Observable<any> {
     let params = new HttpParams()
       .set('page', page)
@@ -33,6 +36,9 @@ export class AdminProductService {
     if (status !== undefined && status !== null) {
       params = params.set('status', status);
     }
+    if (shopId) params = params.set('shopId', shopId);
+    if (minPrice !== undefined && minPrice !== null) params = params.set('minPrice', minPrice);
+    if (maxPrice !== undefined && maxPrice !== null) params = params.set('maxPrice', maxPrice);
 
     return this.http.get<any>(this.apiUrl, { params });
   }

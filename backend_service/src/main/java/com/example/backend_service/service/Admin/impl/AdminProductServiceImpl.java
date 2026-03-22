@@ -27,7 +27,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final ProductRepository productRepository;
     
     @Override
-    public Page<ProductListResponse> getAllProducts(String keyword, Boolean status, Pageable pageable) {
+    public Page<ProductListResponse> getAllProducts(String keyword, Boolean status, Long shopId, Double minPrice, Double maxPrice, Pageable pageable) {
         Specification<Product> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -42,6 +42,18 @@ public class AdminProductServiceImpl implements AdminProductService {
 
             if (status != null) {
                 predicates.add(cb.equal(root.get("isActive"), status));
+            }
+
+            if (shopId != null) {
+                predicates.add(cb.equal(root.get("shop").get("id"), shopId));
+            }
+
+            if (minPrice != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("price"), minPrice));
+            }
+            
+            if (maxPrice != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("price"), maxPrice));
             }
             
             predicates.add(cb.isFalse(root.get("isDeleted")));

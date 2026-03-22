@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminProductService, AdminProductResponse } from '../../../core/services/admin-product.service';
+import { ShopService } from '../../../core/services/shop.Service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -17,9 +18,11 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ProductManagementComponent implements OnInit {
   private adminProductService = inject(AdminProductService);
+  private shopService = inject(ShopService);
   private toastr = inject(ToastrService);
 
   products: AdminProductResponse[] = [];
+  shops: any[] = [];
   isLoading = false;
 
   // Pagination
@@ -31,9 +34,20 @@ export class ProductManagementComponent implements OnInit {
   // Filter
   keyword: string = '';
   selectedStatus: string = 'ALL'; // ALL | ACTIVE | LOCKED
+  selectedShopId: string | null = null; 
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
 
   ngOnInit() {
+    this.loadShops();
     this.loadProducts();
+  }
+
+  loadShops() {
+    this.shopService.getShopsForAdmin('', 'APPROVED', 0, 1000).subscribe({
+      next: (res) => this.shops = res.content || [],
+      error: (err) => console.error('Lỗi khi tải danh sách Shop', err)
+    });
   }
 
   loadProducts() {
@@ -43,8 +57,15 @@ export class ProductManagementComponent implements OnInit {
     let statusParam: boolean | undefined = undefined;
     if (this.selectedStatus === 'ACTIVE') statusParam = true;
     if (this.selectedStatus === 'LOCKED') statusParam = false;
+    
+    // Parse shopId filter
+    const shopIdParam = this.selectedShopId && this.selectedShopId !== 'null' ? Number(this.selectedShopId) : undefined;
+    
+    // Parse price limits
+    const minParam = this.minPrice !== null && this.minPrice >= 0 ? this.minPrice : undefined;
+    const maxParam = this.maxPrice !== null && this.maxPrice >= 0 ? this.maxPrice : undefined;
 
-    this.adminProductService.getProducts(this.currentPage, this.pageSize, this.keyword, statusParam)
+    this.adminProductService.getProducts(this.currentPage, this.pageSize, this.keyword, statusParam, shopIdParam, minParam, maxParam)
       .subscribe({
         next: (res) => {
           this.products = res.content;
