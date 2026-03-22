@@ -83,6 +83,10 @@
                         </td>
                         <td class="text-end pe-4">
 
+                            <button class="btn btn-sm btn-info me-2 text-white" title="Xem sản phẩm" (click)="viewShopProducts(shop.id)">
+                                <i class="bi bi-box-seam"></i> SP
+                            </button>
+
                             <button *ngIf="shop.status === 'PENDING' || shop.status === 'REJECTED'"
                                 class="btn btn-sm btn-success me-2" title="Phê duyệt"
                                 (click)="updateStatus(shop, true)">

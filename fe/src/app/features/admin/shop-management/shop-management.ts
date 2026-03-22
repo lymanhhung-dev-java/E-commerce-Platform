@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ShopService } from '../../../core/services/shop.Service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -14,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 export class ShopManagementComponent implements OnInit {
   shopService = inject(ShopService);
   toastr = inject(ToastrService);
+  private router = inject(Router);
 
   shops: any[] = [];
   
@@ -77,5 +79,9 @@ export class ShopManagementComponent implements OnInit {
         error: () => this.toastr.error('Lỗi khi khóa shop')
       });
     }
+  }
+
+  viewShopProducts(shopId: number) {
+    this.router.navigate(['/admin/products'], { queryParams: { shopId } });
   }
 }

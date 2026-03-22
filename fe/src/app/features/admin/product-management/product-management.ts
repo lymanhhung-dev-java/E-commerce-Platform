@@ -2,8 +2,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminProductService, AdminProductResponse } from '../../../core/services/admin-product.service';
+import { ProductService } from '../../../core/services/product.service';
 import { ShopService } from '../../../core/services/shop.Service';
 import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-product-management', 
@@ -18,12 +20,15 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ProductManagementComponent implements OnInit {
   private adminProductService = inject(AdminProductService);
+  private publicProductService = inject(ProductService);
   private shopService = inject(ShopService);
   private toastr = inject(ToastrService);
+  private route = inject(ActivatedRoute);
 
   products: AdminProductResponse[] = [];
   shops: any[] = [];
   isLoading = false;
+  selectedProductDetails: any = null;
 
   // Pagination
   currentPage = 0;
@@ -40,7 +45,12 @@ export class ProductManagementComponent implements OnInit {
 
   ngOnInit() {
     this.loadShops();
-    this.loadProducts();
+    this.route.queryParams.subscribe(params => {
+      if (params['shopId']) {
+        this.selectedShopId = params['shopId'];
+      }
+      this.loadProducts();
+    });
   }
 
   loadShops() {
@@ -104,6 +114,18 @@ export class ProductManagementComponent implements OnInit {
       },
       error: (err) => {
         this.toastr.error('Lỗi: ' + (err.error || err.message));
+      }
+    });
+  }
+
+  viewProductDetails(product: AdminProductResponse) {
+    this.publicProductService.getProductById(product.id).subscribe({
+      next: (res) => {
+        this.selectedProductDetails = res;
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Không thể tải chi tiết sản phẩm');
       }
     });
   }

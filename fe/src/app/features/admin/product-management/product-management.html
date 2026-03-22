@@ -82,6 +82,12 @@
                         </td>
 
                         <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết" 
+                                    data-bs-toggle="modal" data-bs-target="#productDetailModal"
+                                    (click)="viewProductDetails(p)">
+                                <i class="bi bi-eye"></i> Chi tiết
+                            </button>
+
                             <button class="btn btn-sm btn-outline-danger me-1" *ngIf="p.isActive"
                                 (click)="toggleStatus(p)" title="Khóa sản phẩm này">
                                 <i class="bi bi-lock-fill"></i> Khóa
@@ -116,4 +122,83 @@
             </button>
         </div>
     </div>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal fade" id="productDetailModal" tabIndex="-1" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold" id="productDetailModalLabel">Chi tiết Sản Phẩm</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedProductDetails; else loadingDetails" class="row">
+            <div class="col-md-5 mb-3 mb-md-0">
+                <!-- Carousel cho ảnh -->
+                <div id="productImagesCarousel" class="carousel slide" data-bs-ride="carousel" *ngIf="selectedProductDetails.productImages && selectedProductDetails.productImages.length > 0; else fallbackImage">
+                    <div class="carousel-inner rounded-3 shadow-sm">
+                        <div class="carousel-item" *ngFor="let imgUrl of selectedProductDetails.productImages; let i = index" [class.active]="i === 0">
+                            <img [src]="imgUrl" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Product Image">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productImagesCarousel" data-bs-slide="prev" *ngIf="selectedProductDetails.productImages.length > 1">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productImagesCarousel" data-bs-slide="next" *ngIf="selectedProductDetails.productImages.length > 1">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <!-- Fallback to main image if productImages is empty -->
+                <ng-template #fallbackImage>
+                    <div class="rounded-3 shadow-sm overflow-hidden">
+                       <img [src]="selectedProductDetails.imageUrl || 'assets/images/placeholder.png'" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Product Image">
+                    </div>
+                </ng-template>
+            </div>
+            <div class="col-md-7">
+                <h4 class="fw-bold mb-2">{{ selectedProductDetails.name }}</h4>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-primary">{{ selectedProductDetails.categoryName }}</span>
+                    <span class="text-muted small"><i class="bi bi-shop"></i> {{ selectedProductDetails.shopName }}</span>
+                </div>
+                
+                <h3 class="text-danger fw-bold mb-3">{{ selectedProductDetails.price | number:'1.0-0' }} đ</h3>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 border text-center">
+                            <div class="small text-muted mb-1">Kho hàng</div>
+                            <div class="fw-bold fs-5 text-dark">{{ selectedProductDetails.stockQuantity }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 border text-center">
+                            <div class="small text-muted mb-1">Đã bán</div>
+                            <div class="fw-bold fs-5 text-dark">{{ selectedProductDetails.soldQuantity || 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-2">Mô tả sản phẩm:</h6>
+                <div class="p-3 bg-light rounded-3 border text-secondary" style="max-height: 200px; overflow-y: auto;">
+                    <p class="mb-0" style="white-space: pre-line; font-size: 0.95rem;">{{ selectedProductDetails.description }}</p>
+                </div>
+            </div>
+        </div>
+        <ng-template #loadingDetails>
+            <div class="d-flex justify-content-center align-items-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </ng-template>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
 </div>
