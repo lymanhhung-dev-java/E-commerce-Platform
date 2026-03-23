@@ -54,6 +54,9 @@ export class ProductService {
     keyword: string,
     categoryId: number | null,
     status: boolean | null,
+    minPrice: number | null,
+    maxPrice: number | null,
+    minRating: number | null,
     page: number,
     size: number
   ): Observable<any> {
@@ -67,6 +70,9 @@ export class ProductService {
     if (status !== null) {
       params = params.set('status', status);
     }
+    if (minPrice !== null && minPrice !== undefined) params = params.set('minPrice', minPrice);
+    if (maxPrice !== null && maxPrice !== undefined) params = params.set('maxPrice', maxPrice);
+    if (minRating !== null && minRating !== undefined) params = params.set('minRating', minRating);
 
     return this.http.get<any>(this.apiMerchantUrl, { params });
   }

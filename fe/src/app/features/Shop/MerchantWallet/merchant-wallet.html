@@ -14,14 +14,13 @@
     <div class="col-md-4">
       <div class="card bg-success text-white border-0 shadow-sm h-100">
         <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start">
-            <h6 class="text-uppercase opacity-75">Doanh thu theo</h6>
-            <select class="form-select form-select-sm w-auto bg-white text-dark border-0"
-              (change)="onChangePeriod($event)">
-              <option value="MONTH">Tháng này</option>
-              <option value="WEEK">Tuần này</option>
-              <option value="YEAR">Năm nay</option>
-            </select>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="text-uppercase opacity-75 mb-0">Doanh thu theo</h6>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-sm px-2" [class.btn-light]="selectedPeriod === 'WEEK'" [class.btn-outline-light]="selectedPeriod !== 'WEEK'"[class.text-dark]="selectedPeriod === 'WEEK'" (click)="onChangePeriod('WEEK')">Tuần</button>
+              <button type="button" class="btn btn-sm px-2" [class.btn-light]="selectedPeriod === 'MONTH'" [class.btn-outline-light]="selectedPeriod !== 'MONTH'" [class.text-dark]="selectedPeriod === 'MONTH'" (click)="onChangePeriod('MONTH')">Tháng</button>
+              <button type="button" class="btn btn-sm px-2" [class.btn-light]="selectedPeriod === 'YEAR'" [class.btn-outline-light]="selectedPeriod !== 'YEAR'" [class.text-dark]="selectedPeriod === 'YEAR'" (click)="onChangePeriod('YEAR')">Năm</button>
+            </div>
           </div>
           <h2 class="fw-bold mb-0 mt-2">
             {{ periodRevenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}
@@ -174,8 +173,35 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" [disabled]="withdrawForm.invalid">
-            XÁC NHẬN RÚT TIỀN
+          <!-- Withdrawal Policy Section -->
+          <div class="card bg-light border-0 rounded-3 mb-4">
+            <div class="card-body p-3 small">
+              <h6 class="fw-bold text-dark mb-0 cursor-pointer d-flex justify-content-between align-items-center" (click)="showPolicy = !showPolicy">
+                <span><i class="bi bi-shield-check text-success me-1"></i> Quy định rút tiền <span class="text-primary text-decoration-underline ms-1 fw-normal" style="font-size: 0.85em;">(Nhấn để xem)</span></span>
+                <i class="bi" [ngClass]="showPolicy ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              </h6>
+              
+              <div *ngIf="showPolicy" class="mt-3 border-top pt-3">
+                <ul class="text-muted ps-3 mb-2">
+                  <li>Số tiền rút tối thiểu là <strong>50.000 VNĐ</strong> và không vượt quá số dư khả dụng.</li>
+                  <li>Giao dịch chỉ áp dụng chuyển khoản trực tiếp về ngân hàng Quân Đội (MBBank).</li>
+                  <li>Tên chủ tài khoản phải trùng khớp với thông tin định danh của người đại diện cửa hàng để đảm bảo an toàn.</li>
+                  <li><strong>Thời gian xử lý:</strong> Hệ thống sẽ xem xét và chuyển tiền trong vòng <strong>24h làm việc</strong>. Trong một số trường hợp thanh toán rủi ro, thời gian có thể kéo dài hơn một chút.</li>
+                </ul>
+                <p class="text-success fst-italic mb-0 mt-2">Cảm ơn bạn đã đồng hành và luôn tin tưởng hợp tác cùng nền tảng của chúng tôi!</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-check mb-4">
+            <input class="form-check-input cursor-pointer shadow-none" type="checkbox" id="acceptPolicyCheck" [(ngModel)]="acceptPolicy" [ngModelOptions]="{standalone: true}">
+            <label class="form-check-label cursor-pointer select-none text-dark fw-bold" for="acceptPolicyCheck">
+              Tôi đã đọc và đồng ý với quy định rút tiền
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm" [disabled]="withdrawForm.invalid || !acceptPolicy">
+            XÁC NHẬN RÚT TIỀN <i class="bi bi-arrow-right-circle ms-1"></i>
           </button>
         </form>
       </div>

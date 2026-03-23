@@ -1,21 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { MerchantStatisticService } from '../../../core/services/merchant-statistic.service';
 import { MerchantWalletService } from '../../../core/services/merchant-wallet.service';
 
 @Component({
   selector: 'app-merchant-wallet',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './merchant-wallet.html',
   styleUrls: ['./merchant-wallet.css']
 })
 export class MerchantWalletComponent implements OnInit {
   walletData: any = null;
   periodRevenue: number = 0;
+  selectedPeriod: string = 'MONTH';
 
   showWithdrawModal = false;
+  acceptPolicy = false;
+  showPolicy = false;
   withdrawForm: FormGroup;
 
   constructor(
@@ -63,8 +66,8 @@ export class MerchantWalletComponent implements OnInit {
     this.loadHistory();
   }
 
-  onChangePeriod(event: any) {
-    const type = event.target.value;
+  onChangePeriod(type: string) {
+    this.selectedPeriod = type;
     this.loadPeriodRevenue(type);
   }
 
@@ -107,6 +110,8 @@ export class MerchantWalletComponent implements OnInit {
 
   openWithdrawModal() {
     this.showWithdrawModal = true;
+    this.acceptPolicy = false;
+    this.showPolicy = false;
     this.withdrawForm.reset({
       amount: 0,
       bankName: 'MBBank',

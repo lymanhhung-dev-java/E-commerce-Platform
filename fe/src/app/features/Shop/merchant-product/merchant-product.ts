@@ -26,6 +26,9 @@ export class MerchantProductListComponent implements OnInit {
     filterKeyword: string = '';
     filterCategoryId: number | null = null;
     filterStatus: string = 'ALL';
+    filterMinPrice: number | null = null;
+    filterMaxPrice: number | null = null;
+    filterMinRating: number | null = null;
 
     // Phân trang
     page: number = 0;
@@ -58,6 +61,9 @@ export class MerchantProductListComponent implements OnInit {
             this.filterKeyword,
             this.filterCategoryId,
             statusParam,
+            this.filterMinPrice,
+            this.filterMaxPrice,
+            this.filterMinRating,
             this.page,
             this.size
         ).subscribe({

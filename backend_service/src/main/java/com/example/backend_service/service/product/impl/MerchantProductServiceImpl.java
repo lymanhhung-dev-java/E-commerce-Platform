@@ -2,6 +2,7 @@ package com.example.backend_service.service.product.impl;
 
 import com.example.backend_service.dto.request.product.MerchantProductCreateRequest;
 import com.example.backend_service.dto.request.product.MerchantProductUpdateRequest;
+import java.math.BigDecimal;
 import com.example.backend_service.dto.response.product.MerchantProductResponse;
 import com.example.backend_service.dto.response.product.ProductDetailResponse;
 import com.example.backend_service.model.product.Product;
@@ -147,6 +148,7 @@ public class MerchantProductServiceImpl implements MerchantProductService {
 
     @Override
     public Page<MerchantProductResponse> getMerchantProducts(String keyword, Long categoryId, Boolean status,
+            BigDecimal minPrice, BigDecimal maxPrice, Double minRating,
             Pageable pageable) {
         User currentUsername = getCurrentUser();
         
@@ -156,6 +158,9 @@ public class MerchantProductServiceImpl implements MerchantProductService {
                 processedKeyword,
                 categoryId,
                 status,
+                minPrice,
+                maxPrice,
+                minRating,
                 pageable
         );
         return products.map(MerchantProductResponse::fromEntity);

@@ -2,6 +2,7 @@ package com.example.backend_service.service.product;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.math.BigDecimal;
 
 import com.example.backend_service.dto.request.product.MerchantProductCreateRequest;
 import com.example.backend_service.dto.request.product.MerchantProductUpdateRequest;
@@ -18,5 +19,5 @@ public interface MerchantProductService {
 
     void toggleProductStatus(Long id);
 
-    Page<MerchantProductResponse> getMerchantProducts(String keyword, Long categoryId, Boolean status, Pageable pageable);
+    Page<MerchantProductResponse> getMerchantProducts(String keyword, Long categoryId, Boolean status, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, Pageable pageable);
 }

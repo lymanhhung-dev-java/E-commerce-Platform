@@ -6,6 +6,7 @@ import com.example.backend_service.dto.response.product.MerchantProductResponse;
 import com.example.backend_service.dto.response.product.ProductDetailResponse;
 import com.example.backend_service.service.product.MerchantProductService;
 
+import java.math.BigDecimal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -67,9 +68,12 @@ public class MerchantProductController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Boolean status, 
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Double minRating,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(merchantProductService.getMerchantProducts(keyword, categoryId, status, pageable));
+        return ResponseEntity.ok(merchantProductService.getMerchantProducts(keyword, categoryId, status, minPrice, maxPrice, minRating, pageable));
     }
 }
 

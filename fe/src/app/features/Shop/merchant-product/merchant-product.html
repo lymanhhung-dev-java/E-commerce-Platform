@@ -45,6 +45,27 @@
                         <i class="bi bi-funnel"></i> Lọc
                     </button>
                 </div>
+
+                <!-- Thêm bộ lọc giá và đánh giá -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted">Giá từ</span>
+                        <input type="number" class="form-control" placeholder="0" [(ngModel)]="filterMinPrice" (keyup.enter)="onFilterChange()">
+                        <span class="input-group-text bg-white text-muted">đến</span>
+                        <input type="number" class="form-control" placeholder="Max" [(ngModel)]="filterMaxPrice" (keyup.enter)="onFilterChange()">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select" [(ngModel)]="filterMinRating" (change)="onFilterChange()">
+                        <option [ngValue]="null">-- Tất cả đánh giá --</option>
+                        <option [ngValue]="5.0">5 Sao</option>
+                        <option [ngValue]="4.0">Từ 4 Sao trở lên</option>
+                        <option [ngValue]="3.0">Từ 3 Sao trở lên</option>
+                        <option [ngValue]="2.0">Từ 2 Sao trở lên</option>
+                        <option [ngValue]="1.0">Từ 1 Sao trở lên</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
