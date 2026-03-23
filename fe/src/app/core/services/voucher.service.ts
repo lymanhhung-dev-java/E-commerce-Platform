@@ -18,6 +18,7 @@ export interface PageableResponse<T> {
 export class VoucherService {
   private adminApiUrl = `${environment.apiUrl}/admin/vouchers`;
   private merchantApiUrl = `${environment.apiUrl}/merchant/vouchers`;
+  private userApiUrl = `${environment.apiUrl}/user/vouchers`;
 
   constructor(private http: HttpClient) {}
 
@@ -81,5 +82,17 @@ export class VoucherService {
 
   toggleMerchantVoucherStatus(id: number): Observable<string> {
     return this.http.patch(`${this.merchantApiUrl}/${id}/toggle-status`, {}, { responseType: 'text' });
+  }
+
+  // ================= USER APIs =================
+  saveVoucher(code: string): Observable<any> {
+    return this.http.post<any>(`${this.userApiUrl}/save/${code}`, {});
+  }
+
+  getMySavedVouchers(page: number = 0, size: number = 10): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<any>(this.userApiUrl, { params });
   }
 }

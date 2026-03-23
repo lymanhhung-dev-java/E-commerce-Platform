@@ -43,9 +43,27 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label fw-bold">Địa chỉ kho hàng <span class="text-danger">*</span></label>
+              <label class="form-label fw-bold">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+              <select class="form-select bg-light" formControlName="city"
+                [class.is-invalid]="registerForm.get('city')?.invalid && registerForm.get('city')?.touched">
+                <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                <option *ngFor="let province of provinces" [value]="province.name">{{ province.name }}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Quận/Huyện/Phường/Xã <span class="text-danger">*</span></label>
+              <select class="form-select bg-light" formControlName="ward"
+                [class.is-invalid]="registerForm.get('ward')?.invalid && registerForm.get('ward')?.touched">
+                <option value="">-- Chọn Quận/Huyện/Phường/Xã --</option>
+                <option *ngFor="let w of wards" [value]="w.name">{{ w.fullName }}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Số nhà, đường... <span class="text-danger">*</span></label>
               <input type="text" class="form-control bg-light" 
-                     placeholder="Số nhà, đường, phường/xã..." formControlName="address">
+                     placeholder="Số nhà, đường, hẻm..." formControlName="street">
             </div>
 
             <div class="mb-4">

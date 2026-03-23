@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
@@ -9,12 +9,13 @@ import { CheckoutService } from '../../core/services/checkout.service';
 import { AddressService } from '../../core/services/address.service';
 import { Address } from '../../core/models/address';
 import { LocationService, Province, Ward } from '../../core/services/location.service';
+import { VoucherService } from '../../core/services/voucher.service';
 import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink], // 2. Thêm RouterLink vào đây
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, FormsModule], // 2. Thêm RouterLink vào đây
   templateUrl: './checkout.html',
   styleUrl: './checkout.css'
 })
@@ -27,6 +28,7 @@ export class CheckoutComponent implements OnInit {
   checkoutService = inject(CheckoutService);
   addressService = inject(AddressService);
   locationService = inject(LocationService);
+  voucherService = inject(VoucherService);
 
   showQrModal: boolean = false;
   qrCodeUrl: string = '';
@@ -45,6 +47,15 @@ export class CheckoutComponent implements OnInit {
 
   provinces: Province[] = [];
   wards: Ward[] = [];
+
+  savedVouchers: any[] = [];
+  shopVouchers: any[] = [];
+  systemVouchers: any[] = [];
+  
+  selectedShopVoucherId: number | null = null;
+  selectedSystemVoucherId: number | null = null;
+  shopDiscountAmount: number = 0;
+  systemDiscountAmount: number = 0;
 
   // Form giữ nguyên
   checkoutForm = this.fb.group({
@@ -76,6 +87,7 @@ export class CheckoutComponent implements OnInit {
   ngOnInit() {
     this.loadSavedAddresses();
     this.loadProvinces();
+    this.loadMyVouchers();
 
     this.checkoutForm.get('city')?.valueChanges.subscribe(cityName => {
       if (cityName) {
@@ -98,6 +110,66 @@ export class CheckoutComponent implements OnInit {
       next: (res) => this.provinces = res,
       error: () => this.toastr.error('Lỗi tải danh sách tỉnh/thành')
     });
+  }
+
+  loadMyVouchers() {
+    this.voucherService.getMySavedVouchers(0, 100).subscribe({
+      next: (res) => {
+        const vouchers = res.content || res;
+        this.savedVouchers = vouchers;
+        this.shopVouchers = vouchers.filter((v: any) => v.ownerType === 'SHOP');
+        this.systemVouchers = vouchers.filter((v: any) => v.ownerType === 'SYSTEM');
+        
+        // Filter out Shop Vouchers to only include those matching the cart items' shop.
+        // Assuming all items in checkout are from the same shop for now.
+        if (this.selectedItems.length > 0) {
+           const shopIdStr = this.selectedItems[0].product.shopId || (this.selectedItems[0].product as any).shop?.id;
+           if (shopIdStr) {
+               this.shopVouchers = this.shopVouchers.filter(v => v.shopId == shopIdStr);
+           }
+        }
+      }
+    });
+  }
+
+  calculateDiscounts() {
+    const subTotal = this.cartService.subTotalSelected();
+    this.shopDiscountAmount = 0;
+    this.systemDiscountAmount = 0;
+
+    if (this.selectedShopVoucherId) {
+       const v = this.shopVouchers.find(v => v.voucherId == this.selectedShopVoucherId);
+       if (v) {
+          if (v.discountType === 'FIXED') {
+             this.shopDiscountAmount = v.discountValue;
+          } else {
+             this.shopDiscountAmount = (subTotal * v.discountValue) / 100;
+             if (v.maxDiscount && this.shopDiscountAmount > v.maxDiscount) {
+                this.shopDiscountAmount = v.maxDiscount;
+             }
+          }
+       }
+    }
+
+    const amountAfterShop = Math.max(0, subTotal - this.shopDiscountAmount);
+
+    if (this.selectedSystemVoucherId) {
+       const v = this.systemVouchers.find(v => v.voucherId == this.selectedSystemVoucherId);
+       if (v) {
+          if (v.discountType === 'FIXED') {
+             this.systemDiscountAmount = v.discountValue;
+          } else {
+             this.systemDiscountAmount = (amountAfterShop * v.discountValue) / 100;
+             if (v.maxDiscount && this.systemDiscountAmount > v.maxDiscount) {
+                this.systemDiscountAmount = v.maxDiscount;
+             }
+          }
+       }
+    }
+  }
+
+  onVoucherChange() {
+     this.calculateDiscounts();
   }
 
   onBankTransferCheckout(orderId: number) {
@@ -285,15 +357,14 @@ export class CheckoutComponent implements OnInit {
     this.checkoutForm.patchValue({ paymentMethod: 'COD' });
   }
 
-  shippingCost = 25000;
-  discount = 20.00;
+  shippingCost = 0;
 
   get selectedItems() {
     return this.cartService.cartItems().filter(item => item.selected);
   }
 
   get finalTotal() {
-    return this.cartService.subTotalSelected() + this.shippingCost - this.discount;
+    return Math.max(0, this.cartService.subTotalSelected() + this.shippingCost - this.shopDiscountAmount - this.systemDiscountAmount);
   }
 
   onSubmit() {
@@ -317,13 +388,20 @@ export class CheckoutComponent implements OnInit {
 
     const finalAddress = `${formValue.street}, ${formValue.ward}, ${formValue.city} (Người nhận: ${formValue.receiverName})`;
 
-    const requestData = {
+    const requestData: any = {
       items: itemsPayload,
       shippingAddress: finalAddress,
       shippingPhone: formValue.phone,
       note: formValue.note,
       paymentMethod: formValue.paymentMethod
     };
+
+    if (this.selectedShopVoucherId) {
+      requestData.shopVoucherId = this.selectedShopVoucherId;
+    }
+    if (this.selectedSystemVoucherId) {
+      requestData.systemVoucherId = this.selectedSystemVoucherId;
+    }
 
     this.checkoutService.checkout(requestData).subscribe({
       next: (response: any) => {

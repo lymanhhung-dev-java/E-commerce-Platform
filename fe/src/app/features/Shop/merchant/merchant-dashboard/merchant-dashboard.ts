@@ -7,6 +7,7 @@ import { StatisticResponse } from '../../../../core/models/StatisticResponse';
 import { Chart, registerables } from 'chart.js';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { LocationService, Province, Ward } from '../../../../core/services/location.service';
 
 // Đăng ký các thành phần của Chart.js
 Chart.register(...registerables);
@@ -23,6 +24,7 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
 
   private statisticService = inject(MerchantStatisticService);
   private toastr = inject(ToastrService);
+  private locationService = inject(LocationService);
 
   shop: any = null;
   currentDate = new Date();
@@ -54,6 +56,7 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getShopInfo();
+    this.loadProvinces();
     // Gọi API load chart sau khi view init xong (thực tế gọi ở đây cũng được nhưng vẽ chart cần canvas tồn tại)
     setTimeout(() => {
       this.loadRevenueStatistics(this.selectedType);
@@ -74,22 +77,69 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
   }
 
   // --- EDIT SHOP INFO ---
+  provinces: Province[] = [];
+  wards: Ward[] = [];
   editShopForm: any = {
     shopName: '',
     address: '',
+    city: '',
+    ward: '',
+    street: '',
     description: '',
     logoUrl: ''
   };
   selectedLogoFile: File | null = null;
 
+  loadProvinces() {
+    this.locationService.getProvinces().subscribe({
+      next: (res) => this.provinces = res,
+      error: () => this.toastr.error('Lỗi tải danh sách tỉnh/thành')
+    });
+  }
+
+  onCityChange() {
+    this.editShopForm.ward = '';
+    this.wards = [];
+    if (this.editShopForm.city) {
+      this.locationService.getWardsByProvinceName(this.editShopForm.city).subscribe(wards => {
+        this.wards = wards;
+      });
+    }
+  }
+
   openEditModal() {
     if (this.shop) {
+      let streetStr = '', wardStr = '', cityStr = '';
+      if (this.shop.address) {
+        // Assume format: street, ward, city
+        const parts = this.shop.address.split(',').map((p: string) => p.trim());
+        if (parts.length >= 3) {
+          cityStr = parts[parts.length - 1];
+          wardStr = parts[parts.length - 2];
+          streetStr = parts.slice(0, parts.length - 2).join(', ');
+        } else {
+          streetStr = this.shop.address; // Fallback
+        }
+      }
+
       this.editShopForm = {
         shopName: this.shop.shopName,
         address: this.shop.address,
+        city: cityStr,
+        ward: wardStr,
+        street: streetStr,
         description: this.shop.description,
         logoUrl: this.shop.logoUrl
       };
+      
+      if (cityStr) {
+        this.locationService.getWardsByProvinceName(cityStr).subscribe(wards => {
+          this.wards = wards;
+        });
+      } else {
+        this.wards = [];
+      }
+
       this.selectedLogoFile = null; // Reset file selection
     }
   }
@@ -123,6 +173,7 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
   }
 
   submitUpdate() {
+    this.editShopForm.address = `${this.editShopForm.street}, ${this.editShopForm.ward}, ${this.editShopForm.city}`;
     this.shopService.updateShopInfo(this.editShopForm).subscribe({
       next: (res) => {
         this.toastr.success('Cập nhật thông tin shop thành công');

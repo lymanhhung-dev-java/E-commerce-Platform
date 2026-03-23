@@ -134,9 +134,26 @@
 
           <hr class="text-muted my-4">
 
-          <div class="input-group mb-4">
-            <input type="text" class="form-control" placeholder="Mã giảm giá">
-            <button class="btn btn-secondary" type="button" disabled>Áp dụng</button>
+          <div class="mb-4">
+            <label class="form-label fw-bold">Voucher của Shop</label>
+            <select class="form-select" [(ngModel)]="selectedShopVoucherId" (change)="onVoucherChange()" [ngModelOptions]="{standalone: true}">
+              <option [ngValue]="null">-- Không chọn --</option>
+              <option *ngFor="let v of shopVouchers" [ngValue]="v.voucherId">
+                {{ v.code }} - {{ v.discountType === 'PERCENT' ? 'Giảm ' + v.discountValue + '%' : 'Giảm ' + (v.discountValue | currency:'VND':'symbol':'1.0-0') }} 
+                (Đơn tối thiểu: {{ v.minOrderValue | currency:'VND':'symbol':'1.0-0' }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">Voucher của Hệ thống</label>
+            <select class="form-select" [(ngModel)]="selectedSystemVoucherId" (change)="onVoucherChange()" [ngModelOptions]="{standalone: true}">
+              <option [ngValue]="null">-- Không chọn --</option>
+              <option *ngFor="let v of systemVouchers" [ngValue]="v.voucherId">
+                {{ v.code }} - {{ v.discountType === 'PERCENT' ? 'Giảm ' + v.discountValue + '%' : 'Giảm ' + (v.discountValue | currency:'VND':'symbol':'1.0-0') }} 
+                (Đơn tối thiểu: {{ v.minOrderValue | currency:'VND':'symbol':'1.0-0' }})
+              </option>
+            </select>
           </div>
 
           <div class="d-flex justify-content-between mb-2">
@@ -145,11 +162,16 @@
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span class="text-muted">Phí vận chuyển</span>
-            <span class="fw-bold">{{ shippingCost | currency:'VND':'symbol':'1.0-0' }}</span>
+            <span class="fw-bold text-success" *ngIf="shippingCost === 0">Miễn phí</span>
+            <span class="fw-bold" *ngIf="shippingCost > 0">{{ shippingCost | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
-          <div class="d-flex justify-content-between mb-3 text-danger">
-            <span class="text-muted">Giảm giá</span>
-            <span class="fw-bold">-{{ discount | currency:'VND':'symbol':'1.0-0' }}</span>
+          <div class="d-flex justify-content-between mb-2 text-danger" *ngIf="shopDiscountAmount > 0">
+            <span class="text-muted">Giảm giá Shop</span>
+            <span class="fw-bold">-{{ shopDiscountAmount | currency:'VND':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3 text-danger" *ngIf="systemDiscountAmount > 0">
+            <span class="text-muted">Giảm giá Hệ thống</span>
+            <span class="fw-bold">-{{ systemDiscountAmount | currency:'VND':'symbol':'1.0-0' }}</span>
           </div>
 
           <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">

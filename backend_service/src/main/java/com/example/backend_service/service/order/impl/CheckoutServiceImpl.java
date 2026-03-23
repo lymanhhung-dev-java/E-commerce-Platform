@@ -43,6 +43,7 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final VoucherRepository voucherRepository;
+    private final UserVoucherRepository userVoucherRepository;
 
     @Value("${sepay.api.token}")
     private String sepayApiToken;
@@ -134,27 +135,40 @@ public class CheckoutServiceImpl implements CheckoutService {
             if (request.getShopVoucherId() != null) {
                 Voucher shopVoucher = voucherRepository.findById(request.getShopVoucherId())
                         .orElseThrow(() -> new AppException("Shop Voucher không tồn tại"));
-                if (shopVoucher.getOwnerType() != OwnerType.SHOP || !shopId.equals(shopVoucher.getShopId())) {
-                    throw new AppException("Shop Voucher không hợp lệ cho shop này");
-                }
-                LocalDateTime now = LocalDateTime.now();
-                if (now.isBefore(shopVoucher.getStartDate()) || now.isAfter(shopVoucher.getEndDate())) {
-                    throw new AppException("Shop Voucher đã hết hạn hoặc chưa bắt đầu");
-                }
-                if (shopVoucher.getMinOrderValue() != null && totalAmount.compareTo(shopVoucher.getMinOrderValue()) < 0) {
-                    throw new AppException("Chưa đạt giá trị đơn hàng tối thiểu để dùng Shop Voucher");
-                }
-
-                if (shopVoucher.getDiscountType() == DiscountType.FIXED) {
-                    shopVoucherDiscount = shopVoucher.getDiscountValue();
-                } else if (shopVoucher.getDiscountType() == DiscountType.PERCENT) {
-                    shopVoucherDiscount = totalAmount.multiply(shopVoucher.getDiscountValue()).divide(BigDecimal.valueOf(100));
-                    if (shopVoucher.getMaxDiscount() != null && shopVoucherDiscount.compareTo(shopVoucher.getMaxDiscount()) > 0) {
-                        shopVoucherDiscount = shopVoucher.getMaxDiscount();
+                
+                // Only process Shop Voucher if it matches the current shop
+                if (shopVoucher.getOwnerType() == OwnerType.SHOP && shopId.equals(shopVoucher.getShopId())) {
+                    LocalDateTime now = LocalDateTime.now();
+                    if (now.isBefore(shopVoucher.getStartDate()) || now.isAfter(shopVoucher.getEndDate())) {
+                        throw new AppException("Shop Voucher đã hết hạn hoặc chưa bắt đầu");
                     }
-                }
-                if (shopVoucherDiscount.compareTo(totalAmount) > 0) {
-                    shopVoucherDiscount = totalAmount;
+                    if (shopVoucher.getMinOrderValue() != null && totalAmount.compareTo(shopVoucher.getMinOrderValue()) < 0) {
+                        throw new AppException("Chưa đạt giá trị đơn hàng tối thiểu để dùng Shop Voucher");
+                    }
+                    if (shopVoucher.getLimitUsage() != null && shopVoucher.getUsedCount() >= shopVoucher.getLimitUsage()) {
+                        throw new AppException("Shop Voucher đã hết lượt sử dụng");
+                    }
+
+                    if (shopVoucher.getDiscountType() == DiscountType.FIXED) {
+                        shopVoucherDiscount = shopVoucher.getDiscountValue();
+                    } else if (shopVoucher.getDiscountType() == DiscountType.PERCENT) {
+                        shopVoucherDiscount = totalAmount.multiply(shopVoucher.getDiscountValue()).divide(BigDecimal.valueOf(100));
+                        if (shopVoucher.getMaxDiscount() != null && shopVoucherDiscount.compareTo(shopVoucher.getMaxDiscount()) > 0) {
+                            shopVoucherDiscount = shopVoucher.getMaxDiscount();
+                        }
+                    }
+                    if (shopVoucherDiscount.compareTo(totalAmount) > 0) {
+                        shopVoucherDiscount = totalAmount;
+                    }
+
+                    // Update voucher usage
+                    shopVoucher.setUsedCount(shopVoucher.getUsedCount() + 1);
+                    voucherRepository.save(shopVoucher);
+
+                    userVoucherRepository.findByUserAndVoucher(user, shopVoucher).ifPresent(uv -> {
+                        uv.setIsUsed(true);
+                        userVoucherRepository.save(uv);
+                    });
                 }
             }
 
@@ -167,6 +181,13 @@ public class CheckoutServiceImpl implements CheckoutService {
             BigDecimal commissionFee = amountAfterShopDiscount.multiply(commissionRate);
 
             BigDecimal systemVoucherDiscount = BigDecimal.ZERO;
+            // System voucher applies once per checkout, but if order is split into multiple shops,
+            // we should technically apportion it. However, keeping it simple: apply it to the first shop that can absorb it or equally?
+            // To prevent applying it multiple times in the loop, we check a flag or just apply until max.
+            // But let's just use the current implementation logic: applies to each shop order? No, system voucher is global.
+            // If the user uses system voucher, and they buy from 2 shops, applying it to both is BAD!
+            // Let's modify: `systemVoucherDiscount` is calculated based on `totalAmount` of THIS shop order.
+            // Which means they get double discount if we don't clear the ID.
             if (request.getSystemVoucherId() != null) {
                 Voucher systemVoucher = voucherRepository.findById(request.getSystemVoucherId())
                         .orElseThrow(() -> new AppException("System Voucher không tồn tại"));
@@ -180,6 +201,9 @@ public class CheckoutServiceImpl implements CheckoutService {
                 if (systemVoucher.getMinOrderValue() != null && totalAmount.compareTo(systemVoucher.getMinOrderValue()) < 0) {
                     throw new AppException("Chưa đạt giá trị đơn hàng tối thiểu để dùng System Voucher");
                 }
+                if (systemVoucher.getLimitUsage() != null && systemVoucher.getUsedCount() >= systemVoucher.getLimitUsage()) {
+                    throw new AppException("System Voucher đã hết lượt sử dụng");
+                }
 
                 if (systemVoucher.getDiscountType() == DiscountType.FIXED) {
                     systemVoucherDiscount = systemVoucher.getDiscountValue();
@@ -192,6 +216,18 @@ public class CheckoutServiceImpl implements CheckoutService {
                 if (systemVoucherDiscount.compareTo(amountAfterShopDiscount) > 0) {
                     systemVoucherDiscount = amountAfterShopDiscount;
                 }
+
+                // Update voucher usage
+                systemVoucher.setUsedCount(systemVoucher.getUsedCount() + 1);
+                voucherRepository.save(systemVoucher);
+
+                userVoucherRepository.findByUserAndVoucher(user, systemVoucher).ifPresent(uv -> {
+                    uv.setIsUsed(true);
+                    userVoucherRepository.save(uv);
+                });
+
+                // Clear the ID so it doesn't get applied to the next shop's order
+                request.setSystemVoucherId(null);
             }
 
             BigDecimal finalUserPay = totalAmount.subtract(shopVoucherDiscount).subtract(systemVoucherDiscount);

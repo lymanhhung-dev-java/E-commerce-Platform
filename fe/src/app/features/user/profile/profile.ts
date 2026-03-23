@@ -12,6 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order';
 import { CartService } from '../../../core/services/cart.service';
+import { VoucherService } from '../../../core/services/voucher.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { forkJoin } from 'rxjs';
@@ -36,6 +37,7 @@ export class ProfileComponent implements OnInit {
   router = inject(Router);
   orderService = inject(OrderService);
   cartService = inject(CartService);
+  voucherService = inject(VoucherService);
   private http = inject(HttpClient);
   private cartApiUrl = `${environment.apiUrl}/cart`;
 
@@ -58,7 +60,12 @@ export class ProfileComponent implements OnInit {
   provinces: Province[] = [];
   wards: Ward[] = [];
 
-  activeTab: 'info' | 'security' | 'address' | 'orders' = 'info';
+  activeTab: 'info' | 'security' | 'address' | 'orders' | 'vouchers' = 'info';
+
+  savedVouchers: any[] = [];
+  voucherCodeInput: string = '';
+  voucherPage: number = 0;
+  voucherTotalPages: number = 0;
 
   addressForm = this.fb.group({
     receiverName: ['', Validators.required],
@@ -122,9 +129,49 @@ export class ProfileComponent implements OnInit {
     this.router.navigate(['/profile/order', orderId]);
   }
 
-  switchTab(tab: 'info' | 'security' | 'address' | 'orders') {
+  switchTab(tab: 'info' | 'security' | 'address' | 'orders' | 'vouchers') {
     this.activeTab = tab;
     this.showAddressForm = false;
+    if (tab === 'vouchers') {
+      this.loadVouchers();
+    }
+  }
+
+  loadVouchers() {
+    this.voucherService.getMySavedVouchers(this.voucherPage, 10).subscribe({
+      next: (res) => {
+        if (res.content) {
+          this.savedVouchers = res.content;
+          this.voucherTotalPages = res.totalPages;
+        } else {
+          this.savedVouchers = res;
+        }
+      },
+      error: () => this.toastr.error('Lỗi tải mã giảm giá')
+    });
+  }
+
+  onSaveVoucher() {
+    if (!this.voucherCodeInput.trim()) {
+      this.toastr.warning('Vui lòng nhập mã giảm giá');
+      return;
+    }
+    this.voucherService.saveVoucher(this.voucherCodeInput.trim()).subscribe({
+      next: () => {
+        this.toastr.success('Lưu mã giảm giá thành công');
+        this.voucherCodeInput = '';
+        this.voucherPage = 0;
+        this.loadVouchers();
+      },
+      error: (err) => this.toastr.error(err.error?.message || 'Lỗi lưu mã giảm giá')
+    });
+  }
+
+  onVoucherPageChange(page: number) {
+    if (page >= 0 && page < this.voucherTotalPages) {
+      this.voucherPage = page;
+      this.loadVouchers();
+    }
   }
 
   loadProfile() {

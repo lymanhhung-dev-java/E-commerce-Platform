@@ -98,8 +98,24 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Địa chỉ</label>
-            <input type="text" class="form-control" [(ngModel)]="editShopForm.address" name="address" required>
+            <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="editShopForm.city" name="city" (change)="onCityChange()" required>
+              <option value="">-- Chọn Tỉnh / Thành phố --</option>
+              <option *ngFor="let province of provinces" [value]="province.name">{{ province.name }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Quận/Huyện/Phường/Xã <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="editShopForm.ward" name="ward" required>
+              <option value="">-- Chọn Quận/Huyện/Phường/Xã --</option>
+              <option *ngFor="let w of wards" [value]="w.name">{{ w.fullName }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Số nhà, đường... <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="editShopForm.street" name="street" required>
           </div>
 
           <div class="mb-3">
