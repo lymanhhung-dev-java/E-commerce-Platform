@@ -80,7 +80,10 @@ public interface OrderRepository extends JpaRepository<Order, Long>,JpaSpecifica
                                  @Param("month") int month, 
                                  @Param("year") int year);
 
-    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = 'DELIVERED'")
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = 'DELIVERED' OR o.status = 'COMPLETED'")
+    BigDecimal sumTotalGrossMerchandiseValue();
+
+    @Query("SELECT SUM(o.commissionFee) FROM Order o WHERE o.status = 'DELIVERED' OR o.status = 'COMPLETED'")
     BigDecimal sumTotalPlatformRevenue();
 
     @Query("SELECT " +

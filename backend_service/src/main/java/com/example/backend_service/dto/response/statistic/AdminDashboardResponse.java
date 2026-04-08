@@ -12,5 +12,9 @@ public class AdminDashboardResponse {
     private long totalShops;
     private long pendingShopRequests; 
     private long pendingWithdrawals;
-    private BigDecimal totalRevenue;
+    private BigDecimal totalRevenue; // This represents Platform revenue
+    private BigDecimal totalGMV;     // Tổng giá trị giao dịch của sàn
+    private BigDecimal escrowBalance; // Quỹ đang đóng băng
+    private long pendingRefunds;     // Chờ hoàn tiền
+    private long pendingReports;     // Khiếu nại chờ xử lý
 }

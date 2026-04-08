@@ -2,62 +2,131 @@
   <h3 class="fw-bold mb-4">Tổng quan hệ thống</h3>
 
   <div class="row g-4 mb-4">
-
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100 bg-primary text-white rounded-4">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center mb-2">
-            <i class="bi bi-currency-dollar fs-4 me-2"></i>
-            <h6 class="card-title mb-0 text-uppercase opacity-75">Doanh thu sàn</h6>
-          </div>
-          <h3 class="fw-bold">{{ stats?.totalRevenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h3>
-          <small class="opacity-75">Tổng giá trị đơn hàng thành công</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100 bg-info text-white rounded-4">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center mb-2">
-            <i class="bi bi-people-fill fs-4 me-2"></i>
-            <h6 class="card-title mb-0 text-uppercase opacity-75">Người dùng</h6>
-          </div>
-          <h3 class="fw-bold">{{ stats?.totalUsers }} <span class="fs-6 fw-normal">Người dùng</span></h3>
-          <div class="mt-1 border-top border-white border-opacity-25 pt-2">
-            <strong>{{ stats?.totalShops }}</strong> Cửa hàng hoạt động
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100 bg-danger text-white rounded-4 cursor-pointer"
-        routerLink="/admin/wallets">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-cash-coin fs-4 me-2"></i>
-              <h6 class="card-title mb-0 text-uppercase opacity-75">Rút tiền</h6>
+    <!-- Cột chính hiển thị Dòng tiền -->
+    <div class="col-xl-8">
+      <div class="row g-3">
+        <!-- Tổng GMV -->
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100 bg-primary text-white rounded-4" style="background: linear-gradient(135deg, #0d6efd, #0dcaf0);">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="card-title mb-0 text-uppercase fw-bold opacity-75">Tổng Dòng Tiền (GMV) toàn sàn</h6>
+                <i class="bi bi-globe fs-3 opacity-50"></i>
+              </div>
+              <h2 class="fw-bold mb-1">{{ stats?.totalGMV | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h2>
+              <small class="opacity-75">Tổng giá trị giao dịch của mọi đơn hàng thành công trên hệ thống</small>
             </div>
-            <span class="badge bg-white text-danger fw-bold" *ngIf="stats?.pendingWithdrawals > 0">Mới</span>
+            <div class="card-footer border-0 bg-white bg-opacity-10 text-white p-3">
+              <div class="d-flex justify-content-between">
+                <span>Doanh thu hoa hồng (Platform):</span>
+                <strong>{{ stats?.totalRevenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</strong>
+              </div>
+            </div>
           </div>
-          <h3 class="fw-bold">{{ stats?.pendingWithdrawals }}</h3>
-          <small class="opacity-75">Yêu cầu đang chờ duyệt</small>
+        </div>
+
+        <!-- Quỹ Escrow -->
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100 bg-warning text-dark rounded-4">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="card-title mb-0 text-uppercase fw-bold opacity-75">Quỹ Đóng Băng (Escrow)</h6>
+                <i class="bi bi-safe fs-3 opacity-50"></i>
+              </div>
+              <h2 class="fw-bold mb-1 text-dark">{{ stats?.escrowBalance | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h2>
+              <small class="opacity-75">Tổng số tiền chưa trả cho Seller (Đối soát Ngân hàng)</small>
+            </div>
+            <div class="card-footer border-0 bg-white bg-opacity-25 text-dark p-3">
+              <div class="d-flex justify-content-between text-muted">
+                <span>Trạng thái: An toàn</span>
+                <i class="bi bi-shield-check text-success"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Stats User -->
+        <div class="col-md-12">
+           <div class="card border-0 shadow-sm bg-info text-white rounded-4">
+            <div class="card-body p-3">
+              <div class="d-flex align-items-center justify-content-around">
+                <div class="text-center">
+                  <h4 class="fw-bold mb-0">{{ stats?.totalUsers }}</h4>
+                  <small class="opacity-75 text-uppercase fw-bold">Người Dùng</small>
+                </div>
+                <div class="border-end border-white opacity-25" style="height: 40px;"></div>
+                <div class="text-center">
+                  <h4 class="fw-bold mb-0">{{ stats?.totalShops }}</h4>
+                  <small class="opacity-75 text-uppercase fw-bold">Cửa Hàng Active</small>
+                </div>
+              </div>
+            </div>
+           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100 bg-warning text-dark rounded-4 cursor-pointer"
-        routerLink="/admin/shopsApprovals">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center mb-2">
-            <i class="bi bi-shop-window fs-4 me-2"></i>
-            <h6 class="card-title mb-0 text-uppercase opacity-75">Đăng ký Cửa hàng</h6>
-          </div>
-          <h3 class="fw-bold">{{ stats?.pendingShopRequests }}</h3>
-          <small class="opacity-75">Đơn đăng ký chờ duyệt</small>
+    <!-- Hệ thống phê duyệt (Pipeline) -->
+    <div class="col-xl-4">
+      <div class="card border-0 shadow rounded-4 h-100 bg-white">
+        <div class="card-header bg-white border-bottom p-4">
+          <h5 class="fw-bold mb-0"><i class="bi bi-list-check text-danger me-2"></i>Quan trọng</h5>
+          <small class="text-muted">Các tác vụ cần xử lý ngay</small>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush rounded-bottom-4">
+            <!-- Xử lý Rút tiền -->
+            <a routerLink="/admin/wallets" class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center" [ngClass]="{'bg-danger-subtle': stats?.pendingWithdrawals > 0}">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-cash-coin fs-4" [class.text-danger]="stats?.pendingWithdrawals > 0"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">Yêu Cầu Rút Tiền</h6>
+                  <small class="text-muted" *ngIf="stats?.pendingWithdrawals === 0">Không có yêu cầu chuyển khoản.</small>
+                  <small class="text-danger fw-medium" *ngIf="stats?.pendingWithdrawals > 0">Hãy hoàn tất chuyển khoản cho Shop!</small>
+                </div>
+              </div>
+              <span class="badge rounded-pill fs-6" [ngClass]="stats?.pendingWithdrawals > 0 ? 'bg-danger' : 'bg-secondary'">{{ stats?.pendingWithdrawals }}</span>
+            </a>
+
+            <!-- Xử lý Hoàn tiền -->
+            <a routerLink="/admin/refunds" class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center" [ngClass]="{'bg-warning-subtle': stats?.pendingRefunds > 0}">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-arrow-return-left fs-4" [class.text-warning]="stats?.pendingRefunds > 0"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">Danh Sách Hoàn Tiền</h6>
+                  <small class="text-muted" *ngIf="stats?.pendingRefunds === 0">Tất cả khách hàng đã nhận được tiền bồi hoàn.</small>
+                  <small class="text-dark fw-medium" *ngIf="stats?.pendingRefunds > 0">Cần trả tiền lại cho khách mua.</small>
+                </div>
+              </div>
+              <span class="badge rounded-pill fs-6" [ngClass]="stats?.pendingRefunds > 0 ? 'bg-warning text-dark' : 'bg-secondary'">{{ stats?.pendingRefunds }}</span>
+            </a>
+
+            <!-- Xử lý Khiếu nại -->
+            <a routerLink="/admin/reports" class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center" [ngClass]="{'bg-danger-subtle': stats?.pendingReports > 0}">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-shield-exclamation fs-4" [class.text-danger]="stats?.pendingReports > 0"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">Vi Phạm & Khiếu Nại</h6>
+                  <small class="text-muted" *ngIf="stats?.pendingReports === 0">Sàn đang hoàn toàn trong sạch.</small>
+                  <small class="text-danger fw-medium" *ngIf="stats?.pendingReports > 0">Có tranh chấp cần phân xử ngay!</small>
+                </div>
+              </div>
+              <span class="badge rounded-pill fs-6" [ngClass]="stats?.pendingReports > 0 ? 'bg-danger' : 'bg-secondary'">{{ stats?.pendingReports }}</span>
+            </a>
+
+             <!-- Xét duyệt Cửa hàng -->
+             <a routerLink="/admin/shopsApprovals" class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center" [ngClass]="{'bg-info-subtle': stats?.pendingShopRequests > 0}">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-shop fs-4"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">Duyệt Đăng Ký Shop</h6>
+                  <small class="text-muted" *ngIf="stats?.pendingShopRequests === 0">Hôm nay không có shop mới.</small>
+                  <small class="text-primary fw-medium" *ngIf="stats?.pendingShopRequests > 0">Có Shop mới chờ kiểm duyệt.</small>
+                </div>
+              </div>
+              <span class="badge rounded-pill fs-6" [ngClass]="stats?.pendingShopRequests > 0 ? 'bg-info text-white' : 'bg-secondary'">{{ stats?.pendingShopRequests }}</span>
+            </a>
+          </ul>
         </div>
       </div>
     </div>

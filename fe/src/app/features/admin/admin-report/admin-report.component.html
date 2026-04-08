@@ -1,0 +1,70 @@
+<div class="container-fluid p-4 bg-light min-vh-100">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">Quản lý Khiếu nại & Vi phạm</h3>
+      <p class="text-muted small mb-0">Theo dõi và phân xử các khiếu nại của người dùng.</p>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0 table-hover">
+        <thead class="bg-white text-secondary small text-uppercase fw-bold border-bottom">
+          <tr>
+            <th class="ps-4 py-3">Mã Đơn / Shop</th>
+            <th>Người Tố Cáo</th>
+            <th>Lý do</th>
+            <th style="max-width: 300px;">Chi tiết</th>
+            <th>Trạng thái</th>
+            <th class="text-end pe-4">Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status"></div>
+            </td>
+          </tr>
+
+          <tr *ngFor="let r of reports" class="bg-light border-bottom border-white">
+            <td class="ps-4">
+              <div class="fw-bold text-dark" *ngIf="r.orderId">Đơn hàng #{{ r.orderId }}</div>
+              <div class="small text-muted" *ngIf="r.shopName">Shop: {{ r.shopName }}</div>
+              <div class="small text-muted" *ngIf="!r.orderId && !r.shopName">Hệ thống chung</div>
+            </td>
+            <td class="fw-bold text-primary">{{ r.username }}</td>
+            <td><span class="badge bg-danger">{{ r.reasonType }}</span></td>
+            <td>
+              <div class="text-truncate" style="max-width: 250px;" [title]="r.description">{{ r.description }}</div>
+              <div class="small text-muted" *ngIf="r.adminNote">Note: {{ r.adminNote }}</div>
+            </td>
+            <td>
+              <span class="badge rounded-pill" [ngClass]="{
+                  'bg-warning text-dark': r.status === 'PENDING',
+                  'bg-success': r.status === 'RESOLVED',
+                  'bg-secondary': r.status === 'REJECTED'
+                }">
+                {{ r.status }}
+              </span>
+            </td>
+            <td class="text-end pe-4">
+              <button class="btn btn-sm btn-outline-primary shadow-sm" *ngIf="r.status === 'PENDING'" (click)="resolveReport(r.id, r.status)">
+                Phân Xử
+              </button>
+              <button class="btn btn-sm btn-light text-muted border" *ngIf="r.status !== 'PENDING'" disabled>
+                Đã xử lý
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="!isLoading && reports.length === 0">
+            <td colspan="6" class="text-center py-5 text-muted bg-white">
+              <i class="bi bi-shield-check display-4 d-block mb-3 text-success opacity-50"></i>
+              Mọi thứ đều ổn. Không có khiếu nại nào!
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

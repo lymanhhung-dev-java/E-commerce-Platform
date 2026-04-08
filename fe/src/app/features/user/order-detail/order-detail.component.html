@@ -50,9 +50,14 @@
                     <span class="text-dark fw-medium">Đang chờ Admin hoàn tiền qua ngân hàng</span>
                   </div>
 
+                  <!-- Nút báo cáo vi phạm rủi ro -->
+                  <button class="btn btn-outline-danger btn-sm px-3 fw-semibold" (click)="reportOrder()">
+                    <i class="bi bi-shield-exclamation me-1"></i> Báo cáo gian lận
+                  </button>
+                  
                   <!-- Nút hủy đơn: chỉ hiện khi PENDING -->
                   <button *ngIf="order.status === 'PENDING'"
-                    class="btn btn-outline-danger btn-sm px-3 fw-semibold"
+                    class="btn btn-outline-secondary btn-sm px-3 fw-semibold"
                     (click)="cancelOrder()"
                     [disabled]="isCanceling">
                     <span *ngIf="isCanceling" class="spinner-border spinner-border-sm me-1" role="status"></span>

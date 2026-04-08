@@ -82,6 +82,7 @@ export const routes: Routes = [
             { path: 'products', component: ProductManagementComponent },
             { path: 'refunds', loadComponent: () => import('./features/admin/admin-refund/admin-refund.component').then(m => m.AdminRefundComponent) },
             { path: 'vouchers', loadComponent: () => import('./features/admin/admin-voucher/admin-voucher').then(m => m.AdminVoucherComponent) },
+            { path: 'reports', loadComponent: () => import('./features/admin/admin-report/admin-report.component').then(m => m.AdminReportComponent) },
 
         ]
     },

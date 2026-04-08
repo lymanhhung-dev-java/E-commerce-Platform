@@ -18,7 +18,11 @@ export class AdminDashboardComponent implements OnInit {
     totalShops: 0,
     pendingShopRequests: 0,
     pendingWithdrawals: 0,
-    totalRevenue: 0
+    totalRevenue: 0,
+    totalGMV: 0,
+    escrowBalance: 0,
+    pendingRefunds: 0,
+    pendingReports: 0
   };
 
   ngOnInit() {

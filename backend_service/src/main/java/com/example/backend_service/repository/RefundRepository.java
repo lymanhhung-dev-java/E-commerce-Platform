@@ -10,4 +10,5 @@ import com.example.backend_service.model.order.Refund;
 @Repository
 public interface RefundRepository extends JpaRepository<Refund, Long> {
     List<Refund> findByStatus(RefundStatus status);
+    long countByStatus(RefundStatus status);
 }

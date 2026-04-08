@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ReviewModalComponent } from '../review-modal/review-modal.component';
 import { OrderItem } from '../../../core/models/order';
 import Swal from 'sweetalert2';
+import { UserReportService } from '../../../core/services/user-report.service';
 
 @Component({
     selector: 'app-order-detail',
@@ -20,6 +21,7 @@ export class OrderDetailComponent implements OnInit {
     private router = inject(Router);
     private orderService = inject(OrderService);
     private toastr = inject(ToastrService);
+    private reportService = inject(UserReportService);
 
     order: Order | null = null;
     isLoading = true;
@@ -130,5 +132,55 @@ export class OrderDetailComponent implements OnInit {
     isLastShop(group: { shopName: string }): boolean {
         const groups = this.getShopGroups();
         return groups[groups.length - 1]?.shopName === group.shopName;
+    }
+
+    reportOrder() {
+        Swal.fire({
+            title: 'Báo cáo Cửa hàng',
+            html: `
+              <select id="swal-reason" class="swal2-select mb-3" style="font-size: 14px;">
+                <option value="" disabled selected>Chọn lý do vi phạm...</option>
+                <option value="Hàng giả, nhái">Hàng giả, nhái</option>
+                <option value="Lừa đảo">Dấu hiệu lừa đảo</option>
+                <option value="Thái độ kém">Thái độ phục vụ kém</option>
+                <option value="Khác">Lý do khác</option>
+              </select>
+              <textarea id="swal-desc" class="swal2-textarea" placeholder="Mô tả chi tiết vi phạm..." style="font-size: 14px; min-height: 100px;"></textarea>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Gửi báo cáo',
+            cancelButtonText: 'Hủy',
+            preConfirm: () => {
+              const reason = (document.getElementById('swal-reason') as HTMLSelectElement).value;
+              const desc = (document.getElementById('swal-desc') as HTMLTextAreaElement).value;
+              
+              if (!reason) {
+                Swal.showValidationMessage('Vui lòng chọn lý do vi phạm');
+                return false;
+              }
+              if (!desc.trim()) {
+                Swal.showValidationMessage('Vui lòng mô tả chi tiết');
+                return false;
+              }
+              return { reason, desc };
+            }
+          }).then((result) => {
+            if (result.isConfirmed && result.value) {
+              const val: any = result.value;
+              const shopId = this.order?.items?.[0]?.shopId; // Optional: Use first shop if exists
+              
+              this.reportService.createReport({
+                  orderId: this.order?.id,
+                  shopId: shopId,
+                  reasonType: val.reason,
+                  description: val.desc
+              }).subscribe({
+                next: () => {
+                   this.toastr.success('Cảm ơn bạn. Chúng tôi sẽ xử lý báo cáo sớm nhất.');
+                },
+                error: () => this.toastr.error('Lỗi khi gửi báo cáo')
+              });
+            }
+          });
     }
 }
