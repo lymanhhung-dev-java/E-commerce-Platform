@@ -49,6 +49,9 @@ public class Order {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop; 
 
+    @Column(name = "total_product_price")
+    private BigDecimal totalProductPrice;
+
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 

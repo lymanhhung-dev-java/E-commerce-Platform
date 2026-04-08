@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
         if (status == OrderStatus.DELIVERED) {
             Shop merchant = order.getShop();
             BigDecimal currentBalance = merchant.getBalance() == null ? BigDecimal.ZERO : merchant.getBalance();
-            merchant.setBalance(currentBalance.add(order.getTotalAmount()));
+            merchant.setBalance(currentBalance.add(order.getFinalAmountToShop()));
         }
         orderRepository.save(order);
     }

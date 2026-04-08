@@ -36,11 +36,23 @@ public class MerchantStatisticController {
         return ResponseEntity.ok(statisticService.getRevenueStatistics(type, month, year));
     }
 
-    @Operation(summary = "Báo cáo tài chính chi tiết", 
+    @Operation(summary = "Báo cáo tài chính chi tiết",
                description = "Trả về tổng doanh thu gốc, tổng tiền giảm Voucher Shop, tổng phí sàn, và số tiền thực tế cộng vào ví. (Thực nhận = Giá gốc - Voucher Shop - Phí sàn)")
     @GetMapping("/financial-report")
     @PreAuthorize("hasRole('ROLE_SELLER')")
     public ResponseEntity<FinancialReportResponse> getFinancialReport() {
         return ResponseEntity.ok(statisticService.getFinancialReport());
+    }
+
+    @Operation(summary = "Báo cáo tài chính tháng",
+               description = "Trả về báo cáo tài chính cho tháng cụ thể: doanh thu gốc, tiền giảm Voucher Shop, phí sàn, và lợi nhuận ròng thực nhận. " +
+                             "Truyền month và year (không bắt buộc, mặc định là tháng/năm hiện tại).")
+    @GetMapping("/financial-report/monthly")
+    @PreAuthorize("hasRole('ROLE_SELLER')")
+    public ResponseEntity<FinancialReportResponse> getMonthlyFinancialReport(
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year
+    ) {
+        return ResponseEntity.ok(statisticService.getMonthlyFinancialReport(month, year));
     }
 }

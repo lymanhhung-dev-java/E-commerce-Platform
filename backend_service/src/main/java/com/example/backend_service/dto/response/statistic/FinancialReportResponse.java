@@ -16,4 +16,6 @@ public class FinancialReportResponse {
     private BigDecimal totalShopVoucherDiscount;
     private BigDecimal totalCommissionFee;
     private BigDecimal actualBalanceAdded;
+    private Integer month;
+    private Integer year;
 }

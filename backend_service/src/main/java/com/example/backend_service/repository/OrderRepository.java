@@ -78,4 +78,18 @@ public interface OrderRepository extends JpaRepository<Order, Long>,JpaSpecifica
            "WHERE o.shop.id = :shopId " +
            "AND o.status = 'DELIVERED'")
     List<Object[]> getFinancialReportByShop(@Param("shopId") Long shopId);
+
+    @Query("SELECT " +
+           "COALESCE(SUM(o.totalProductPrice), 0), " +
+           "COALESCE(SUM(o.shopVoucherDiscount), 0), " +
+           "COALESCE(SUM(o.commissionFee), 0), " +
+           "COALESCE(SUM(o.finalAmountToShop), 0) " +
+           "FROM Order o " +
+           "WHERE o.shop.id = :shopId " +
+           "AND o.status = 'DELIVERED' " +
+           "AND FUNCTION('MONTH', o.createdAt) = :month " +
+           "AND FUNCTION('YEAR', o.createdAt) = :year")
+    List<Object[]> getMonthlyFinancialReportByShop(@Param("shopId") Long shopId,
+                                                   @Param("month") int month,
+                                                   @Param("year") int year);
 }

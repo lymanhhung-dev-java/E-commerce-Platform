@@ -22,6 +22,11 @@ public class OrderResponse {
     private String paymentMethod;
     private OrderStatus status;
     private BigDecimal totalAmount;
+    private BigDecimal totalProductPrice;
+    private BigDecimal shopVoucherDiscount;
+    private BigDecimal systemVoucherDiscount;
+    private BigDecimal commissionFee;
+    private BigDecimal finalAmountToShop;
     private LocalDateTime createdAt;
     private List<OrderItemResponse> items;
 
@@ -35,6 +40,11 @@ public class OrderResponse {
                 .paymentMethod(order.getPaymentMethod())
                 .status(order.getStatus())
                 .totalAmount(order.getTotalAmount())
+                .totalProductPrice(order.getTotalProductPrice())
+                .shopVoucherDiscount(order.getShopVoucherDiscount())
+                .systemVoucherDiscount(order.getSystemVoucherDiscount())
+                .commissionFee(order.getCommissionFee())
+                .finalAmountToShop(order.getFinalAmountToShop())
                 .createdAt(order.getCreatedAt())
                 .items(order.getOrderItems().stream()
                         .map(OrderItemResponse::fromEntity)

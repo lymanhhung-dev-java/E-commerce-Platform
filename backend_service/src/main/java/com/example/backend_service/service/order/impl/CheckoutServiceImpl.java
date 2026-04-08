@@ -14,6 +14,7 @@ import com.example.backend_service.model.order.OrderItem;
 import com.example.backend_service.model.product.Product;
 import com.example.backend_service.repository.*;
 import com.example.backend_service.service.order.CheckoutService;
+import com.example.backend_service.service.voucher.VoucherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,7 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final RestTemplate restTemplate;
     private final VoucherRepository voucherRepository;
     private final UserVoucherRepository userVoucherRepository;
+    private final VoucherService voucherService;
 
     @Value("${sepay.api.token}")
     private String sepayApiToken;
@@ -172,7 +174,9 @@ public class CheckoutServiceImpl implements CheckoutService {
                 }
             }
 
-            BigDecimal amountAfterShopDiscount = totalAmount.subtract(shopVoucherDiscount);
+            BigDecimal totalProductPrice = totalAmount;
+
+            BigDecimal amountAfterShopDiscount = totalProductPrice.subtract(shopVoucherDiscount);
             if (amountAfterShopDiscount.compareTo(BigDecimal.ZERO) < 0) {
                 amountAfterShopDiscount = BigDecimal.ZERO;
             }
@@ -180,14 +184,9 @@ public class CheckoutServiceImpl implements CheckoutService {
             BigDecimal commissionRate = BigDecimal.valueOf(0.1);
             BigDecimal commissionFee = amountAfterShopDiscount.multiply(commissionRate);
 
+            BigDecimal finalAmountToShop = amountAfterShopDiscount.subtract(commissionFee);
+
             BigDecimal systemVoucherDiscount = BigDecimal.ZERO;
-            // System voucher applies once per checkout, but if order is split into multiple shops,
-            // we should technically apportion it. However, keeping it simple: apply it to the first shop that can absorb it or equally?
-            // To prevent applying it multiple times in the loop, we check a flag or just apply until max.
-            // But let's just use the current implementation logic: applies to each shop order? No, system voucher is global.
-            // If the user uses system voucher, and they buy from 2 shops, applying it to both is BAD!
-            // Let's modify: `systemVoucherDiscount` is calculated based on `totalAmount` of THIS shop order.
-            // Which means they get double discount if we don't clear the ID.
             if (request.getSystemVoucherId() != null) {
                 Voucher systemVoucher = voucherRepository.findById(request.getSystemVoucherId())
                         .orElseThrow(() -> new AppException("System Voucher không tồn tại"));
@@ -198,7 +197,7 @@ public class CheckoutServiceImpl implements CheckoutService {
                 if (now.isBefore(systemVoucher.getStartDate()) || now.isAfter(systemVoucher.getEndDate())) {
                     throw new AppException("System Voucher đã hết hạn hoặc chưa bắt đầu");
                 }
-                if (systemVoucher.getMinOrderValue() != null && totalAmount.compareTo(systemVoucher.getMinOrderValue()) < 0) {
+                if (systemVoucher.getMinOrderValue() != null && totalProductPrice.compareTo(systemVoucher.getMinOrderValue()) < 0) {
                     throw new AppException("Chưa đạt giá trị đơn hàng tối thiểu để dùng System Voucher");
                 }
                 if (systemVoucher.getLimitUsage() != null && systemVoucher.getUsedCount() >= systemVoucher.getLimitUsage()) {
@@ -208,7 +207,7 @@ public class CheckoutServiceImpl implements CheckoutService {
                 if (systemVoucher.getDiscountType() == DiscountType.FIXED) {
                     systemVoucherDiscount = systemVoucher.getDiscountValue();
                 } else if (systemVoucher.getDiscountType() == DiscountType.PERCENT) {
-                    systemVoucherDiscount = totalAmount.multiply(systemVoucher.getDiscountValue()).divide(BigDecimal.valueOf(100));
+                    systemVoucherDiscount = totalProductPrice.multiply(systemVoucher.getDiscountValue()).divide(BigDecimal.valueOf(100));
                     if (systemVoucher.getMaxDiscount() != null && systemVoucherDiscount.compareTo(systemVoucher.getMaxDiscount()) > 0) {
                         systemVoucherDiscount = systemVoucher.getMaxDiscount();
                     }
@@ -230,13 +229,13 @@ public class CheckoutServiceImpl implements CheckoutService {
                 request.setSystemVoucherId(null);
             }
 
-            BigDecimal finalUserPay = totalAmount.subtract(shopVoucherDiscount).subtract(systemVoucherDiscount);
+            BigDecimal shippingFee = BigDecimal.ZERO;
+            BigDecimal finalUserPay = totalProductPrice.subtract(shopVoucherDiscount).subtract(systemVoucherDiscount).add(shippingFee);
             if (finalUserPay.compareTo(BigDecimal.ZERO) < 0) {
                 finalUserPay = BigDecimal.ZERO;
             }
 
-            BigDecimal finalAmountToShop = totalAmount.subtract(shopVoucherDiscount).subtract(commissionFee);
-
+            order.setTotalProductPrice(totalProductPrice);
             order.setShopVoucherDiscount(shopVoucherDiscount);
             order.setSystemVoucherDiscount(systemVoucherDiscount);
             order.setCommissionRate(commissionRate);

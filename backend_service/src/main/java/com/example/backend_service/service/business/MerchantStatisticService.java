@@ -8,4 +8,5 @@ import com.example.backend_service.dto.response.statistic.FinancialReportRespons
 public interface MerchantStatisticService {
     List<StatisticResponse> getRevenueStatistics(String type, Integer month, Integer year);
     FinancialReportResponse getFinancialReport();
+    FinancialReportResponse getMonthlyFinancialReport(Integer month, Integer year);
 }

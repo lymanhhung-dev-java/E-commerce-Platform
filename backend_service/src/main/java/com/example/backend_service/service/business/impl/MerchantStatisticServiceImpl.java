@@ -139,6 +139,42 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
                 .build();
     }
 
+    @Override
+    public FinancialReportResponse getMonthlyFinancialReport(Integer month, Integer year) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User merchant = userRepository.findByUsername(username);
+        if (merchant.getShop() == null) {
+            throw new RuntimeException("Tài khoản này chưa đăng ký Shop");
+        }
+        Long shopId = merchant.getShop().getId();
+
+        int reportMonth = (month != null) ? month : LocalDate.now().getMonthValue();
+        int reportYear  = (year != null)  ? year  : LocalDate.now().getYear();
+
+        List<Object[]> rawData = orderRepository.getMonthlyFinancialReportByShop(shopId, reportMonth, reportYear);
+
+        if (rawData == null || rawData.isEmpty() || rawData.get(0) == null || rawData.get(0)[0] == null) {
+            return FinancialReportResponse.builder()
+                    .totalOriginalRevenue(BigDecimal.ZERO)
+                    .totalShopVoucherDiscount(BigDecimal.ZERO)
+                    .totalCommissionFee(BigDecimal.ZERO)
+                    .actualBalanceAdded(BigDecimal.ZERO)
+                    .month(reportMonth)
+                    .year(reportYear)
+                    .build();
+        }
+
+        Object[] row = rawData.get(0);
+        return FinancialReportResponse.builder()
+                .totalOriginalRevenue(getBigDecimalValue(row[0]))
+                .totalShopVoucherDiscount(getBigDecimalValue(row[1]))
+                .totalCommissionFee(getBigDecimalValue(row[2]))
+                .actualBalanceAdded(getBigDecimalValue(row[3]))
+                .month(reportMonth)
+                .year(reportYear)
+                .build();
+    }
+
     private BigDecimal getBigDecimalValue(Object val) {
         if (val == null) return BigDecimal.ZERO;
         if (val instanceof BigDecimal) return (BigDecimal) val;

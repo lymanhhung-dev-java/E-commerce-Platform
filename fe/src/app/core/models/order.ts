@@ -21,6 +21,11 @@ export interface Order {
   paymentMethod: string;
   status: OrderStatus;
   totalAmount: number;
+  totalProductPrice?: number;
+  shopVoucherDiscount?: number;
+  systemVoucherDiscount?: number;
+  commissionFee?: number;
+  finalAmountToShop?: number;
   createdAt: string;
   items: OrderItem[];
 }
