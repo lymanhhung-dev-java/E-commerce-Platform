@@ -40,7 +40,12 @@ export class AuthService {
   }
 
   register(userData: any) {
-    return this.http.post(`${this.apiUrl}/register`, userData);
+    // Expected to return a text response (e.g. "Mã xác thực đã được gửi...")
+    return this.http.post(`${this.apiUrl}/register`, userData, { responseType: 'text' });
+  }
+
+  verifyRegister(email: string, otp: string) {
+    return this.http.post(`${this.apiUrl}/verify-register`, { email, otp });
   }
 
   loginWithGoogle(code: string) {

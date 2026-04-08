@@ -6,7 +6,8 @@
       <p>Bắt đầu mua sắm hoặc bán hàng ngay hôm nay.</p>
     </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    @if (step === 1) {
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       
       <div class="form-row">
         <div class="form-group half-width">
@@ -84,23 +85,50 @@
       </button>
 
     </form>
-    
-    <div class="divider">
-      <span>HOẶC ĐĂNG KÝ BẰNG</span>
-    </div>
 
-    <div class="social-login">
-      <button type="button" class="btn-social">
-        <i class="fab fa-google text-danger"></i> Google
-      </button>
-      <button type="button" class="btn-social">
-        <i class="fab fa-facebook text-primary"></i> Facebook
-      </button>
-    </div>
+      <div class="divider mt-4">
+        <span>HOẶC ĐĂNG KÝ BẰNG</span>
+      </div>
 
-    <div class="footer-link">
-      Đã có tài khoản? <a routerLink="/login">Đăng nhập</a>
-    </div>
+      <div class="social-login">
+        <button type="button" class="btn-social">
+          <i class="fab fa-google text-danger"></i> Google
+        </button>
+        <button type="button" class="btn-social">
+          <i class="fab fa-facebook text-primary"></i> Facebook
+        </button>
+      </div>
+
+      <div class="footer-link">
+        Đã có tài khoản? <a routerLink="/login">Đăng nhập</a>
+      </div>
+    } @else {
+      <!-- Màn hình xác thực OTP -->
+      <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()">
+        <p class="text-center mb-4">Chúng tôi đã gửi mã xác thực tới <br><strong>{{ registeredEmail }}</strong><br>Vui lòng nhập mã để hoàn tất.</p>
+
+        <div class="form-group text-center">
+          <label>Mã xác thực (4 ký tự)</label>
+          <div class="input-container mx-auto" style="max-width: 200px;">
+            <input type="text" 
+                   class="form-input text-center" 
+                   style="letter-spacing: 5px; font-size: 1.2rem; font-weight: bold;" 
+                   formControlName="otp" 
+                   maxlength="4" 
+                   placeholder="____"
+                   autocomplete="off">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-register mt-4" [disabled]="otpForm.invalid">
+          Xác thực & Đăng nhập <i class="fas fa-check"></i>
+        </button>
+
+        <div class="footer-link mt-3">
+          <a href="javascript:void(0)" (click)="step = 1; otpForm.reset()">Quay lại thông tin đăng ký</a>
+        </div>
+      </form>
+    }
 
   </div>
 </div>

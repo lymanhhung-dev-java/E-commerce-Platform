@@ -71,9 +71,31 @@ public class AuthServiceImpl implements AuthService {
     private RoleRepository roleRepository;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private com.example.backend_service.service.auth.EmailService emailService;
+    @Autowired
+    private com.example.backend_service.service.auth.OtpService otpService;
 
     @Override
-    public User register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new AppException("Email is already in use");
+        }
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new AppException("Username is already in use");
+        }
+
+        String otp = otpService.generateAndCacheOtp(registerRequest);
+        emailService.sendVerificationCode(registerRequest.getEmail(), otp);
+    }
+
+    @Override
+    public User verifyRegister(com.example.backend_service.dto.request.auth.VerifyRegisterRequest request) {
+        RegisterRequest registerRequest = otpService.verifyOtp(request.getEmail(), request.getOtp());
+        if (registerRequest == null) {
+            throw new AppException("Mã xác thực không hợp lệ hoặc đã hết hạn");
+        }
+
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new AppException("Email is already in use");
         }
@@ -92,8 +114,10 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new AppException("Error: Role USER not found."));
         roles.add(userRole);
         user.setRoles(roles);
+        
         User savedUser = userRepository.save(user);
-        log.info("New user registered: {}", savedUser.getUsername());
+        otpService.clearOtp(request.getEmail());
+        log.info("New user registered and verified: {}", savedUser.getUsername());
         return savedUser;
     }
 

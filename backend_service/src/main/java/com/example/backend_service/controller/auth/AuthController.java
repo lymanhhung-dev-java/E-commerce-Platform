@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend_service.dto.request.auth.LoginRequest;
 import com.example.backend_service.dto.request.auth.RegisterRequest;
 import com.example.backend_service.dto.request.auth.SocialLoginRequest;
+import com.example.backend_service.dto.request.auth.VerifyRegisterRequest;
 import com.example.backend_service.dto.response.auth.TokenResponse;
 import com.example.backend_service.model.auth.User;
 import com.example.backend_service.service.auth.AuthService;
@@ -26,10 +27,17 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Operation(summary = "Register", description = "API to register a new user")
+    @Operation(summary = "Register", description = "API to register a new user using OTP email verification")
     @PostMapping("/register")
-    public ResponseEntity<Long> register(@RequestBody @Valid RegisterRequest req) {
-        User registeredUser = authService.register(req);
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterRequest req) {
+        authService.register(req);
+        return ResponseEntity.ok("Mã xác thực đã được gửi đến email của bạn.");
+    }
+
+    @Operation(summary = "Verify Register", description = "API to verify OTP and complete registration")
+    @PostMapping("/verify-register")
+    public ResponseEntity<Long> verifyRegister(@RequestBody @Valid VerifyRegisterRequest req) {
+        User registeredUser = authService.verifyRegister(req);
         return ResponseEntity.ok(registeredUser.getId());
     }
 

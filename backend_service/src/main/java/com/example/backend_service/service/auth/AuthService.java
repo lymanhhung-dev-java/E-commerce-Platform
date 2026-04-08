@@ -6,8 +6,12 @@ import com.example.backend_service.dto.request.auth.SocialLoginRequest;
 import com.example.backend_service.dto.response.auth.TokenResponse;
 import com.example.backend_service.model.auth.User;
 
+import com.example.backend_service.dto.request.auth.VerifyRegisterRequest;
+
 public interface AuthService {
-   User register(RegisterRequest registerRequest);
+   void register(RegisterRequest registerRequest);
+
+   User verifyRegister(VerifyRegisterRequest request);
 
    TokenResponse getAccessToken(LoginRequest loginRequest);
    
