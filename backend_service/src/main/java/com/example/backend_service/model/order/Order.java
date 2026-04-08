@@ -88,6 +88,11 @@ public class Order {
     @Column(name = "payment_code")
     private String paymentCode;
 
+    @Column(name = "customer_bank_info")
+    private String customerBankInfo;
+
+    @Column(name = "is_fund_released")
+    private Boolean isFundReleased = false;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;

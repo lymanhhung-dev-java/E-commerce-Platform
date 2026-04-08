@@ -40,8 +40,15 @@
                     {{ order.status === 'PENDING' ? 'Chờ xử lý' :
                        order.status === 'SHIPPED' ? 'Đang giao hàng' :
                        order.status === 'DELIVERED' ? 'Giao thành công' :
-                       order.status === 'CANCELED' ? 'Đã hủy' : order.status }}
+                       order.status === 'CANCELED' ? 'Đã hủy' : 
+                       order.status === 'REFUND_PENDING' ? 'Chờ hoàn tiền' : order.status }}
                   </span>
+
+                  <!-- Thông báo hoàn tiền -->
+                  <div *ngIf="order.status === 'REFUND_PENDING'" class="alert alert-warning py-2 px-3 mb-0 mt-3 d-flex align-items-center gap-2 small border border-warning-subtle rounded-3">
+                    <i class="bi bi-hourglass-split text-warning"></i>
+                    <span class="text-dark fw-medium">Đang chờ Admin hoàn tiền qua ngân hàng</span>
+                  </div>
 
                   <!-- Nút hủy đơn: chỉ hiện khi PENDING -->
                   <button *ngIf="order.status === 'PENDING'"

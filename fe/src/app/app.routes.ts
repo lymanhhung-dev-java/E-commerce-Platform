@@ -80,6 +80,7 @@ export const routes: Routes = [
             { path: 'shops', component: ShopManagementComponent },
             { path: 'wallets', component: WithdrawalRequestListComponent },
             { path: 'products', component: ProductManagementComponent },
+            { path: 'refunds', loadComponent: () => import('./features/admin/admin-refund/admin-refund.component').then(m => m.AdminRefundComponent) },
             { path: 'vouchers', loadComponent: () => import('./features/admin/admin-voucher/admin-voucher').then(m => m.AdminVoucherComponent) },
 
         ]

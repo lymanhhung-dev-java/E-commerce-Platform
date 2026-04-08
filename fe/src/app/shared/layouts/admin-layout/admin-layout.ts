@@ -22,6 +22,7 @@ export class AdminLayoutComponent {
     { label: 'Quản lý sản phẩm', icon: 'bi-box-seam-fill', route: '/admin/products' },
     { label: 'Quản lý Voucher Hệ Thống', icon: 'bi-ticket-perforated-fill', route: '/admin/vouchers' },
     { label: 'Yêu cầu rút tiền', icon: 'bi-bag-fill', route: '/admin/wallets' },
+    { label: 'Yêu cầu hoàn tiền', icon: 'bi-cash-coin', route: '/admin/refunds' },
   ];
   
   systemItems = [

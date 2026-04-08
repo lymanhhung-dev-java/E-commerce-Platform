@@ -43,6 +43,9 @@ public class Shop extends AbstractEntity<Long> implements Serializable {
     @Column(name = "balance", precision = 19, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 
+    @Column(name = "pending_balance")
+    private Double pendingBalance = 0.0;
+
     @Column(name = "logo_url")
     private String logoUrl;
 

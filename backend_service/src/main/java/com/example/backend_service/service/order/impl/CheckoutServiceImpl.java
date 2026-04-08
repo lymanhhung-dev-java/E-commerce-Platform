@@ -46,6 +46,8 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final VoucherRepository voucherRepository;
     private final UserVoucherRepository userVoucherRepository;
     private final VoucherService voucherService;
+    private final ShopRepository shopRepository;
+    private final RefundRepository refundRepository;
 
     @Value("${sepay.api.token}")
     private String sepayApiToken;
@@ -271,16 +273,26 @@ public class CheckoutServiceImpl implements CheckoutService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean checkPaymentStatus(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException("Đơn hàng không tồn tại"));
 
-        boolean isPaid = checkPaymentStatusInternal(order);
+        SepayTransactionDto trans = checkPaymentStatusInternal(order);
 
-        if (isPaid) {
+        if (trans != null) {
             if (order.getStatus() == OrderStatus.PENDING) {
                 order.setStatus(OrderStatus.PAID);
+                
+                String bankInfo = "Ngân hàng: " + trans.getBankBrandName() + ", STK: " + trans.getAccountNumber();
+                order.setCustomerBankInfo(bankInfo);
+                
                 orderRepository.save(order);
+                
+                Shop shop = order.getShop();
+                double finalAmountToShop = order.getFinalAmountToShop() != null ? order.getFinalAmountToShop().doubleValue() : 0.0;
+                shop.setPendingBalance(shop.getPendingBalance() + finalAmountToShop);
+                shopRepository.save(shop);
             }
             return true;
         }
@@ -295,16 +307,42 @@ public class CheckoutServiceImpl implements CheckoutService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException("Đơn hàng không tồn tại"));
 
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new AppException("Đơn hàng đã được xử lý hoặc thanh toán. Không thể hủy!");
+        if (order.getStatus() == OrderStatus.PAID) {
+            order.setStatus(OrderStatus.REFUND_PENDING);
+            orderRepository.save(order);
+
+            com.example.backend_service.model.order.Refund refund = new com.example.backend_service.model.order.Refund();
+            refund.setOrderId(order.getId());
+            refund.setAmount(order.getTotalAmount().doubleValue());
+            refund.setCustomerBankInfo(order.getCustomerBankInfo());
+            refund.setReason("Người dùng yêu cầu hủy đơn hàng đã thanh toán");
+            refund.setStatus(com.example.backend_service.common.RefundStatus.PENDING);
+            refundRepository.save(refund);
+
+            log.info("YÊU CẦU HOÀN TIỀN MỚI: Đơn hàng {} đã chuyển sang REFUND_PENDING, chờ Admin xử lý.", order.getId());
+            return;
+        } else if (order.getStatus() != OrderStatus.PENDING) {
+            throw new AppException("Đơn hàng đã được xử lý. Không thể hủy!");
         }
 
-        boolean isJustPaid = checkPaymentStatusInternal(order);
+        SepayTransactionDto trans = checkPaymentStatusInternal(order);
 
-        if (isJustPaid) {
-            order.setStatus(OrderStatus.PAID);
+        if (trans != null) {
+            order.setStatus(OrderStatus.REFUND_PENDING);
+            String bankInfo = "Ngân hàng: " + trans.getBankBrandName() + ", STK: " + trans.getAccountNumber();
+            order.setCustomerBankInfo(bankInfo);
             orderRepository.save(order);
-            throw new AppException("Giao dịch thành công! Tiền đã vào tài khoản nên không thể hủy đơn.");
+
+            com.example.backend_service.model.order.Refund refund = new com.example.backend_service.model.order.Refund();
+            refund.setOrderId(order.getId());
+            refund.setAmount(order.getTotalAmount().doubleValue());
+            refund.setCustomerBankInfo(bankInfo);
+            refund.setReason("Người dùng yêu cầu hủy, giao dịch vừa khớp");
+            refund.setStatus(com.example.backend_service.common.RefundStatus.PENDING);
+            refundRepository.save(refund);
+
+            log.info("YÊU CẦU HOÀN TIỀN MỚI: Đơn hàng {} đã chuyển sang REFUND_PENDING, chờ Admin xử lý.", order.getId());
+            return;
         }
 
         List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
@@ -334,7 +372,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         orderRepository.delete(order);
     }
 
-    private boolean checkPaymentStatusInternal(Order order) {
+    private SepayTransactionDto checkPaymentStatusInternal(Order order) {
         try {
             String paymentCodeToCheck = extractPaymentCode(order.getNote());
             BigDecimal amountToCheck = order.getTotalAmount();
@@ -357,15 +395,15 @@ public class CheckoutServiceImpl implements CheckoutService {
                             trans.getTransactionContent().toUpperCase().contains(paymentCodeToCheck.toUpperCase());
 
                     if (amountMatch && contentMatch) {
-                        return true;
+                        return trans;
                     }
                 }
             }
         } catch (Exception e) {
             log.error("Lỗi check SePay order {}: {}", order.getId(), e.getMessage());
-            return false;
+            return null;
         }
-        return false;
+        return null;
     }
 
     private String extractPaymentCode(String note) {

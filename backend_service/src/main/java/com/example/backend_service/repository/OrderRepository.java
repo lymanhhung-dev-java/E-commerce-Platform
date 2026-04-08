@@ -13,9 +13,15 @@ import org.springframework.data.repository.query.Param;
 import com.example.backend_service.model.auth.User;
 import com.example.backend_service.model.business.Shop;
 import com.example.backend_service.model.order.Order;
+import com.example.backend_service.common.OrderStatus;
 
 public interface OrderRepository extends JpaRepository<Order, Long>,JpaSpecificationExecutor<Order>{
     Page<Order> findByShop(Shop shop, Pageable pageable);
+
+    List<Order> findByShopAndStatus(Shop shop, OrderStatus status);
+
+    @Query("SELECT o FROM Order o WHERE o.status = :status AND (o.isFundReleased = false OR o.isFundReleased IS NULL) AND o.updatedAt <= :date")
+    List<Order> findByStatusAndIsFundReleasedFalseAndUpdatedAtBefore(@Param("status") OrderStatus status, @Param("date") LocalDateTime date);
 
     List<Order> findByUserOrderByCreatedAtDesc(User user);
 
