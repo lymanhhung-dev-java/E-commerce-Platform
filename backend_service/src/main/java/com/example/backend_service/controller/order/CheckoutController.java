@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend_service.dto.request.order.CheckoutRequest;
+import com.example.backend_service.dto.response.order.PaymentQrResponse;
 import com.example.backend_service.service.order.CheckoutService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,9 +40,9 @@ public class CheckoutController {
     }
 
     @GetMapping("/{orderId}/payment-qr")
-    public ResponseEntity<String> getPaymentQr(@PathVariable Long orderId) {
-        String url = checkoutService.getPaymentQrUrl(orderId);
-        return ResponseEntity.ok(url);
+    public ResponseEntity<PaymentQrResponse> getPaymentQr(@PathVariable Long orderId) {
+        PaymentQrResponse response = checkoutService.getPaymentQrUrl(orderId);
+        return ResponseEntity.ok(response);
     }
 
     // 2. API Kiểm tra trạng thái thanh toán (Frontend gọi 5s/lần)

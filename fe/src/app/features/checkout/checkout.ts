@@ -31,7 +31,7 @@ export class CheckoutComponent implements OnInit {
   voucherService = inject(VoucherService);
 
   showQrModal: boolean = false;
-  qrCodeUrl: string = '';
+  qrInfo: any = null;
   currentOrderId: number | null = null;
 
   countdownTime: number = 180;
@@ -176,8 +176,8 @@ export class CheckoutComponent implements OnInit {
     this.currentOrderId = orderId;
 
     // 1. Lấy mã QR
-    this.checkoutService.getPaymentQrUrl(orderId).subscribe(url => {
-      this.qrCodeUrl = url;
+    this.checkoutService.getPaymentQrUrl(orderId).subscribe(res => {
+      this.qrInfo = res;
       this.showQrModal = true;
 
       // 2. Bắt đầu đếm ngược và kiểm tra tự động
@@ -423,7 +423,30 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  copyToClipboard(text: string, fieldName: string) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.toastr.success(`Đã sao chép ${fieldName}`);
+      }).catch(err => {
+        this.toastr.error('Lỗi khi sao chép');
+      });
+    } else {
+      // Fallback
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        this.toastr.success(`Đã sao chép ${fieldName}`);
+      } catch (err) {
+        this.toastr.error('Lỗi khi sao chép');
+      }
+      document.body.removeChild(textArea);
+    }
+  }
+
   ngOnDestroy() {
     this.stopPaymentProcess();
   }
-}
+}

@@ -12,8 +12,8 @@ export class CheckoutService {
     return this.http.post<number[]>(this.apiUrl, data);
   }
 
-  getPaymentQrUrl(orderId: number): Observable<string> {
-    return this.http.get(`${this.apiUrl}/${orderId}/payment-qr`, { responseType: 'text' });
+  getPaymentQrUrl(orderId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${orderId}/payment-qr`);
   }
 
   // 2. Kiểm tra trạng thái thanh toán

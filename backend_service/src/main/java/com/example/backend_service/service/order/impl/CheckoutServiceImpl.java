@@ -2,6 +2,7 @@ package com.example.backend_service.service.order.impl;
 
 import com.example.backend_service.common.OrderStatus;
 import com.example.backend_service.dto.request.order.CheckoutRequest;
+import com.example.backend_service.dto.response.order.PaymentQrResponse;
 import com.example.backend_service.dto.response.order.SepayResponse;
 import com.example.backend_service.dto.response.order.SepayTransactionDto;
 import com.example.backend_service.exception.AppException;
@@ -258,18 +259,27 @@ public class CheckoutServiceImpl implements CheckoutService {
     }
 
     @Override
-    public String getPaymentQrUrl(Long orderId) {
+    public PaymentQrResponse getPaymentQrUrl(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException("Đơn hàng không tồn tại"));
 
         String content = extractPaymentCode(order.getNote());
 
-        return String.format("https://qr.sepay.vn/img?acc=%s&bank=%s&amount=%s&des=%s",
+        String qrUrl = String.format("https://qr.sepay.vn/img?acc=%s&bank=%s&amount=%s&des=%s",
                 MY_BANK_ACC,
                 MY_BANK_NAME,
                 order.getTotalAmount().toPlainString(),
                 content
         );
+
+        return PaymentQrResponse.builder()
+                .qrUrl(qrUrl)
+                .bankName("MBBank")
+                .accountNo(MY_BANK_ACC)
+                .accountName("CTY TNHH SEPAY")
+                .amount(order.getTotalAmount())
+                .content(content)
+                .build();
     }
 
     @Override

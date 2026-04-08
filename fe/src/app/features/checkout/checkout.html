@@ -200,34 +200,119 @@
 
 <div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0,0,0,0.7); z-index: 1055;"
   *ngIf="showQrModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-4 border-0 shadow-lg rounded-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="modal-title fw-bold text-primary">Thanh toán chuyển khoản</h5>
-        <button type="button" class="btn-close" (click)="closeModal()" [disabled]="isPaymentSuccess"></button>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 1.5rem; overflow: hidden;">
+      
+      <!-- Header gradient -->
+      <div class="modal-header border-0 text-white" style="background: linear-gradient(135deg, #1e317a 0%, #2a4199 100%); padding: 1.5rem;">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <div class="bg-white rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+              <i class="bi bi-qr-code text-primary fs-5"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold mb-0">Thanh Toán Chuyển Khoản</h5>
+              <small class="text-white-50">Vui lòng quét mã QR hoặc chuyển khoản thủ công</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" (click)="closeModal()" [disabled]="isPaymentSuccess"></button>
+        </div>
       </div>
-      <div class="modal-body position-relative" style="min-height: 300px;">
+
+      <div class="modal-body p-4 p-md-5 position-relative bg-light" style="min-height: 400px;">
+        
         <div *ngIf="!isPaymentSuccess && !isExpired">
-          <p class="text-muted mb-3">Mở App Ngân hàng và quét mã bên dưới</p>
-          <div class="qr-wrapper position-relative d-inline-block p-2 border rounded-3 bg-white shadow-sm mb-3">
-            <img [src]="qrCodeUrl" alt="QR Code" class="img-fluid" style="max-width: 220px;">
-            <div class="spinner-border text-primary position-absolute top-50 start-50 translate-middle" role="status"
-              style="width: 3rem; height: 3rem; opacity: 0.3; z-index: 0;"></div>
+          <div class="row align-items-center">
+            
+            <!-- Left side QR -->
+            <div class="col-md-5 text-center mb-4 mb-md-0">
+              <div class="qr-wrapper position-relative d-inline-block p-3 bg-white shadow-sm" style="border-radius: 1.25rem; border: 2px dashed #dee2e6;">
+                <img *ngIf="qrInfo?.qrUrl" [src]="qrInfo.qrUrl" alt="QR Code" class="img-fluid" style="max-width: 240px; object-fit: contain;">
+                <div *ngIf="!qrInfo?.qrUrl" class="spinner-border text-primary position-absolute top-50 start-50 translate-middle" role="status"
+                  style="width: 3rem; height: 3rem; opacity: 0.3; z-index: 0;"></div>
+              </div>
+              
+              <div class="mt-4">
+                <span class="d-inline-flex align-items-center shadow-sm px-4 py-2 rounded-pill bg-white border border-danger">
+                  <span class="spinner-grow text-danger spinner-grow-sm me-2" role="status"></span>
+                  <span class="text-danger fw-semibold">Chờ thanh toán: <span class="fs-5 ms-1">{{ displayTime }}</span></span>
+                </span>
+              </div>
+            </div>
+            
+            <!-- Right side Info -->
+            <div class="col-md-7" *ngIf="qrInfo">
+              <div class="bg-white p-4 shadow-sm" style="border-radius: 1.25rem;">
+                <h6 class="text-uppercase text-muted fw-bold mb-3" style="letter-spacing: 0.5px; font-size: 0.85rem;">Thông tin người nhận</h6>
+                
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Ngân hàng thụ hưởng</label>
+                  <div class="d-flex align-items-center p-2 rounded bg-light border">
+                    <span class="fw-bold text-dark"><i class="bi bi-bank text-secondary me-2"></i> {{ qrInfo.bankName }}</span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Tên ngân hàng / Chủ tài khoản</label>
+                  <div class="d-flex align-items-center p-2 rounded bg-light border">
+                    <span class="fw-bold text-dark">{{ qrInfo.accountName }}</span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Số tài khoản</label>
+                  <div class="d-flex align-items-center justify-content-between p-2 rounded bg-light border border-primary-subtle">
+                    <span class="fw-bold fs-5 text-primary text-break">{{ qrInfo.accountNo }}</span>
+                    <button class="btn btn-sm btn-outline-primary rounded-circle" type="button" (click)="copyToClipboard(qrInfo.accountNo, 'Số tài khoản')" title="Sao chép">
+                      <i class="bi bi-copy"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Số tiền cần chuyển</label>
+                  <div class="d-flex align-items-center justify-content-between p-2 rounded bg-light border border-danger-subtle">
+                    <span class="fw-bold fs-5 text-danger">{{ qrInfo.amount | currency:'VND':'symbol':'1.0-0' }}</span>
+                    <button class="btn btn-sm btn-outline-danger rounded-circle" type="button" (click)="copyToClipboard(qrInfo.amount.toString(), 'Số tiền')" title="Sao chép">
+                      <i class="bi bi-copy"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="text-muted small mb-1">Nội dung chuyển khoản (Bắt buộc)</label>
+                  <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                    <span class="fw-bold fs-5 text-success text-break">{{ qrInfo.content }}</span>
+                    <button class="btn btn-sm btn-outline-success rounded-circle" type="button" (click)="copyToClipboard(qrInfo.content, 'Nội dung')" title="Sao chép">
+                      <i class="bi bi-copy"></i>
+                    </button>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
           </div>
-          <div>
-            <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill border border-danger">
-              Hết hạn sau: <span class="fw-bold fs-5 ms-1">{{ displayTime }}</span>
-            </span>
-          </div>
         </div>
-        <div *ngIf="isPaymentSuccess" class="py-4 text-center success-container">
-          <h3 class="text-success fw-bold mb-2">Thanh toán thành công!</h3>
-          <p class="text-muted mb-4">Đang chuyển hướng...</p>
+        
+        <div *ngIf="isPaymentSuccess" class="h-100 d-flex flex-column justify-content-center align-items-center text-center py-5">
+           <div class="rounded-circle bg-success shadow d-flex justify-content-center align-items-center text-white mb-4" style="width: 80px; height: 80px;">
+             <i class="bi bi-check-lg" style="font-size: 2.5rem;"></i>
+           </div>
+           <h3 class="fw-bold text-success mb-2">Thanh toán thành công!</h3>
+           <p class="text-muted fs-6">Đơn hàng của bạn đã được xác nhận. Đang chuyển hướng...</p>
+           
+           <div class="spinner-border text-success mt-4" role="status" style="width: 2rem; height: 2rem;"></div>
         </div>
-        <div *ngIf="isExpired" class="py-5">
-          <h4 class="text-danger mt-3">Hết thời gian</h4>
-          <button class="btn btn-outline-dark mt-2" (click)="closeModal()">Đóng</button>
+        
+        <div *ngIf="isExpired" class="h-100 d-flex flex-column justify-content-center align-items-center text-center py-5">
+           <div class="rounded-circle bg-danger-subtle d-flex justify-content-center align-items-center text-danger mb-4" style="width: 80px; height: 80px;">
+             <i class="bi bi-x-lg" style="font-size: 2.5rem;"></i>
+           </div>
+           <h4 class="fw-bold text-danger mb-2">Hết thời gian thanh toán</h4>
+           <p class="text-muted">Quá thời gian quy định. Vui lòng đặt lại đơn hàng!</p>
+           <button class="btn btn-dark mt-3 px-4 py-2 rounded-pill shadow-sm" (click)="closeModal()">Đóng và quay lại</button>
         </div>
+        
       </div>
     </div>
   </div>
