@@ -15,7 +15,7 @@ export interface ChatMessage {
   createdAt: string;
   isRead: boolean;
   senderType: 'USER' | 'SHOP';
-  messageType?: 'TEXT' | 'ORDER_INFO' | 'PRODUCT_INFO';
+  messageType?: 'TEXT' | 'ORDER_INFO' | 'PRODUCT_INFO' | 'IMAGE';
   parsedOrderInfo?: any;
   parsedProductInfo?: any;
 }
@@ -67,6 +67,12 @@ export class ChatService {
 
   markAsRead(roomId: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/rooms/${roomId}/read`, {});
+  }
+
+  uploadImageMessage(chatRoomId: number, file: File): Observable<ChatMessage> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ChatMessage>(`${this.apiUrl}/rooms/${chatRoomId}/image`, formData);
   }
 
   // ==================== WebSocket STOMP ====================

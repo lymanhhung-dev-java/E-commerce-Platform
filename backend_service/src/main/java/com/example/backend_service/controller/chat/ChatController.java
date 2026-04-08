@@ -13,6 +13,8 @@ import com.example.backend_service.service.chat.ChatService;
 import com.example.backend_service.common.MessageType;
 import com.example.backend_service.dto.request.SendOrderMessageRequest;
 import com.example.backend_service.dto.request.SendProductMessageRequest;
+import com.example.backend_service.service.common.StorageService;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,7 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final StorageService storageService;
 
     // ==================== WebSocket STOMP ====================
 
@@ -170,5 +173,26 @@ public class ChatController {
             @AuthenticationPrincipal User user) {
         chatService.markAsRead(roomId, user.getId());
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Upload an image to send in chat
+     */
+    @PostMapping("/rooms/{roomId}/image")
+    public ResponseEntity<ChatMessageResponse> uploadImageMessage(
+            @PathVariable Long roomId,
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal User user) {
+        
+        String imageUrl = storageService.uploadFile(file, "chat_images");
+
+        ChatMessageResponse response = chatService.sendMessage(
+                roomId, user.getId(), imageUrl, MessageType.IMAGE);
+
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
+        List<Long> participantIds = chatService.getParticipantIds(roomId);
+        participantIds.forEach(id -> messagingTemplate.convertAndSend("/topic/user/" + id, response));
+
+        return ResponseEntity.ok(response);
     }
 }

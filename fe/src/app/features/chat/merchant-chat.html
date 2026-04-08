@@ -81,6 +81,12 @@
                   </div>
                   <a [routerLink]="['/product', msg.parsedProductInfo.productId]" class="btn btn-sm btn-outline-primary w-100 mt-2">Xem chi tiết</a>
                 </div>
+              } @else if (msg.messageType === 'IMAGE') {
+                <div class="message-content p-0">
+                  <a [href]="msg.content" target="_blank">
+                    <img [src]="msg.content" alt="Image" class="chat-image rounded img-fluid" style="max-height: 200px; max-width: 100%; object-fit: contain;">
+                  </a>
+                </div>
               } @else {
                 <div class="message-content">{{ msg.content }}</div>
               }
@@ -92,6 +98,10 @@
 
       <div class="chat-input-area">
         <div class="input-wrapper">
+          <button class="btn btn-sm btn-outline-secondary me-2 image-btn" (click)="fileInput.click()" title="Gửi hình ảnh" style="border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="bi bi-image"></i>
+          </button>
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
           <textarea 
             [(ngModel)]="newMessage" 
             (keypress)="onKeyPress($event)"

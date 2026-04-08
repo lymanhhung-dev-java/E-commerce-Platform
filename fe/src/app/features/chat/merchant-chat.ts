@@ -140,6 +140,27 @@ export class MerchantChatComponent implements OnInit, OnDestroy {
     this.newMessage = '';
   }
 
+  onFileSelected(event: any): void {
+    if (!this.selectedRoom) return;
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Chỉ chấp nhận file hình ảnh');
+        return;
+      }
+      this.chatService.uploadImageMessage(this.selectedRoom.id, file).subscribe({
+        next: () => {
+          event.target.value = ''; // Reset input
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Upload ảnh thất bại: ' + (err.error?.message || 'Có lỗi xảy ra'));
+          event.target.value = '';
+        }
+      });
+    }
+  }
+
   onKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -173,6 +194,11 @@ export class MerchantChatComponent implements OnInit, OnDestroy {
     } catch (e) {
       // Fallback
     }
+    
+    if (content.startsWith('http://') || content.startsWith('https://')) {
+      return '[Hình ảnh]';
+    }
+    
     return content;
   }
 }

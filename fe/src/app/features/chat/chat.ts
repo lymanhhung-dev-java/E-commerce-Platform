@@ -169,16 +169,25 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.newMessage = '';
   }
 
-  sendOrderInfo(): void {
+  onFileSelected(event: any): void {
     if (!this.selectedRoom) return;
-    const orderIdValue = prompt('Nhập mã đơn hàng (ID) bạn muốn gửi:');
-    if (orderIdValue) {
-      const orderId = parseInt(orderIdValue, 10);
-      if (!isNaN(orderId)) {
-        this.chatService.sendOrderInfo(this.selectedRoom.id, orderId);
-      } else {
-        alert('Mã đơn hàng không hợp lệ!');
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Chỉ chấp nhận file hình ảnh');
+        return;
       }
+      this.chatService.uploadImageMessage(this.selectedRoom.id, file).subscribe({
+        next: () => {
+          // Message will be received via STOMP broadcase, no need to manually push
+          event.target.value = ''; // Reset input
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Upload ảnh thất bại: ' + (err.error?.message || 'Có lỗi xảy ra'));
+          event.target.value = '';
+        }
+      });
     }
   }
 
@@ -218,8 +227,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (obj && obj.orderId) return '[Thông tin đơn hàng]';
       }
     } catch (e) {
-      // Not JSON or parse error, fallback to content
+      // Not JSON or parse error
     }
+    
+    if (content.startsWith('http://') || content.startsWith('https://')) {
+      return '[Hình ảnh]';
+    }
+    
     return content;
   }
 }
