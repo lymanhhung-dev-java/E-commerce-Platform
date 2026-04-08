@@ -126,20 +126,31 @@ public class AuthServiceImpl implements AuthService {
 
         List<String> authorities = new ArrayList<>();
 
+        String realUsername = loginRequest.getUsername();
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
                             loginRequest.getPassword()));
-            log.info("Authorities: {}", authentication.getAuthorities().toString());
             authorities.add(authentication.getAuthorities().toString());
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            
+            // Extract the actual User object from the authentication
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof com.example.backend_service.model.auth.User) {
+                realUsername = ((com.example.backend_service.model.auth.User) principal).getUsername();
+            } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+                realUsername = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+            } else {
+                realUsername = principal.toString();
+            }
+            
         } catch (Exception e) {
             log.error("Authentication failed for user: {}", loginRequest.getUsername());
             throw new AppException("Invalid username or password");
         }
-        String accessToken = jwtService.generateAccessToken(loginRequest.getUsername(), authorities);
-        String refreshToken = jwtService.generateRefreshToken(loginRequest.getUsername(), authorities);
+        String accessToken = jwtService.generateAccessToken(realUsername, authorities);
+        String refreshToken = jwtService.generateRefreshToken(realUsername, authorities);
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -175,7 +186,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             GoogleUserInfo googleUser = getGoogleUserInfo(req.getCode());
 
-            User user = userRepository.findByEmail(googleUser.getEmail()).orElseGet(() -> {
+            User user = userRepository.findFirstByEmail(googleUser.getEmail()).orElseGet(() -> {
                 User newUser = new User();
                 newUser.setEmail(googleUser.getEmail());
                 newUser.setFullName(googleUser.getName());

@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleUnwantedException(Exception ex) {
         ex.printStackTrace();
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống vui lòng thử lại sau", null);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống: " + ex.getMessage() + " | " + ex.getClass().getName(), null);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
