@@ -152,4 +152,38 @@ export class MerchantProductListComponent implements OnInit {
             }
         });
     }
+
+    // 6. Bulk Update Hàng loạt
+    isBulkUpdateMode = false;
+
+    toggleBulkUpdateMode() {
+        this.isBulkUpdateMode = true;
+        this.products.forEach((p: any) => {
+            p.editPrice = p.price;
+            p.editStock = this.getStock(p);
+        });
+    }
+
+    cancelBulkUpdate() {
+        this.isBulkUpdateMode = false;
+    }
+
+    saveBulkUpdate() {
+        if (!this.products || this.products.length === 0) return;
+        
+        const payload = this.products.map((p: any) => ({
+            id: p.id,
+            price: p.editPrice,
+            stockQuantity: p.editStock
+        }));
+
+        this.productService.bulkUpdateMerchantProducts(payload).subscribe({
+            next: () => {
+                this.toastr.success('Cập nhật tất cả thành công');
+                this.isBulkUpdateMode = false;
+                this.loadProducts();
+            },
+            error: () => this.toastr.error('Lỗi cập nhật hàng loạt')
+        });
+    }
 }

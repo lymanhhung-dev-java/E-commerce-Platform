@@ -38,4 +38,18 @@ export class MerchantStatisticService {
     if (year) params = params.set('year', year);
     return this.http.get<FinancialReportResponse>(`${this.apiUrl}/financial-report/monthly`, { params });
   }
+
+  getDashboardActions(): Observable<MerchantDashboardActionResponse> {
+    return this.http.get<MerchantDashboardActionResponse>(`${this.apiUrl}/dashboard-actions`);
+  }
+}
+
+export interface MerchantDashboardActionResponse {
+  todayRevenue: number;
+  newOrdersToday: number;
+  lowStockProductCount: number;
+  pendingOrderCount: number;
+  unreadMessageCount: number;
+  frozenBalance: number;
+  availableBalance: number;
 }

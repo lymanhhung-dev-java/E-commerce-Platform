@@ -57,10 +57,21 @@ export class MerchantDashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getShopInfo();
     this.loadProvinces();
+    this.loadDashboardActions();
     // Gọi API load chart sau khi view init xong (thực tế gọi ở đây cũng được nhưng vẽ chart cần canvas tồn tại)
     setTimeout(() => {
       this.loadRevenueStatistics(this.selectedType);
     }, 100);
+  }
+
+  // --- ACTIONS METRICS ---
+  actionMetrics: any = null;
+
+  loadDashboardActions() {
+    this.statisticService.getDashboardActions().subscribe({
+      next: (res) => this.actionMetrics = res,
+      error: (err) => console.error('Lỗi tải metrics', err)
+    });
   }
 
   ngOnDestroy() {

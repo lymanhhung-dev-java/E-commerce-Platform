@@ -101,6 +101,10 @@ export class ProductService {
     return this.http.delete(`${this.apiMerchantUrl}/${id}`, { responseType: 'text' });
   }
 
+  bulkUpdateMerchantProducts(requests: any[]): Observable<string> {
+    return this.http.put(`${this.apiMerchantUrl}/bulk`, requests, { responseType: 'text' });
+  }
+
   updateProduct(id: number, data: any) {
     return this.http.put(`${this.apiMerchantUrl}/${id}`, data);
   }

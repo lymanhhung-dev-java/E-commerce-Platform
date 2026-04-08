@@ -27,6 +27,8 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final com.example.backend_service.repository.ProductRepository productRepository;
+    private final com.example.backend_service.repository.ChatMessageRepository chatMessageRepository;
 
     @Override
     public List<StatisticResponse> getRevenueStatistics(String type, Integer month, Integer year) {
@@ -183,5 +185,37 @@ public class MerchantStatisticServiceImpl implements MerchantStatisticService {
         } catch(Exception e) {
             return BigDecimal.ZERO;
         }
+    }
+
+    @Override
+    public com.example.backend_service.dto.response.statistic.MerchantDashboardActionResponse getDashboardActionMetrics() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User merchant = userRepository.findByUsername(username);
+        com.example.backend_service.model.business.Shop shop = merchant.getShop();
+        if (shop == null) {
+            throw new RuntimeException("Tài khoản này chưa đăng ký Shop");
+        }
+
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+
+        Long newOrdersToday = orderRepository.countNewOrdersSince(shop, startOfDay);
+        BigDecimal todayRevenueBd = orderRepository.sumRevenueSince(shop, startOfDay);
+        Double todayRevenue = todayRevenueBd != null ? todayRevenueBd.doubleValue() : 0.0;
+
+        Long lowStockProductCount = productRepository.countByShopAndStockQuantityLessThan(shop, 5);
+
+        Long pendingOrderCount = orderRepository.countByShopAndStatus(shop, com.example.backend_service.common.OrderStatus.PENDING);
+
+        Long unreadMessageCount = chatMessageRepository.countUnreadMessagesForShop(shop.getId());
+
+        return com.example.backend_service.dto.response.statistic.MerchantDashboardActionResponse.builder()
+                .todayRevenue(todayRevenue)
+                .newOrdersToday(newOrdersToday)
+                .lowStockProductCount(lowStockProductCount != null ? lowStockProductCount : 0L)
+                .pendingOrderCount(pendingOrderCount != null ? pendingOrderCount : 0L)
+                .unreadMessageCount(unreadMessageCount != null ? unreadMessageCount : 0L)
+                .frozenBalance(shop.getPendingBalance())
+                .availableBalance(shop.getBalance() != null ? shop.getBalance().doubleValue() : 0.0)
+                .build();
     }
 }

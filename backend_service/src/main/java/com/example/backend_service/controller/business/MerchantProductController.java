@@ -75,5 +75,13 @@ public class MerchantProductController {
     ) {
         return ResponseEntity.ok(merchantProductService.getMerchantProducts(keyword, categoryId, status, minPrice, maxPrice, minRating, pageable));
     }
+
+    @Operation(summary = "Lưu nhiều sản phẩm cùng lúc (Cập nhật số lượng và giá)")
+    @PutMapping("/bulk")
+    @PreAuthorize("hasRole('ROLE_SELLER')")
+    public ResponseEntity<String> bulkUpdate(@RequestBody java.util.List<com.example.backend_service.dto.request.product.BulkUpdateProductRequest> requests) {
+        merchantProductService.bulkUpdate(requests);
+        return ResponseEntity.ok("Cập nhật hàng loạt thành công");
+    }
 }
 

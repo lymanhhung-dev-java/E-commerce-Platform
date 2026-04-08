@@ -178,8 +178,37 @@ public class MerchantProductServiceImpl implements MerchantProductService {
         if (!product.getShop().getOwner().getId().equals(merchant.getId())) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa sản phẩm này");
         }      
-    product.setIsActive(!product.getIsActive());
-    productRepository.save(product);
-}
+        product.setIsActive(!product.getIsActive());
+        productRepository.save(product);
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public void bulkUpdate(java.util.List<com.example.backend_service.dto.request.product.BulkUpdateProductRequest> requests) {
+        User currentUsername = getCurrentUser();
+        Long merchantId = currentUsername.getId();
+
+        for (com.example.backend_service.dto.request.product.BulkUpdateProductRequest req : requests) {
+            Product product = productRepository.findById(req.getId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + req.getId()));
+
+            if (!product.getShop().getOwner().getId().equals(merchantId)) {
+                throw new RuntimeException("Bạn không có quyền chỉnh sửa sản phẩm ID: " + req.getId());
+            }
+
+            if (req.getPrice() != null) {
+                product.setPrice(java.math.BigDecimal.valueOf(req.getPrice()));
+            }
+
+            if (req.getStockQuantity() != null) {
+                if (req.getStockQuantity() < 0) {
+                    throw new RuntimeException("Tồn kho không được âm ở sản phẩm ID: " + req.getId());
+                }
+                product.setStockQuantity(req.getStockQuantity());
+            }
+
+            productRepository.save(product); // because of transactional, this batch saves
+        }
+    }
+}
 

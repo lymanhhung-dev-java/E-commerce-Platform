@@ -35,4 +35,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
             @Param("minRating") Double minRating,
             Pageable pageable
     );
+
+    Long countByShopAndStockQuantityLessThan(com.example.backend_service.model.business.Shop shop, Integer stock);
 }

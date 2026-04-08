@@ -25,6 +25,14 @@ public interface OrderRepository extends JpaRepository<Order, Long>,JpaSpecifica
 
     List<Order> findByUserOrderByCreatedAtDesc(User user);
 
+    Long countByShopAndStatus(Shop shop, OrderStatus status);
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.shop = :shop AND o.createdAt >= :startDate")
+    Long countNewOrdersSince(@Param("shop") Shop shop, @Param("startDate") java.time.LocalDateTime startDate);
+
+    @Query("SELECT SUM(o.finalAmountToShop) FROM Order o WHERE o.shop = :shop AND o.createdAt >= :startDate AND o.status <> com.example.backend_service.common.OrderStatus.CANCELED AND o.status <> com.example.backend_service.common.OrderStatus.RETURNED")
+    java.math.BigDecimal sumRevenueSince(@Param("shop") Shop shop, @Param("startDate") java.time.LocalDateTime startDate);
+
 
 
 

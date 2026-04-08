@@ -9,4 +9,6 @@ export interface MerchantProductResponse {
   categoryName: string;
   active: boolean;
   status?: boolean; // Backup field
+  editPrice?: number; // Used for bulk update UI
+  editStock?: number; // Used for bulk update UI
 }

@@ -20,16 +20,115 @@
   </div>
 </div>
 
-<div class="row g-3 mb-4">
-  <div class="col-md-6 col-xl-3">
-    <div class="card border-0 shadow-sm rounded-4 p-3 h-100 card-hover">
-      <div class="d-flex justify-content-between mb-3">
-        <span class="text-muted small fw-bold text-uppercase">Doanh Thu (Kỳ này)</span>
-        <div class="icon-box bg-primary bg-opacity-10 text-primary">
-          <i class="bi bi-wallet2"></i>
+<div class="row g-4 mb-4" *ngIf="actionMetrics">
+  
+  <!-- Cột 1: Real-time Stats & Finance -->
+  <div class="col-xl-8">
+    <h5 class="fw-bold mb-3"><i class="bi bi-activity text-primary me-2"></i>Thống Kê Trong Ngày (Real-time)</h5>
+    <div class="row g-3 mb-4">
+      <!-- Doanh thu hôm nay -->
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 card-hover h-100 bg-primary text-white" style="background: linear-gradient(135deg, #0d6efd, #0dcaf0);">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="small fw-bold text-uppercase opacity-75">Doanh Thu Hôm Nay</span>
+            <i class="bi bi-wallet2 fs-4 opacity-50"></i>
+          </div>
+          <h2 class="fw-bold mb-0 text-white">{{ actionMetrics.todayRevenue | currency:'VND':'symbol':'1.0-0' }}</h2>
         </div>
       </div>
-      <h3 class="fw-bold mb-2">{{ stats.revenue | currency:'VND':'symbol':'1.0-0':'vi-VN' }}</h3>
+      <!-- Đơn hàng hôm nay -->
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 card-hover h-100 bg-success text-white" style="background: linear-gradient(135deg, #198754, #20c997);">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="small fw-bold text-uppercase opacity-75">Đơn Hàng Mới Hôm Nay</span>
+            <i class="bi bi-cart-check fs-4 opacity-50"></i>
+          </div>
+          <h2 class="fw-bold mb-0 text-white">{{ actionMetrics.newOrdersToday }} <small class="fs-6 fw-normal opacity-75">đơn</small></h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phân định tài chính -->
+    <h5 class="fw-bold mb-3"><i class="bi bi-safe text-warning me-2"></i>Tài Chính Của Bạn</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card border border-warning-subtle shadow-sm rounded-4 p-3 bg-light">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-box bg-warning bg-opacity-25 text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+              <i class="bi bi-lock-fill fs-5"></i>
+            </div>
+            <div>
+              <p class="text-muted small fw-bold mb-0">Quỹ Đóng Băng (Đang chờ 7 ngày)</p>
+              <h4 class="fw-bold mb-0 text-dark">{{ actionMetrics.frozenBalance | currency:'VND':'symbol':'1.0-0' }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border border-success-subtle shadow-sm rounded-4 p-3 bg-light">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-box bg-success bg-opacity-25 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+              <i class="bi bi-unlock-fill fs-5"></i>
+            </div>
+            <div>
+              <p class="text-muted small fw-bold mb-0">Số Dư Khả Dụng Để Rút</p>
+              <h4 class="fw-bold mb-0 text-success">{{ actionMetrics.availableBalance | currency:'VND':'symbol':'1.0-0' }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cột 2: To-do List (Ưu tiên hành động) -->
+  <div class="col-xl-4">
+    <div class="card border-0 shadow rounded-4 h-100 bg-white">
+      <div class="card-header bg-white border-bottom p-4">
+        <h5 class="fw-bold mb-0"><i class="bi bi-list-check text-danger me-2"></i>Ưu Tiên Hành Động</h5>
+        <small class="text-muted">Các việc cần bạn xử lý ngay</small>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush rounded-bottom-4">
+          <!-- Cảnh báo đơn hàng -->
+          <a routerLink="/merchant/orders" class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center" [ngClass]="{'bg-danger-subtle': actionMetrics.pendingOrderCount > 0}">
+            <div class="d-flex align-items-center gap-3">
+              <i class="bi bi-box-seam text-danger fs-4"></i>
+              <div>
+                <h6 class="fw-bold mb-0" [class.text-danger]="actionMetrics.pendingOrderCount > 0">Đơn Hàng Chờ Xác Nhận</h6>
+                <small class="text-muted" *ngIf="actionMetrics.pendingOrderCount === 0">Bạn đã xử lý hết đơn hàng.</small>
+                <small class="text-danger fw-medium" *ngIf="actionMetrics.pendingOrderCount > 0">Cần đóng gói giao hàng ngay!</small>
+              </div>
+            </div>
+            <span class="badge rounded-pill fs-6" [ngClass]="actionMetrics.pendingOrderCount > 0 ? 'bg-danger' : 'bg-secondary'">{{ actionMetrics.pendingOrderCount }}</span>
+          </a>
+
+          <!-- Cảnh báo tin nhắn -->
+          <a routerLink="/merchant/chat" class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center" [ngClass]="{'bg-warning-subtle': actionMetrics.unreadMessageCount > 0}">
+            <div class="d-flex align-items-center gap-3">
+              <i class="bi bi-chat-dots text-warning fs-4"></i>
+              <div>
+                <h6 class="fw-bold mb-0" [class.text-dark]="actionMetrics.unreadMessageCount > 0">Tin Nhắn Của Khách Hàng</h6>
+                <small class="text-muted" *ngIf="actionMetrics.unreadMessageCount === 0">Chưa có thắc mắc nào mới.</small>
+                <small class="text-dark fw-medium" *ngIf="actionMetrics.unreadMessageCount > 0">Hãy trả lời khách sớm lập tức!</small>
+              </div>
+            </div>
+            <span class="badge rounded-pill fs-6" [ngClass]="actionMetrics.unreadMessageCount > 0 ? 'bg-warning text-dark' : 'bg-secondary'">{{ actionMetrics.unreadMessageCount }}</span>
+          </a>
+
+          <!-- Cảnh báo tồn kho -->
+          <a routerLink="/merchant/products" class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center" [ngClass]="{'bg-danger-subtle': actionMetrics.lowStockProductCount > 0}">
+            <div class="d-flex align-items-center gap-3">
+              <i class="bi bi-exclamation-triangle text-danger fs-4"></i>
+              <div>
+                <h6 class="fw-bold mb-0" [class.text-danger]="actionMetrics.lowStockProductCount > 0">Sản Phẩm Sắp Hết Hàng</h6>
+                <small class="text-muted" *ngIf="actionMetrics.lowStockProductCount === 0">Kho của bạn rất đầy đủ.</small>
+                <small class="text-danger fw-medium" *ngIf="actionMetrics.lowStockProductCount > 0">Hàng tồn kho &lt; 5. Cập nhật ngay!</small>
+              </div>
+            </div>
+            <span class="badge rounded-pill fs-6" [ngClass]="actionMetrics.lowStockProductCount > 0 ? 'bg-danger' : 'bg-secondary'">{{ actionMetrics.lowStockProductCount }}</span>
+          </a>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

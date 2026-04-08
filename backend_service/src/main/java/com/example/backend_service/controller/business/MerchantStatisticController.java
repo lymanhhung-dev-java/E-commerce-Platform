@@ -55,4 +55,12 @@ public class MerchantStatisticController {
     ) {
         return ResponseEntity.ok(statisticService.getMonthlyFinancialReport(month, year));
     }
+
+    @Operation(summary = "Lấy dữ liệu Tương tác Giao diện Dashboard (Visibility)",
+               description = "Trả về doanh thu hôm nay, số đơn hôm nay, và các cảnh báo To-do list (đơn chờ, hàng sắp hết...).")
+    @GetMapping("/dashboard-actions")
+    @PreAuthorize("hasRole('ROLE_SELLER')")
+    public ResponseEntity<com.example.backend_service.dto.response.statistic.MerchantDashboardActionResponse> getDashboardActionMetrics() {
+        return ResponseEntity.ok(statisticService.getDashboardActionMetrics());
+    }
 }

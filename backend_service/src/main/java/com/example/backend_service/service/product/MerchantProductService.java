@@ -20,4 +20,6 @@ public interface MerchantProductService {
     void toggleProductStatus(Long id);
 
     Page<MerchantProductResponse> getMerchantProducts(String keyword, Long categoryId, Boolean status, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, Pageable pageable);
+
+    void bulkUpdate(java.util.List<com.example.backend_service.dto.request.product.BulkUpdateProductRequest> requests);
 }

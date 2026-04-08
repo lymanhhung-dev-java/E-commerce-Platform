@@ -5,9 +5,22 @@
             <h3 class="fw-bold mb-1">Quản lý sản phẩm</h3>
             <p class="text-muted small mb-0">Quản lý kho hàng và trạng thái hiển thị</p>
         </div>
-        <button class="btn btn-primary px-4 py-2 fw-bold shadow-sm" routerLink="/merchant/products/create">
-            <i class="bi bi-plus-lg me-2"></i> Thêm sản phẩm mới
-        </button>
+        <div>
+            <button *ngIf="!isBulkUpdateMode" class="btn btn-warning px-4 py-2 fw-bold shadow-sm me-2 text-dark" (click)="toggleBulkUpdateMode()">
+                <i class="bi bi-pencil-square me-2"></i> Sửa nhanh (Bulk)
+            </button>
+            <ng-container *ngIf="isBulkUpdateMode">
+                <button class="btn btn-secondary px-4 py-2 fw-bold shadow-sm me-2" (click)="cancelBulkUpdate()">
+                    Hủy
+                </button>
+                <button class="btn btn-success px-4 py-2 fw-bold shadow-sm me-2" (click)="saveBulkUpdate()">
+                    <i class="bi bi-check-circle me-2"></i> Lưu tất cả
+                </button>
+            </ng-container>
+            <button class="btn btn-primary px-4 py-2 fw-bold shadow-sm" routerLink="/merchant/products/create">
+                <i class="bi bi-plus-lg me-2"></i> Thêm sản phẩm
+            </button>
+        </div>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -108,16 +121,25 @@
                         </td>
 
                         <td class="fw-bold text-primary">
-                            {{ p.price | number }} ₫
+                            <span *ngIf="!isBulkUpdateMode">{{ p.price | number }} ₫</span>
+                            <div *ngIf="isBulkUpdateMode" class="input-group input-group-sm" style="width: 120px;">
+                                <input type="number" class="form-control" [(ngModel)]="p.editPrice">
+                            </div>
                         </td>
 
                         <td class="align-middle">
-                            <span class="badge rounded-pill px-3 py-2 border border-secondary bg-white" [ngClass]="{
-                                'text-primary': getStock(p) > 0,
-                                'text-danger border-danger': getStock(p) === 0
-                            }">
-                                {{ getStock(p) }} sp
-                            </span>
+                            <div *ngIf="!isBulkUpdateMode">
+                                <span class="badge rounded-pill px-3 py-2 border shadow-sm" [ngClass]="{
+                                    'text-primary border-primary bg-white': getStock(p) >= 5,
+                                    'text-danger border-danger bg-danger-subtle': getStock(p) < 5
+                                }">
+                                    <i class="bi bi-exclamation-triangle-fill me-1" *ngIf="getStock(p) < 5"></i>
+                                    {{ getStock(p) }} sp
+                                </span>
+                            </div>
+                            <div *ngIf="isBulkUpdateMode" style="width: 80px;">
+                                <input type="number" class="form-control form-control-sm" [(ngModel)]="p.editStock">
+                            </div>
                         </td>
 
                         <td>
