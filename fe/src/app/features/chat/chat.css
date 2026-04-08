@@ -260,6 +260,12 @@
   border-bottom-right-radius: 4px;
 }
 
+.sent .message-bubble.order-bubble {
+  background: #ffffff;
+  color: var(--chat-text-main);
+  border: 1px solid var(--chat-border);
+}
+
 .received .message-bubble {
   background: var(--chat-bubble-received);
   color: var(--chat-text-main);
@@ -281,6 +287,10 @@
 .sent .message-time {
   color: rgba(255, 255, 255, 0.8);
   text-align: right;
+}
+
+.sent .message-bubble.order-bubble .message-time {
+  color: var(--chat-text-muted);
 }
 
 .received .message-time {

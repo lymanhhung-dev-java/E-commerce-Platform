@@ -208,4 +208,18 @@ export class ChatComponent implements OnInit, OnDestroy {
     const date = new Date(dateStr);
     return date.toLocaleDateString('vi-VN');
   }
+
+  formatLastMessage(content: string | undefined): string {
+    if (!content) return 'Bắt đầu trò chuyện...';
+    try {
+      if (content.startsWith('{')) {
+        const obj = JSON.parse(content);
+        if (obj && obj.productId) return '[Thông tin sản phẩm]';
+        if (obj && obj.orderId) return '[Thông tin đơn hàng]';
+      }
+    } catch (e) {
+      // Not JSON or parse error, fallback to content
+    }
+    return content;
+  }
 }

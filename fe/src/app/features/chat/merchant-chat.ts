@@ -161,4 +161,18 @@ export class MerchantChatComponent implements OnInit, OnDestroy {
     const date = new Date(dateStr);
     return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
   }
+
+  formatLastMessage(content: string | undefined): string {
+    if (!content) return 'Bấm để xem tin nhắn';
+    try {
+      if (content.startsWith('{')) {
+        const obj = JSON.parse(content);
+        if (obj && obj.productId) return '[Thông tin sản phẩm]';
+        if (obj && obj.orderId) return '[Thông tin đơn hàng]';
+      }
+    } catch (e) {
+      // Fallback
+    }
+    return content;
+  }
 }

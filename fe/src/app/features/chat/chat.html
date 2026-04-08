@@ -28,7 +28,7 @@
           </div>
           <div class="room-info">
             <div class="room-name">{{ room.shopName }}</div>
-            <div class="room-last-message">{{ room.lastMessage || 'Bắt đầu trò chuyện...' }}</div>
+            <div class="room-last-message">{{ formatLastMessage(room.lastMessage) }}</div>
           </div>
           <div class="room-meta">
             @if (room.lastMessageTime) {

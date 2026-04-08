@@ -211,6 +211,12 @@
   border-bottom-right-radius: 4px;
 }
 
+.own .message-bubble.order-bubble {
+  background: #ffffff;
+  color: var(--merch-text-main);
+  border: 1px solid var(--merch-border);
+}
+
 .message-wrapper:not(.own) .message-bubble {
   background: #fff;
   color: var(--merch-text-main);
@@ -227,6 +233,10 @@
 .own .message-time {
   color: rgba(255, 255, 255, 0.8);
   text-align: right;
+}
+
+.own .message-bubble.order-bubble .message-time {
+  color: var(--merch-text-muted);
 }
 
 .message-wrapper:not(.own) .message-time {
