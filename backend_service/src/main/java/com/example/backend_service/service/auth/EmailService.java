@@ -16,19 +16,34 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     @Async
-public void sendVerificationCode(String toEmail, String code) {
-    try {
-        SimpleMailMessage message = new SimpleMailMessage();
-        // CỰC KỲ QUAN TRỌNG: Phải là email bạn dùng đăng ký tài khoản Brevo
-        message.setFrom("ignuh204@gmail.com"); 
-        message.setTo(toEmail);
-        message.setSubject("Mã xác nhận đăng ký tài khoản");
-        message.setText("Mã của bạn là: " + code);
-        
-        mailSender.send(message);
-        log.info("Verification code sent to email: {}", toEmail);
-    } catch (Exception e) {
-        log.error("Failed to send verification email to {}: {}", toEmail, e.getMessage());
+    public void sendVerificationCode(String toEmail, String code) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("ignuh204@gmail.com"); 
+            message.setTo(toEmail);
+            message.setSubject("Mã xác nhận đăng ký tài khoản");
+            message.setText("Mã của bạn là: " + code);
+            
+            mailSender.send(message);
+            log.info("Verification code sent to email: {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send verification email to {}: {}", toEmail, e.getMessage());
+        }
     }
-}
+
+    @Async
+    public void sendPasswordResetCode(String toEmail, String code) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("ignuh204@gmail.com"); 
+            message.setTo(toEmail);
+            message.setSubject("Mã xác nhận cấp lại mật khẩu (E-commerce Platform)");
+            message.setText("Bạn vừa yêu cầu cấp lại mật khẩu cho tài khoản liên kết với thẻ Email này.\nMã xác nhận nhận diện của bạn là: " + code + "\n\nVui lòng không cung cấp mã này cho người lạ để tránh rủi ro bảo mật dữ liệu.\n\nTrân trọng.");
+            
+            mailSender.send(message);
+            log.info("Password reset code sent to email: {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send password reset email to {}: {}", toEmail, e.getMessage());
+        }
+    }
 }

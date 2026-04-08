@@ -63,4 +63,20 @@ public class AuthController {
         TokenResponse tokenResponse = authService.googleLogin(req);
         return ResponseEntity.ok(tokenResponse);
     }
+
+    @Operation(summary = "Forgot Password - Send Code", description = "Send OTP to email for password reset")
+    @PostMapping("/forgot-password/send-code")
+    public ResponseEntity<String> sendForgotPasswordCode(@RequestBody @Valid com.example.backend_service.dto.request.auth.ForgotPasswordRequest req) {
+        log.info("Forgot password send code requested for email: {}", req.getEmail());
+        authService.forgotPassword(req);
+        return ResponseEntity.ok("Mã xác thực đã được gửi đến email của bạn.");
+    }
+
+    @Operation(summary = "Forgot Password - Reset", description = "Verify OTP and reset password")
+    @PostMapping("/forgot-password/reset")
+    public ResponseEntity<String> resetPassword(@RequestBody @Valid com.example.backend_service.dto.request.auth.ResetPasswordRequest req) {
+        log.info("Reset password requested for email: {}", req.getEmail());
+        authService.resetPassword(req);
+        return ResponseEntity.ok("Mật khẩu đã được thay đổi thành công. Vui lòng đăng nhập lại.");
+    }
 }

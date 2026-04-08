@@ -60,6 +60,14 @@ export class AuthService {
     );
   }
 
+  sendForgotPasswordCode(email: string) {
+    return this.http.post(`${this.apiUrl}/forgot-password/send-code`, { email }, { responseType: 'text' });
+  }
+
+  resetPassword(payload: { email: string; otp: string; newPassword: string }) {
+    return this.http.post(`${this.apiUrl}/forgot-password/reset`, payload, { responseType: 'text' });
+  }
+
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('access_token');

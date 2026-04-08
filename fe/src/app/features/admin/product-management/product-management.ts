@@ -55,7 +55,7 @@ export class ProductManagementComponent implements OnInit {
   }
 
   loadShops() {
-    this.shopService.getShopsForAdmin('', 'APPROVED', 0, 1000).subscribe({
+    this.shopService.getShopsForAdmin('', 'ACTIVE', 0, 1000).subscribe({
       next: (res) => this.shops = res.content || [],
       error: (err) => console.error('Lỗi khi tải danh sách Shop', err)
     });

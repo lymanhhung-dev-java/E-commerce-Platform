@@ -17,5 +17,9 @@ public interface AuthService {
    
    TokenResponse getRefreshToken(String refreshToken);
 
-   TokenResponse googleLogin(SocialLoginRequest req);
-} 
+   TokenResponse googleLogin(SocialLoginRequest request);
+
+   void forgotPassword(com.example.backend_service.dto.request.auth.ForgotPasswordRequest request);
+
+   void resetPassword(com.example.backend_service.dto.request.auth.ResetPasswordRequest request);
+}

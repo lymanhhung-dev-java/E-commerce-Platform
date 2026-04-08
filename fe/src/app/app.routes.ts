@@ -37,6 +37,7 @@ export const routes: Routes = [
         children: [
             { path: '', component: HomeComponent },
             { path: 'login', component: LoginComponent },
+            { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
             { path: 'auth/google/callback', component: GoogleCallbackComponent },
             { path: 'register', component: RegisterComponent },
             { path: 'profile', component: ProfileComponent },

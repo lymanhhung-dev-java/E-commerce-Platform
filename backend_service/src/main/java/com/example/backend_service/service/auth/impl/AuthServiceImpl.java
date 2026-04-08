@@ -268,4 +268,32 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException("Lỗi đăng nhập Google: " + e.getMessage());
         }
     }
+
+    @Override
+    public void forgotPassword(com.example.backend_service.dto.request.auth.ForgotPasswordRequest request) {
+        User user = userRepository.findFirstByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException("Email không tồn tại trong hệ thống"));
+        
+        String otp = otpService.generateAndCacheResetPasswordOtp(user.getEmail());
+        emailService.sendPasswordResetCode(user.getEmail(), otp);
+        log.info("Sent password reset OTP to email: {}", user.getEmail());
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(com.example.backend_service.dto.request.auth.ResetPasswordRequest request) {
+        boolean isValid = otpService.verifyResetPasswordOtp(request.getEmail(), request.getOtp());
+        if (!isValid) {
+            throw new AppException("Mã xác thực không hợp lệ hoặc đã hết hạn");
+        }
+
+        User user = userRepository.findFirstByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException("Email không tồn tại trong hệ thống"));
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        otpService.clearResetPasswordOtp(request.getEmail());
+        log.info("Password successfully reset for email: {}", request.getEmail());
+    }
 }
