@@ -25,4 +25,10 @@ public class ShopController {
     public ResponseEntity<?> getShopById(@PathVariable Long id) {
         return ResponseEntity.ok(shopService.getShopById(id));
     }
+
+    @Operation(summary = "Get Public Shop Vouchers", description = "Lấy các voucher công khai của Shop")
+    @GetMapping("/{id}/vouchers")
+    public ResponseEntity<?> getShopVouchers(@PathVariable Long id, @org.springframework.beans.factory.annotation.Autowired com.example.backend_service.service.voucher.VoucherService voucherService) {
+        return ResponseEntity.ok(voucherService.getShopPublicVouchers(id));
+    }
 }

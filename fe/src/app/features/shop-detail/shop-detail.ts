@@ -5,6 +5,8 @@ import { ShopService } from '../../core/services/shop.Service';
 import { ProductService } from '../../core/services/product.service';
 import { ChatService } from '../../core/services/chat.service';
 import { ProductResponse } from '../../core/models/product';
+import { VoucherService } from '../../core/services/voucher.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-shop-detail',
@@ -19,10 +21,13 @@ export class ShopDetailComponent implements OnInit {
     private shopService = inject(ShopService);
     private productService = inject(ProductService);
     private chatService = inject(ChatService);
+    private voucherService = inject(VoucherService);
+    private toastr = inject(ToastrService);
 
     shopId: number = 0;
     shop: any = null;
     products: any[] = [];
+    vouchers: any[] = [];
 
     isLoading = false;
     page = 0;
@@ -36,6 +41,7 @@ export class ShopDetailComponent implements OnInit {
                 this.shopId = +id;
                 this.loadShopInfo();
                 this.loadShopProducts();
+                this.loadShopVouchers();
             }
         });
     }
@@ -43,7 +49,7 @@ export class ShopDetailComponent implements OnInit {
     loadShopInfo() {
         this.shopService.getShopById(this.shopId).subscribe({
             next: (res) => this.shop = res,
-            error: (err) => console.error('Error loading shop info', err)
+            error: (err: any) => console.error('Error loading shop info', err)
         });
     }
 
@@ -55,10 +61,24 @@ export class ShopDetailComponent implements OnInit {
                 this.totalPages = res.totalPages;
                 this.isLoading = false;
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Error loading shop products', err);
                 this.isLoading = false;
             }
+        });
+    }
+
+    loadShopVouchers() {
+        this.voucherService.getShopPublicVouchers(this.shopId).subscribe({
+            next: (res: any[]) => this.vouchers = res,
+            error: (err: any) => console.error('Error loading shop vouchers', err)
+        });
+    }
+
+    saveVoucher(code: string) {
+        this.voucherService.saveVoucher(code).subscribe({
+            next: () => this.toastr.success('Lưu mã giảm giá thành công!'),
+            error: (err: any) => this.toastr.error(err.error?.message || 'Lỗi khi lưu mã')
         });
     }
 
@@ -75,7 +95,7 @@ export class ShopDetailComponent implements OnInit {
             next: () => {
                 this.router.navigate(['/chat']);
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Error creating chat room:', err);
             }
         });

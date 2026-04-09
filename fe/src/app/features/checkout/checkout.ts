@@ -57,6 +57,9 @@ export class CheckoutComponent implements OnInit {
   shopDiscountAmount: number = 0;
   systemDiscountAmount: number = 0;
 
+  showVoucherModal: boolean = false;
+  activeVoucherTab: 'SHOP' | 'SYSTEM' = 'SHOP';
+
   // Form giữ nguyên
   checkoutForm = this.fb.group({
     receiverName: ['', Validators.required],
@@ -170,6 +173,42 @@ export class CheckoutComponent implements OnInit {
 
   onVoucherChange() {
      this.calculateDiscounts();
+  }
+
+  openVoucherModal(tab: 'SHOP' | 'SYSTEM') {
+    this.activeVoucherTab = tab;
+    this.showVoucherModal = true;
+  }
+
+  closeVoucherModal() {
+    this.showVoucherModal = false;
+  }
+
+  selectVoucher(voucher: any, type: 'SHOP' | 'SYSTEM') {
+    if (type === 'SHOP') {
+      if (this.selectedShopVoucherId === voucher.voucherId) {
+        this.selectedShopVoucherId = null; // deselect
+      } else {
+        this.selectedShopVoucherId = voucher.voucherId;
+      }
+    } else {
+      if (this.selectedSystemVoucherId === voucher.voucherId) {
+        this.selectedSystemVoucherId = null; // deselect
+      } else {
+        this.selectedSystemVoucherId = voucher.voucherId;
+      }
+    }
+    this.onVoucherChange();
+    this.closeVoucherModal();
+    this.toastr.success('Áp dụng Voucher thành công!');
+  }
+
+  getSelectedShopVoucher() {
+    return this.shopVouchers.find(v => v.voucherId === this.selectedShopVoucherId);
+  }
+
+  getSelectedSystemVoucher() {
+    return this.systemVouchers.find(v => v.voucherId === this.selectedSystemVoucherId);
   }
 
   onBankTransferCheckout(orderId: number) {

@@ -53,3 +53,58 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+.voucher-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    gap: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: #ff7b54 transparent;
+}
+.voucher-scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+.voucher-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.voucher-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #ff7b54;
+    border-radius: 10px;
+}
+.coupon-card {
+    flex: 0 0 auto;
+    min-width: 280px;
+    background: #fff;
+    border: 1px solid #ff7b54;
+    border-radius: 8px;
+    position: relative;
+    border-left: 6px solid #ff7b54;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    transition: transform 0.2s ease;
+}
+.coupon-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,123,84,0.15);
+}
+.coupon-card::before, .coupon-card::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    left: -14px;
+}
+.coupon-card::before {
+    top: -10px;
+    border-bottom: 1px solid #ff7b54;
+}
+.coupon-card::after {
+    bottom: -10px;
+    border-top: 1px solid #ff7b54;
+}

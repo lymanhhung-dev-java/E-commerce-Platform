@@ -276,7 +276,7 @@ public class CheckoutServiceImpl implements CheckoutService {
                 .qrUrl(qrUrl)
                 .bankName("MBBank")
                 .accountNo(MY_BANK_ACC)
-                .accountName("CTY TNHH SEPAY")
+                .accountName("LY MANH HUNG")
                 .amount(order.getTotalAmount())
                 .content(content)
                 .build();

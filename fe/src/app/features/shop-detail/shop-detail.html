@@ -31,6 +31,23 @@
         </div>
     </div>
 
+    <!-- Vouchers Bar -->
+    <div class="mb-5" *ngIf="vouchers.length > 0">
+        <div class="d-flex align-items-center mb-3">
+            <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-ticket-perforated-fill me-2"></i>Mã giảm giá của Shop</h5>
+        </div>
+        <div class="voucher-scroll-container">
+            <div class="coupon-card" *ngFor="let v of vouchers">
+                <div class="ms-2">
+                    <h6 class="fw-bold text-danger mb-1 mb-0">Giảm {{ v.discountType === 'PERCENT' ? v.discountValue + '%' : (v.discountValue | currency:'VND':'symbol':'1.0-0') }}</h6>
+                    <small class="text-muted d-block" style="font-size: 0.75rem;">Đơn tối thiểu: {{ v.minOrderValue | currency:'VND':'symbol':'1.0-0' }}</small>
+                    <small class="text-danger-emphasis d-block" style="font-size: 0.7rem;" *ngIf="v.endDate">HSD: {{ v.endDate | date:'dd/MM/yyyy' }}</small>
+                </div>
+                <button class="btn btn-sm btn-danger rounded-pill px-3 ms-3 fw-semibold" style="font-size: 0.8rem;" (click)="saveVoucher(v.code)">Lưu mã</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Filter/Sort Bar -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0">Danh sách sản phẩm</h4>

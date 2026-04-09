@@ -95,4 +95,8 @@ export class VoucherService {
       .set('size', size.toString());
     return this.http.get<any>(this.userApiUrl, { params });
   }
+
+  getShopPublicVouchers(shopId: number): Observable<Voucher[]> {
+    return this.http.get<Voucher[]>(`${environment.apiUrl}/shops/${shopId}/vouchers`);
+  }
 }

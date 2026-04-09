@@ -21,6 +21,9 @@ public interface VoucherService {
     void deleteShopVoucher(Long id);
     void toggleShopVoucherStatus(Long id);
 
+    // Public method
+    java.util.List<VoucherResponse> getShopPublicVouchers(Long shopId);
+
     // Shared
     VoucherResponse getVoucherById(Long id, boolean isMerchant);
 }

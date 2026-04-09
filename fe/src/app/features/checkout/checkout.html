@@ -135,25 +135,49 @@
           <hr class="text-muted my-4">
 
           <div class="mb-4">
-            <label class="form-label fw-bold">Voucher của Shop</label>
-            <select class="form-select" [(ngModel)]="selectedShopVoucherId" (change)="onVoucherChange()" [ngModelOptions]="{standalone: true}">
-              <option [ngValue]="null">-- Không chọn --</option>
-              <option *ngFor="let v of shopVouchers" [ngValue]="v.voucherId">
-                {{ v.code }} - {{ v.discountType === 'PERCENT' ? 'Giảm ' + v.discountValue + '%' : 'Giảm ' + (v.discountValue | currency:'VND':'symbol':'1.0-0') }} 
-                (Đơn tối thiểu: {{ v.minOrderValue | currency:'VND':'symbol':'1.0-0' }})
-              </option>
-            </select>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label fw-bold mb-0">Voucher của Shop</label>
+              <button type="button" class="btn btn-sm btn-outline-danger p-1 px-3 rounded-pill" (click)="openVoucherModal('SHOP')">
+                {{ selectedShopVoucherId ? 'Thay đổi' : 'Chọn Voucher' }}
+              </button>
+            </div>
+            <div *ngIf="selectedShopVoucherId; else noShopVoucher" class="p-3 border border-danger rounded-3 bg-white position-relative">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-ticket-perforated-fill text-danger fs-4 me-3"></i>
+                <div>
+                  <h6 class="mb-0 text-danger fw-bold">{{ getSelectedShopVoucher()?.code }}</h6>
+                  <small class="text-muted">{{ getSelectedShopVoucher()?.discountType === 'PERCENT' ? 'Giảm ' + getSelectedShopVoucher()?.discountValue + '%' : 'Giảm ' + (getSelectedShopVoucher()?.discountValue | currency:'VND':'symbol':'1.0-0') }}</small>
+                </div>
+              </div>
+            </div>
+            <ng-template #noShopVoucher>
+              <div class="p-3 border border-dashed rounded-3 bg-light text-muted text-center small cursor-pointer" (click)="openVoucherModal('SHOP')">
+                <i class="bi bi-tag"></i> Chọn hoặc nhập mã
+              </div>
+            </ng-template>
           </div>
 
           <div class="mb-4">
-            <label class="form-label fw-bold">Voucher của Hệ thống</label>
-            <select class="form-select" [(ngModel)]="selectedSystemVoucherId" (change)="onVoucherChange()" [ngModelOptions]="{standalone: true}">
-              <option [ngValue]="null">-- Không chọn --</option>
-              <option *ngFor="let v of systemVouchers" [ngValue]="v.voucherId">
-                {{ v.code }} - {{ v.discountType === 'PERCENT' ? 'Giảm ' + v.discountValue + '%' : 'Giảm ' + (v.discountValue | currency:'VND':'symbol':'1.0-0') }} 
-                (Đơn tối thiểu: {{ v.minOrderValue | currency:'VND':'symbol':'1.0-0' }})
-              </option>
-            </select>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label fw-bold mb-0">Voucher của Hệ thống</label>
+              <button type="button" class="btn btn-sm btn-outline-primary p-1 px-3 rounded-pill" (click)="openVoucherModal('SYSTEM')">
+                {{ selectedSystemVoucherId ? 'Thay đổi' : 'Chọn Voucher' }}
+              </button>
+            </div>
+            <div *ngIf="selectedSystemVoucherId; else noSystemVoucher" class="p-3 border border-primary rounded-3 bg-white position-relative">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-ticket-perforated-fill text-primary fs-4 me-3"></i>
+                <div>
+                  <h6 class="mb-0 text-primary fw-bold">{{ getSelectedSystemVoucher()?.code }}</h6>
+                  <small class="text-muted">{{ getSelectedSystemVoucher()?.discountType === 'PERCENT' ? 'Giảm ' + getSelectedSystemVoucher()?.discountValue + '%' : 'Giảm ' + (getSelectedSystemVoucher()?.discountValue | currency:'VND':'symbol':'1.0-0') }}</small>
+                </div>
+              </div>
+            </div>
+            <ng-template #noSystemVoucher>
+              <div class="p-3 border border-dashed rounded-3 bg-light text-muted text-center small cursor-pointer" (click)="openVoucherModal('SYSTEM')">
+                <i class="bi bi-tag"></i> Chọn hoặc nhập mã
+              </div>
+            </ng-template>
           </div>
 
           <div class="d-flex justify-content-between mb-2">
@@ -313,6 +337,80 @@
            <button class="btn btn-dark mt-3 px-4 py-2 rounded-pill shadow-sm" (click)="closeModal()">Đóng và quay lại</button>
         </div>
         
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Voucher Selection Modal -->
+<div class="modal fade show custom-modal-backdrop" *ngIf="showVoucherModal" tabindex="-1" style="display: block;">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold">Chọn Mã giảm giá</h5>
+        <button type="button" class="btn-close" (click)="closeVoucherModal()"></button>
+      </div>
+
+      <div class="modal-body pt-3">
+        <!-- Tabs -->
+        <ul class="nav nav-pills nav-fill mb-4">
+          <li class="nav-item">
+            <button class="nav-link rounded-pill" [class.active]="activeVoucherTab === 'SHOP'" [class.bg-danger]="activeVoucherTab === 'SHOP'" (click)="activeVoucherTab = 'SHOP'">Mã của Shop</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link rounded-pill" [class.active]="activeVoucherTab === 'SYSTEM'" [class.bg-primary]="activeVoucherTab === 'SYSTEM'" (click)="activeVoucherTab = 'SYSTEM'">Mã Hệ thống</button>
+          </li>
+        </ul>
+
+        <!-- Shop Vouchers -->
+        <div *ngIf="activeVoucherTab === 'SHOP'">
+          <div *ngIf="shopVouchers.length === 0" class="text-center py-4 text-muted">
+            <i class="bi bi-inboxes fs-1 d-block mb-2 text-opacity-25 opacity-50 text-danger"></i>
+            Shop chưa có mã giảm giá nào
+          </div>
+          <div class="d-flex flex-column gap-3">
+            <div *ngFor="let v of shopVouchers" class="voucher-item-card border rounded-3 d-flex position-relative overflow-hidden cursor-pointer" [class.border-danger]="selectedShopVoucherId === v.voucherId" [class.bg-danger-subtle]="selectedShopVoucherId === v.voucherId" (click)="selectVoucher(v, 'SHOP')">
+              <div class="bg-danger text-white d-flex align-items-center justify-content-center p-3" style="width: 80px;">
+                <i class="bi bi-shop fs-3"></i>
+              </div>
+              <div class="p-3 flex-grow-1 d-flex flex-column justify-content-center bg-white">
+                <h6 class="fw-bold text-dark mb-1">{{ v.code }}</h6>
+                <div class="text-danger fw-bold mb-1">Giảm {{ v.discountType === 'PERCENT' ? v.discountValue + '%' : (v.discountValue | currency:'VND':'symbol':'1.0-0') }}</div>
+                <small class="text-muted" style="font-size: 0.75rem;">Đơn tối thiểu: {{ v.minOrderValue | currency:'VND':'symbol':'1.0-0' }}</small>
+              </div>
+              <div class="p-3 d-flex align-items-center bg-white">
+                <div class="form-check m-0">
+                  <input class="form-check-input border-danger me-0" type="radio" [checked]="selectedShopVoucherId === v.voucherId">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Vouchers -->
+        <div *ngIf="activeVoucherTab === 'SYSTEM'">
+          <div *ngIf="systemVouchers.length === 0" class="text-center py-4 text-muted">
+            <i class="bi bi-inboxes fs-1 d-block mb-2 text-opacity-25 opacity-50 text-primary"></i>
+            Hệ thống chưa có mã giảm giá nào
+          </div>
+          <div class="d-flex flex-column gap-3">
+            <div *ngFor="let v of systemVouchers" class="voucher-item-card border rounded-3 d-flex position-relative overflow-hidden cursor-pointer" [class.border-primary]="selectedSystemVoucherId === v.voucherId" [class.bg-primary-subtle]="selectedSystemVoucherId === v.voucherId" (click)="selectVoucher(v, 'SYSTEM')">
+              <div class="bg-primary text-white d-flex align-items-center justify-content-center p-3" style="width: 80px;">
+                <i class="bi bi-bag-check fs-3"></i>
+              </div>
+              <div class="p-3 flex-grow-1 d-flex flex-column justify-content-center bg-white">
+                <h6 class="fw-bold text-dark mb-1">{{ v.code }}</h6>
+                <div class="text-primary fw-bold mb-1">Giảm {{ v.discountType === 'PERCENT' ? v.discountValue + '%' : (v.discountValue | currency:'VND':'symbol':'1.0-0') }}</div>
+                <small class="text-muted" style="font-size: 0.75rem;">Đơn tối thiểu: {{ v.minOrderValue | currency:'VND':'symbol':'1.0-0' }}</small>
+              </div>
+              <div class="p-3 d-flex align-items-center bg-white">
+                <div class="form-check m-0">
+                  <input class="form-check-input border-primary me-0" type="radio" [checked]="selectedSystemVoucherId === v.voucherId">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

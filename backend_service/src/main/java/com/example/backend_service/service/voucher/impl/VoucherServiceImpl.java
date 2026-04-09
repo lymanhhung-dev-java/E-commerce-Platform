@@ -202,6 +202,18 @@ public class VoucherServiceImpl implements VoucherService {
         return mapToResponse(voucher);
     }
 
+    @Override
+    public java.util.List<VoucherResponse> getShopPublicVouchers(Long shopId) {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        java.util.List<Voucher> vouchers = voucherRepository.findByOwnerTypeAndShopIdAndIsActiveTrueAndEndDateAfter(OwnerType.SHOP, shopId, now);
+        
+        return vouchers.stream()
+                .filter(v -> v.getStartDate().isBefore(now) || v.getStartDate().isEqual(now))
+                .filter(v -> v.getLimitUsage() == null || v.getLimitUsage() == 0 || v.getUsedCount() < v.getLimitUsage())
+                .map(this::mapToResponse)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private void updateVoucherFields(Voucher voucher, VoucherRequest request) {
         // If code changed, check if exists
         if (!voucher.getCode().equals(request.getCode()) && voucherRepository.findByCode(request.getCode()).isPresent()) {

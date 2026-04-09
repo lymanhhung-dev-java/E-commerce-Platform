@@ -19,4 +19,8 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
 
     org.springframework.data.domain.Page<Voucher> findByOwnerTypeAndShopId(
             com.example.backend_service.common.OwnerType ownerType, Long shopId, org.springframework.data.domain.Pageable pageable);
+
+    // Public API: Find active vouchers for a shop
+    java.util.List<Voucher> findByOwnerTypeAndShopIdAndIsActiveTrueAndEndDateAfter(
+            com.example.backend_service.common.OwnerType ownerType, Long shopId, java.time.LocalDateTime date);
 }
