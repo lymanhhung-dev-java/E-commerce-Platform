@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, shareReplay } from 'rxjs';
 
 export interface Ward {
     code: string;
@@ -26,9 +26,15 @@ export interface Province {
 export class LocationService {
     private http = inject(HttpClient);
     private dataUrl = '/data/tree.json';
+    private provincesCache$?: Observable<Province[]>;
 
     getProvinces(): Observable<Province[]> {
-        return this.http.get<Province[]>(this.dataUrl);
+        if (!this.provincesCache$) {
+            this.provincesCache$ = this.http.get<Province[]>(this.dataUrl).pipe(
+                shareReplay(1)
+            );
+        }
+        return this.provincesCache$;
     }
 
     getWardsByProvinceName(provinceName: string): Observable<Ward[]> {

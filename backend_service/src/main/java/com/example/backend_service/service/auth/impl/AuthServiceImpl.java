@@ -86,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String otp = otpService.generateAndCacheOtp(registerRequest);
-        emailService.sendVerificationCode(registerRequest.getEmail(), otp);
+        emailService.sendOtp(registerRequest.getEmail(), otp);
     }
 
     @Override
